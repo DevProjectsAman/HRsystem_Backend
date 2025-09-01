@@ -25,9 +25,9 @@ public class PermissionRequirement : IAuthorizationRequirement
 public class PermissionHandlerService : AuthorizationHandler<PermissionRequirement>
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly HRsystemDbContext _dbContext;
+    private readonly IdentityDbContextHR _dbContext;
 
-    public PermissionHandlerService(UserManager<ApplicationUser> userManager, HRsystemDbContext dbContext)
+    public PermissionHandlerService(UserManager<ApplicationUser> userManager, IdentityDbContextHR dbContext)
     {
         _userManager = userManager;
         _dbContext = dbContext;

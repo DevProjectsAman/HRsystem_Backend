@@ -10,7 +10,6 @@
         public ResponseResultDTO(string message) => Message = message;
         public ResponseResultDTO(string message, T obj) { Message = message; Data = obj; }
 
-
     }
     public class ResponseResultDTO
     {

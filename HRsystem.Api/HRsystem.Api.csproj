@@ -29,7 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Database\Employee\" />
+	  <Folder Include="Database\DataTables\" />
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
 

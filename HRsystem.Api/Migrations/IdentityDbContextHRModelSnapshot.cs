@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HRsystem.Api.Migrations
 {
-    [DbContext(typeof(HRsystemDbContext))]
-    partial class HRsystemDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(IdentityDbContextHR))]
+    partial class IdentityDbContextHRModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -24,9 +24,11 @@ namespace HRsystem.Api.Migrations
 
             modelBuilder.Entity("HRsystem.Api.Database.Entities.ApplicationRole", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -51,7 +53,7 @@ namespace HRsystem.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("08dd03ec-ef32-4b77-8c77-19f8bb6bda50"),
+                            Id = 1,
                             ConcurrencyStamp = "0b2f3b2f-a5d1-4d3f-be8b-db04070caed1",
                             Name = "SystemAdmin",
                             NormalizedName = "SYSTEMADMIN"
@@ -60,11 +62,16 @@ namespace HRsystem.Api.Migrations
 
             modelBuilder.Entity("HRsystem.Api.Database.Entities.ApplicationUser", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -83,6 +90,27 @@ namespace HRsystem.Api.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("FailedLoginCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ForceLogout")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsToChangePassword")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("LastFailedLoginAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("LastPasswordChangedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("tinyint(1)");
@@ -106,6 +134,14 @@ namespace HRsystem.Api.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("PreferredLanguage")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<Guid>("RowGuid")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
@@ -136,18 +172,26 @@ namespace HRsystem.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("08dd03ec-aff2-4d24-89cf-738fd51097a9"),
+                            Id = 1,
                             AccessFailedCount = 0,
+                            CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 6, 22, 12, 23, 5, 683, DateTimeKind.Local).AddTicks(1899),
+                            CreatedAt = new DateTime(2025, 9, 1, 16, 13, 30, 774, DateTimeKind.Local).AddTicks(7721),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
+                            FailedLoginCount = 0,
+                            ForceLogout = false,
+                            IsActive = true,
+                            IsToChangePassword = false,
+                            LastPasswordChangedAt = new DateTime(2025, 9, 1, 13, 13, 30, 775, DateTimeKind.Utc).AddTicks(1025),
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
                             PasswordHash = "AQAAAAIAAYagAAAAEHuYA7U5KAgI1iuzqry/7jPmIBrciy7nyILnyLHLuOwz3plNoiOeAavDPyJliZul9A==",
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
+                            PreferredLanguage = "en",
+                            RowGuid = new Guid("d53c520a-3b73-4a32-9436-5113cac74da4"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",
@@ -157,9 +201,11 @@ namespace HRsystem.Api.Migrations
 
             modelBuilder.Entity("HRsystem.Api.Database.Entities.AspPermission", b =>
                 {
-                    b.Property<Guid>("PermissionId")
+                    b.Property<int>("PermissionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("PermissionId"));
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -192,11 +238,11 @@ namespace HRsystem.Api.Migrations
 
             modelBuilder.Entity("HRsystem.Api.Database.Entities.AspRolePermissions", b =>
                 {
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -211,7 +257,7 @@ namespace HRsystem.Api.Migrations
                     b.ToTable("AspRolePermissions");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -225,8 +271,8 @@ namespace HRsystem.Api.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -235,7 +281,7 @@ namespace HRsystem.Api.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -249,8 +295,8 @@ namespace HRsystem.Api.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -259,7 +305,7 @@ namespace HRsystem.Api.Migrations
                     b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("varchar(255)");
@@ -270,8 +316,8 @@ namespace HRsystem.Api.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -280,13 +326,13 @@ namespace HRsystem.Api.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -297,15 +343,15 @@ namespace HRsystem.Api.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("08dd03ec-aff2-4d24-89cf-738fd51097a9"),
-                            RoleId = new Guid("08dd03ec-ef32-4b77-8c77-19f8bb6bda50")
+                            UserId = 1,
+                            RoleId = 1
                         });
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("varchar(255)");
@@ -340,7 +386,7 @@ namespace HRsystem.Api.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("HRsystem.Api.Database.Entities.ApplicationRole", null)
                         .WithMany()
@@ -349,7 +395,7 @@ namespace HRsystem.Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.HasOne("HRsystem.Api.Database.Entities.ApplicationUser", null)
                         .WithMany()
@@ -358,7 +404,7 @@ namespace HRsystem.Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
                     b.HasOne("HRsystem.Api.Database.Entities.ApplicationUser", null)
                         .WithMany()
@@ -367,7 +413,7 @@ namespace HRsystem.Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
                     b.HasOne("HRsystem.Api.Database.Entities.ApplicationRole", null)
                         .WithMany()
@@ -382,7 +428,7 @@ namespace HRsystem.Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
                     b.HasOne("HRsystem.Api.Database.Entities.ApplicationUser", null)
                         .WithMany()

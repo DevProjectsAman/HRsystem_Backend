@@ -30,17 +30,25 @@ var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
 
 
-builder.Services.AddDbContext<HRsystemDbContext>(options =>
+builder.Services.AddDbContext<IdentityDbContextHR>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-    .AddEntityFrameworkStores<HRsystemDbContext>()
+    .AddEntityFrameworkStores<IdentityDbContextHR>()
     .AddDefaultTokenProviders();
 
 
+
+// Register DbContext with connection string from appsettings.json
+builder.Services.AddDbContext<DBcontextHRsystem>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    )
+);
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer(); // Needed for minimal APIs

@@ -50,9 +50,9 @@ public record GetPermissionsQuery : IRequest<ResponseResultDTO<List<PermissionDT
 
 public class GetPermissionsHandler : IRequestHandler<GetPermissionsQuery, ResponseResultDTO<List<PermissionDTO>>>
 {
-    private readonly HRsystemDbContext _dbContext;
+    private readonly IdentityDbContextHR _dbContext;
 
-    public GetPermissionsHandler(HRsystemDbContext dbcontext)
+    public GetPermissionsHandler(IdentityDbContextHR dbcontext)
     {
         _dbContext = dbcontext;
     }
@@ -99,11 +99,11 @@ public record AddPermissionCommand(PermissionDTO Permission) : IRequest<Response
 
 public class AddPermissionHandler : IRequestHandler<AddPermissionCommand, ResponseResultDTO>
 {
-    private readonly HRsystemDbContext _dbContext;
+    private readonly IdentityDbContextHR _dbContext;
 
     private readonly ICurrentUserService _currentUser;
 
-    public AddPermissionHandler(HRsystemDbContext dbContext, ICurrentUserService currentUser)
+    public AddPermissionHandler(IdentityDbContextHR dbContext, ICurrentUserService currentUser)
     {
         _dbContext = dbContext;
         _currentUser = currentUser;
@@ -115,7 +115,7 @@ public class AddPermissionHandler : IRequestHandler<AddPermissionCommand, Respon
         {
             var entity = new AspPermission
             {
-                PermissionId = SequentialGuidGenerator.Instance.NewGuid(),
+               // PermissionId = SequentialGuidGenerator.Instance.NewGuid(),
                 PermissionCatagory = request.Permission.PermissionCatagory,
                 PermissionName = request.Permission.PermissionName,
                 PermissionDescription = request.Permission.PermissionDescription,

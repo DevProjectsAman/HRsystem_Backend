@@ -14,8 +14,8 @@ namespace HRsystem.Api.Database.DataSeeder
             builder.HasData(
                 new ApplicationRole
                 {
-                    Id = Guid.Parse("08dd03ec-ef32-4b77-8c77-19f8bb6bda50"),
-                  //  Id = 1,
+                  //  Id = Guid.Parse("08dd03ec-ef32-4b77-8c77-19f8bb6bda50"),
+                    Id = 1,
                     Name = Keys.RoleKey.SystemAdmin,
                     ConcurrencyStamp = "0b2f3b2f-a5d1-4d3f-be8b-db04070caed1",
                     NormalizedName = Keys.RoleKey.SystemAdmin.ToUpper()
@@ -32,8 +32,8 @@ namespace HRsystem.Api.Database.DataSeeder
             builder.HasData(
                 new ApplicationUser
                 {
-                   Id = Guid.Parse("08dd03ec-aff2-4d24-89cf-738fd51097a9"),
-                  //  Id = 1,
+                    // Id = Guid.Parse("08dd03ec-aff2-4d24-89cf-738fd51097a9"),
+                    Id = 1,
                     CreatedAt = DateTime.Now,
                     Email = "systemadmin@example.com",
                     NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
@@ -45,24 +45,44 @@ namespace HRsystem.Api.Database.DataSeeder
                     UserName = "Boles",
                     NormalizedUserName = "BOLES",
                     UserFullName = "Boles Lewis Boles",
+
+
+                    // Custom fields
+                    RowGuid = Guid.NewGuid(),
+ 
+                    CompanyId = 1, // assign to default company
+
+                    IsActive = true,
+                    IsToChangePassword = false,
+                    ForceLogout = false,
+
+                    LastPasswordChangedAt = DateTime.UtcNow,
+                    LastLoginAt = null, // first login not happened yet
+                    LastFailedLoginAt = null,
+                    FailedLoginCount = 0,
+
+                    PreferredLanguage = "en",
+
+                    CreatedBy = null, // system seeded
+                   
                 }
             );
         }
     }
 
-    public class UserRoleConfiguration : IEntityTypeConfiguration<IdentityUserRole<Guid>>
+    public class UserRoleConfiguration : IEntityTypeConfiguration<IdentityUserRole<int>>
     {
-        public void Configure(EntityTypeBuilder<IdentityUserRole<Guid>> builder)
+        public void Configure(EntityTypeBuilder<IdentityUserRole<int>> builder)
         {
             // Seed the relationship between the SystemAdmin user and SystemAdmin role
             builder.HasData(
-                new IdentityUserRole<Guid>
+                new IdentityUserRole<int>
                 {
-                    RoleId = Guid.Parse("08dd03ec-ef32-4b77-8c77-19f8bb6bda50"), // SystemAdmin role ID
-                    UserId = Guid.Parse("08dd03ec-aff2-4d24-89cf-738fd51097a9")  // SystemAdmin user ID
+                  //  RoleId = Guid.Parse("08dd03ec-ef32-4b77-8c77-19f8bb6bda50"), // SystemAdmin role ID
+                   // UserId = Guid.Parse("08dd03ec-aff2-4d24-89cf-738fd51097a9")  // SystemAdmin user ID
 
-                    // RoleId = 1, // SystemAdmin role ID
-                    //UserId = 1  // SystemAdmin user ID
+                     RoleId = 1, // SystemAdmin role ID
+                    UserId = 1  // SystemAdmin user ID
 
 
 

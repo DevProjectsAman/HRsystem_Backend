@@ -27,14 +27,14 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermision
 
     #region Add Permission to Role
 
-    public record AssignPermissionToRoleCommand(Guid RoleId, Guid PermissionId) : IRequest<ResponseResultDTO>;
+    public record AssignPermissionToRoleCommand(int RoleId, int PermissionId) : IRequest<ResponseResultDTO>;
 
     public class AssignPermissionToRoleHandler : IRequestHandler<AssignPermissionToRoleCommand, ResponseResultDTO>
     {
-        private readonly HRsystemDbContext _dbContext;
+        private readonly IdentityDbContextHR _dbContext;
         private readonly ICurrentUserService _currentUser;
 
-        public AssignPermissionToRoleHandler(HRsystemDbContext db, ICurrentUserService currentUser)
+        public AssignPermissionToRoleHandler(IdentityDbContextHR db, ICurrentUserService currentUser)
         {
             _dbContext = db;
             _currentUser = currentUser;

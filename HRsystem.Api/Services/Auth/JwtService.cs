@@ -14,10 +14,10 @@ namespace HRsystem.Api.Services
     {
         private readonly IConfiguration _configuration;
         private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly HRsystemDbContext _dbContext;
+        private readonly IdentityDbContextHR _dbContext;
 
         // ✅ FIX: Constructor parameter name was incorrect
-        public JwtService(IConfiguration configuration, RoleManager<ApplicationRole> roleManager, HRsystemDbContext dbContext)
+        public JwtService(IConfiguration configuration, RoleManager<ApplicationRole> roleManager, IdentityDbContextHR dbContext)
         {
             _configuration = configuration;
             _roleManager = roleManager;
