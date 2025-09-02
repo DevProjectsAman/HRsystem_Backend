@@ -7,6 +7,8 @@ public partial class TbDepartment
 {
     public int DepartmentId { get; set; }
 
+    public string? DepartmentCode { get; set; }
+
     public string DepartmentName { get; set; } = null!;
 
     public int? CompanyId { get; set; }

@@ -43,7 +43,7 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
 
 
 // Register DbContext with connection string from appsettings.json
-builder.Services.AddDbContext<DBcontextHRsystem>(options =>
+builder.Services.AddDbContext<BusinessDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))

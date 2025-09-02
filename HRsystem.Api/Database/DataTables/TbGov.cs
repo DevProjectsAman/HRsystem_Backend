@@ -7,6 +7,8 @@ public partial class TbGov
 {
     public int GovId { get; set; }
 
+    public string? GoveCode { get; set; }
+
     public string? GovName { get; set; }
 
     public string? GovArea { get; set; }

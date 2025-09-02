@@ -6,16 +6,34 @@ using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 
 namespace HRsystem.Api.Database;
 
-public partial class DBcontextHRsystem : DbContext
+public partial class BusinessDbContext : DbContext
 {
-    public DBcontextHRsystem()
+    public BusinessDbContext()
     {
     }
 
-    public DBcontextHRsystem(DbContextOptions<DBcontextHRsystem> options)
+    public BusinessDbContext(DbContextOptions<BusinessDbContext> options)
         : base(options)
     {
     }
+
+    public virtual DbSet<Aspnetrole> Aspnetroles { get; set; }
+
+    public virtual DbSet<Aspnetroleclaim> Aspnetroleclaims { get; set; }
+
+    public virtual DbSet<Aspnetuser> Aspnetusers { get; set; }
+
+    public virtual DbSet<Aspnetuserclaim> Aspnetuserclaims { get; set; }
+
+    public virtual DbSet<Aspnetuserlogin> Aspnetuserlogins { get; set; }
+
+    public virtual DbSet<Aspnetusertoken> Aspnetusertokens { get; set; }
+
+    public virtual DbSet<Asppermission> Asppermissions { get; set; }
+
+    public virtual DbSet<Asprolepermission> Asprolepermissions { get; set; }
+
+    public virtual DbSet<Efmigrationshistory> Efmigrationshistories { get; set; }
 
     public virtual DbSet<TbActivityStatus> TbActivityStatuses { get; set; }
 
@@ -63,15 +81,176 @@ public partial class DBcontextHRsystem : DbContext
 
     public virtual DbSet<TbWorkLocation> TbWorkLocations { get; set; }
 
-//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-//        => optionsBuilder.UseMySql("server=192.168.1.90;port=3306;database=db_hrsystem;user=hrsystem;password=hrsystem;persist security info=False;connect timeout=300", ServerVersion.Parse("8.0.42-mysql"));
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySql("server=192.168.1.90;port=3306;database=db_hrsystem;user=hrsystem;password=hrsystem", ServerVersion.Parse("8.0.42-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
             .UseCollation("utf8mb4_0900_ai_ci")
             .HasCharSet("utf8mb4");
+
+        modelBuilder.Entity<Aspnetrole>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("aspnetroles");
+
+            entity.HasIndex(e => e.NormalizedName, "RoleNameIndex").IsUnique();
+
+            entity.Property(e => e.Name).HasMaxLength(256);
+            entity.Property(e => e.NormalizedName).HasMaxLength(256);
+        });
+
+        modelBuilder.Entity<Aspnetroleclaim>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("aspnetroleclaims");
+
+            entity.HasIndex(e => e.RoleId, "IX_AspNetRoleClaims_RoleId");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Aspnetroleclaims)
+                .HasForeignKey(d => d.RoleId)
+                .HasConstraintName("FK_AspNetRoleClaims_AspNetRoles_RoleId");
+        });
+
+        modelBuilder.Entity<Aspnetuser>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("aspnetusers");
+
+            entity.HasIndex(e => e.NormalizedEmail, "EmailIndex");
+
+            entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex").IsUnique();
+
+            entity.Property(e => e.CreatedAt).HasMaxLength(6);
+            entity.Property(e => e.Email).HasMaxLength(256);
+            entity.Property(e => e.LastFailedLoginAt).HasMaxLength(6);
+            entity.Property(e => e.LastLoginAt).HasMaxLength(6);
+            entity.Property(e => e.LastPasswordChangedAt).HasMaxLength(6);
+            entity.Property(e => e.LockoutEnd).HasMaxLength(6);
+            entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
+            entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
+            entity.Property(e => e.PreferredLanguage).HasMaxLength(10);
+            entity.Property(e => e.RowGuid)
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.UserFullName).HasMaxLength(80);
+            entity.Property(e => e.UserName).HasMaxLength(256);
+
+            entity.HasMany(d => d.Roles).WithMany(p => p.Users)
+                .UsingEntity<Dictionary<string, object>>(
+                    "Aspnetuserrole",
+                    r => r.HasOne<Aspnetrole>().WithMany()
+                        .HasForeignKey("RoleId")
+                        .HasConstraintName("FK_AspNetUserRoles_AspNetRoles_RoleId"),
+                    l => l.HasOne<Aspnetuser>().WithMany()
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK_AspNetUserRoles_AspNetUsers_UserId"),
+                    j =>
+                    {
+                        j.HasKey("UserId", "RoleId")
+                            .HasName("PRIMARY")
+                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+                        j.ToTable("aspnetuserroles");
+                        j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
+                    });
+        });
+
+        modelBuilder.Entity<Aspnetuserclaim>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("aspnetuserclaims");
+
+            entity.HasIndex(e => e.UserId, "IX_AspNetUserClaims_UserId");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Aspnetuserclaims)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_AspNetUserClaims_AspNetUsers_UserId");
+        });
+
+        modelBuilder.Entity<Aspnetuserlogin>(entity =>
+        {
+            entity.HasKey(e => new { e.LoginProvider, e.ProviderKey })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
+            entity.ToTable("aspnetuserlogins");
+
+            entity.HasIndex(e => e.UserId, "IX_AspNetUserLogins_UserId");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Aspnetuserlogins)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_AspNetUserLogins_AspNetUsers_UserId");
+        });
+
+        modelBuilder.Entity<Aspnetusertoken>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
+
+            entity.ToTable("aspnetusertokens");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Aspnetusertokens)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_AspNetUserTokens_AspNetUsers_UserId");
+        });
+
+        modelBuilder.Entity<Asppermission>(entity =>
+        {
+            entity.HasKey(e => e.PermissionId).HasName("PRIMARY");
+
+            entity.ToTable("asppermissions");
+
+            entity.HasIndex(e => e.PermissionName, "IX_AspPermissions_PermissionName").IsUnique();
+
+            entity.Property(e => e.CreatedAt).HasMaxLength(6);
+            entity.Property(e => e.CreatedBy)
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.PermissionCatagory).HasMaxLength(50);
+            entity.Property(e => e.PermissionDescription).HasMaxLength(100);
+            entity.Property(e => e.PermissionName).HasMaxLength(80);
+        });
+
+        modelBuilder.Entity<Asprolepermission>(entity =>
+        {
+            entity.HasKey(e => new { e.RoleId, e.PermissionId })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
+            entity.ToTable("asprolepermissions");
+
+            entity.HasIndex(e => e.PermissionId, "IX_AspRolePermissions_PermissionId");
+
+            entity.Property(e => e.CreatedAt).HasMaxLength(6);
+            entity.Property(e => e.CreatedBy)
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+
+            entity.HasOne(d => d.Permission).WithMany(p => p.Asprolepermissions)
+                .HasForeignKey(d => d.PermissionId)
+                .HasConstraintName("FK_AspRolePermissions_AspPermissions_PermissionId");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Asprolepermissions)
+                .HasForeignKey(d => d.RoleId)
+                .HasConstraintName("FK_AspRolePermissions_AspNetRoles_RoleId");
+        });
+
+        modelBuilder.Entity<Efmigrationshistory>(entity =>
+        {
+            entity.HasKey(e => e.MigrationId).HasName("PRIMARY");
+
+            entity.ToTable("__efmigrationshistory");
+
+            entity.Property(e => e.MigrationId).HasMaxLength(150);
+            entity.Property(e => e.ProductVersion).HasMaxLength(32);
+        });
 
         modelBuilder.Entity<TbActivityStatus>(entity =>
         {
@@ -274,6 +453,9 @@ public partial class DBcontextHRsystem : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.DepartmentCode)
+                .HasMaxLength(25)
+                .HasColumnName("department_code");
             entity.Property(e => e.DepartmentName)
                 .HasMaxLength(150)
                 .HasColumnName("department_name");
@@ -318,6 +500,12 @@ public partial class DBcontextHRsystem : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.EmployeeCodeFinance)
+                .HasMaxLength(25)
+                .HasColumnName("employee_code_finance");
+            entity.Property(e => e.EmployeeCodeHr)
+                .HasMaxLength(25)
+                .HasColumnName("employee_code_hr");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(100)
                 .HasColumnName("first_name");
@@ -521,6 +709,9 @@ public partial class DBcontextHRsystem : DbContext
             entity.Property(e => e.GovName)
                 .HasMaxLength(45)
                 .HasColumnName("gov_name");
+            entity.Property(e => e.GoveCode)
+                .HasMaxLength(25)
+                .HasColumnName("gove_code");
         });
 
         modelBuilder.Entity<TbGroup>(entity =>
@@ -751,6 +942,9 @@ public partial class DBcontextHRsystem : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.ProjectCode)
+                .HasMaxLength(25)
+                .HasColumnName("project_code");
             entity.Property(e => e.ProjectName)
                 .HasMaxLength(45)
                 .HasColumnName("project_name");
@@ -952,6 +1146,9 @@ public partial class DBcontextHRsystem : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            entity.Property(e => e.WorkLocationCode)
+                .HasMaxLength(25)
+                .HasColumnName("work_location_code");
 
             entity.HasOne(d => d.City).WithMany(p => p.TbWorkLocations)
                 .HasForeignKey(d => d.CityId)

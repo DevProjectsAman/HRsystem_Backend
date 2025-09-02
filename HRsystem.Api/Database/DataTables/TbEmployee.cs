@@ -7,6 +7,10 @@ public partial class TbEmployee
 {
     public int EmployeeId { get; set; }
 
+    public string? EmployeeCodeFinance { get; set; }
+
+    public string? EmployeeCodeHr { get; set; }
+
     public int JobTitleId { get; set; }
 
     public string FirstName { get; set; } = null!;

@@ -9,6 +9,8 @@ public partial class TbWorkLocation
 
     public int CompanyId { get; set; }
 
+    public string? WorkLocationCode { get; set; }
+
     public string LocationName { get; set; } = null!;
 
     public decimal? Latitude { get; set; }
