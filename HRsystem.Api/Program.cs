@@ -156,7 +156,7 @@ app.MapRoleManagement();
 app.MapRoleAssignmentEndpoints();
 app.MapPermissionEndpoints();
 app.MapLogin(); // from LoginEndpoint.cs
-
+app.MapGetGroup();
 
 
 
