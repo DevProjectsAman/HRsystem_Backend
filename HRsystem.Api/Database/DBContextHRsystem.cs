@@ -1,4 +1,7 @@
 ﻿using HRsystem.Api.Database.DataSeeder;
+using HRsystem.Api.Database.DataTables;
+
+//using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Database.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +21,63 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
 
     public virtual DbSet<AspPermission> AspPermissions { get; set; }
     public virtual DbSet<AspRolePermissions> AspRolePermissions { get; set; }
+
+
+    public virtual DbSet<TbActivityStatus> TbActivityStatuses { get; set; }
+
+    public virtual DbSet<TbActivityType> TbActivityTypes { get; set; }
+
+    public virtual DbSet<TbAuditLog> TbAuditLogs { get; set; }
+
+    public virtual DbSet<TbCity> TbCities { get; set; }
+
+    public virtual DbSet<TbCompany> TbCompanies { get; set; }
+
+    public virtual DbSet<TbDepartment> TbDepartments { get; set; }
+
+    public virtual DbSet<TbEmployee> TbEmployees { get; set; }
+
+    public virtual DbSet<TbEmployeeActivity> TbEmployeeActivities { get; set; }
+
+    public virtual DbSet<TbEmployeeActivityApproval> TbEmployeeActivityApprovals { get; set; }
+
+    public virtual DbSet<TbEmployeeAttendance> TbEmployeeAttendances { get; set; }
+
+    public virtual DbSet<TbEmployeeAttendancePunch> TbEmployeeAttendancePunches { get; set; }
+
+    public virtual DbSet<TbEmployeeExcuse> TbEmployeeExcuses { get; set; }
+
+    public virtual DbSet<TbEmployeeMission> TbEmployeeMissions { get; set; }
+
+    public virtual DbSet<TbEmployeeProject> TbEmployeeProjects { get; set; }
+
+    public virtual DbSet<TbEmployeeShift> TbEmployeeShifts { get; set; }
+
+    public virtual DbSet<TbEmployeeVacation> TbEmployeeVacations { get; set; }
+
+    public virtual DbSet<TbEmployeeVacationBalance> TbEmployeeVacationBalances { get; set; }
+
+    public virtual DbSet<TbEmployeeWorkLocation> TbEmployeeWorkLocations { get; set; }
+
+    public virtual DbSet<TbGov> TbGovs { get; set; }
+
+    public virtual DbSet<TbGroup> TbGroups { get; set; }
+
+    public virtual DbSet<TbJobLevel> TbJobLevels { get; set; }
+
+    public virtual DbSet<TbJobTitle> TbJobTitles { get; set; }
+
+    public virtual DbSet<TbProject> TbProjects { get; set; }
+
+    public virtual DbSet<TbShift> TbShifts { get; set; }
+
+    public virtual DbSet<TbShiftRule> TbShiftRules { get; set; }
+
+    public virtual DbSet<TbVacationRule> TbVacationRules { get; set; }
+
+    public virtual DbSet<TbVacationType> TbVacationTypes { get; set; }
+
+    public virtual DbSet<TbWorkLocation> TbWorkLocations { get; set; }
 
 
 

@@ -1,16 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HRsystem.Api.Database.DataTables
+namespace HRsystem.Api.Database.DataTables;
+[Table("Tb_Group")]
+public partial class TbGroup
 {
-    
-    public class TbGroup
-    {
-        [Key]
-        public int group_id { get; set; }
+    [Key]
+    public int GroupId { get; set; }
 
-        public string group_name { get; set; }
+    public string GroupName { get; set; } = null!;
 
-        // Navigation property
-        public virtual ICollection<TbCompany> TbCompanies { get; set; }
-    }
+    public virtual ICollection<TbCompany> TbCompanies { get; set; } = new List<TbCompany>();
 }
