@@ -20,6 +20,7 @@ namespace HRsystem.Api.Features.Groups.GetGroupById
     {
         private readonly DBContextHRsystem _db;
 
+
         public GetGroupHandler(DBContextHRsystem db) => _db = db;
 
         public async Task<ResponseResultDTO<GetGroupResponse>> Handle(GetGroupByIdCommand request, CancellationToken cancellationToken)
