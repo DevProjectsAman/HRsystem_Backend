@@ -23,13 +23,32 @@ namespace HRsystem.Api.Features.Groups.GetALL
                 {
                     var errors = validationResult.Errors
                         .Select(e => new { e.PropertyName, e.ErrorMessage });
-                    return Results.BadRequest(errors);
+
+                    return Results.BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Validation failed",
+                        Errors = errors
+                    });
                 }
 
                 // ✅ Send to handler
                 var result = await mediator.Send(command);
 
-                return Results.Ok(result);
+                if (result == null)
+                {
+                    return Results.NotFound(new
+                    {
+                        Success = false,
+                        Message = $"Group with ID {id} not found"
+                    });
+                }
+
+                return Results.Ok(new
+                {
+                    Success = true,
+                    Data = result
+                });
             })
             .WithName("GetGroup")
             .WithTags("Groups");

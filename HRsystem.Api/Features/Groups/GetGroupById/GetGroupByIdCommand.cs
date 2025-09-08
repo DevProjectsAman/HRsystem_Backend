@@ -40,14 +40,14 @@ namespace HRsystem.Api.Features.Groups.GetALL
         }
     }
 
-    public class GetGroupCommandValidator : AbstractValidator<GetGroupByIdCommand>
-    {
-        public GetGroupCommandValidator()
-        {
-            RuleFor(x => x.GroupId)
-                .GreaterThan(0).WithMessage("Group id must be greater than 0");
-        }
-    }
+    //public class GetGroupCommandValidator : AbstractValidator<GetGroupByIdCommand>
+    //{
+    //    public GetGroupCommandValidator()
+    //    {
+    //        RuleFor(x => x.GroupId)
+    //            .GreaterThan(0).WithMessage("Group id must be greater than 0");
+    //    }
+    //}
 }
 
 
