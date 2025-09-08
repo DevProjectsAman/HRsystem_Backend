@@ -18,7 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
-using HRsystem.Api.Features.Groups.Create;
+using HRsystem.Api.Features.Groups.GetALL;
 
 
 
@@ -100,6 +100,15 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.FromMinutes(5); // how often to re-check
+});
+
+// Replace default with our version
+builder.Services.AddScoped<ISecurityStampValidator, PermissionVersionValidator<ApplicationUser>>();
+
+
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
@@ -115,8 +124,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
  
-builder.Services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
-builder.Services.AddScoped<IAuthorizationHandler, PermissionHandlerService>();
+// builder.Services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
+//builder.Services.AddScoped<IAuthorizationHandler, PermissionHandlerService>();
 
 
 
@@ -151,11 +160,6 @@ app.MapRoleManagement();
 app.MapRoleAssignmentEndpoints();
 app.MapPermissionEndpoints();
 app.MapLogin(); // from LoginEndpoint.cs
-
-builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-
-app.MapCreateGroupEndpoint();
 
 
 

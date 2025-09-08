@@ -28,6 +28,9 @@ namespace HRsystem.Api.Database.Entities
         [MaxLength(10)]
         public string PreferredLanguage { get; set; } // e.g. "en", "ar"
 
+        // 🔑 New field
+        public int PermissionVersion { get; set; } = 1;
+
 
         public int? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; } = DateTime.Now;

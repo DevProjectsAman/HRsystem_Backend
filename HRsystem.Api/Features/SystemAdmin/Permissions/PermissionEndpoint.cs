@@ -22,9 +22,13 @@ public static class PermissionEndpoints
         app.MapGet("/api/get-permissions", async (IMediator mediator) =>
             await mediator.Send(new GetPermissionsQuery()))
 
-             .RequireAuthorization("SystemAdmin:,SystemAdmin:CanViewPermissions") // 👈 correct for minimal API
-             //  .RequireAuthorization("SystemAdmin:") // 👈 correct for minimal API
-             //  .RequireAuthorization(":CanViewPermissions") // 👈 correct for minimal API
+
+             .RequireAuthorization(policy =>
+    policy.RequireAssertion(ctx =>
+        ctx.User.IsInRole("SystemAdmin") ||
+        ctx.User.HasClaim("Permission", "CanViewPermissions")))
+
+
 
             .WithName("GetPermissions")
             .WithTags("Permission Management");
@@ -115,7 +119,7 @@ public class AddPermissionHandler : IRequestHandler<AddPermissionCommand, Respon
         {
             var entity = new AspPermission
             {
-               // PermissionId = SequentialGuidGenerator.Instance.NewGuid(),
+                // PermissionId = SequentialGuidGenerator.Instance.NewGuid(),
                 PermissionCatagory = request.Permission.PermissionCatagory,
                 PermissionName = request.Permission.PermissionName,
                 PermissionDescription = request.Permission.PermissionDescription,
