@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Database;
 
-public class IdentityDbContextHR : IdentityDbContext<ApplicationUser, ApplicationRole, int>
+public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationRole, int>
 {
 
 
-    public IdentityDbContextHR(DbContextOptions<IdentityDbContextHR> options)
+    public DBContextHRsystem(DbContextOptions<DBContextHRsystem> options)
         : base(options)
     {
     }

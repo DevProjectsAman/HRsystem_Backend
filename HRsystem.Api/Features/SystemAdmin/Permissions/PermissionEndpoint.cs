@@ -22,7 +22,7 @@ public static class PermissionEndpoints
         app.MapGet("/api/get-permissions", async (IMediator mediator) =>
             await mediator.Send(new GetPermissionsQuery()))
 
-             .RequireAuthorization("SystemAdmin,SystemAdminxx:CanViewPermissions") // 👈 correct for minimal API
+             .RequireAuthorization("SystemAdmin:,SystemAdmin:CanViewPermissions") // 👈 correct for minimal API
              //  .RequireAuthorization("SystemAdmin:") // 👈 correct for minimal API
              //  .RequireAuthorization(":CanViewPermissions") // 👈 correct for minimal API
 
@@ -50,9 +50,9 @@ public record GetPermissionsQuery : IRequest<ResponseResultDTO<List<PermissionDT
 
 public class GetPermissionsHandler : IRequestHandler<GetPermissionsQuery, ResponseResultDTO<List<PermissionDTO>>>
 {
-    private readonly IdentityDbContextHR _dbContext;
+    private readonly DBContextHRsystem _dbContext;
 
-    public GetPermissionsHandler(IdentityDbContextHR dbcontext)
+    public GetPermissionsHandler(DBContextHRsystem dbcontext)
     {
         _dbContext = dbcontext;
     }
@@ -99,11 +99,11 @@ public record AddPermissionCommand(PermissionDTO Permission) : IRequest<Response
 
 public class AddPermissionHandler : IRequestHandler<AddPermissionCommand, ResponseResultDTO>
 {
-    private readonly IdentityDbContextHR _dbContext;
+    private readonly DBContextHRsystem _dbContext;
 
     private readonly ICurrentUserService _currentUser;
 
-    public AddPermissionHandler(IdentityDbContextHR dbContext, ICurrentUserService currentUser)
+    public AddPermissionHandler(DBContextHRsystem dbContext, ICurrentUserService currentUser)
     {
         _dbContext = dbContext;
         _currentUser = currentUser;

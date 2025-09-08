@@ -14,10 +14,10 @@ namespace HRsystem.Api.Services
     {
         private readonly IConfiguration _configuration;
         private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly IdentityDbContextHR _dbContext;
+        private readonly DBContextHRsystem _dbContext;
 
         // ✅ FIX: Constructor parameter name was incorrect
-        public JwtService(IConfiguration configuration, RoleManager<ApplicationRole> roleManager, IdentityDbContextHR dbContext)
+        public JwtService(IConfiguration configuration, RoleManager<ApplicationRole> roleManager, DBContextHRsystem dbContext)
         {
             _configuration = configuration;
             _roleManager = roleManager;
@@ -36,21 +36,24 @@ namespace HRsystem.Api.Services
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-                new Claim(ClaimTypes.Name, user.UserName ?? string.Empty)
-            };
+    {
+        // Standard JWT claims
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),              // subject (user ID)
+        new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),    // email
+        new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty) // username
+    };
 
+            // Add roles + permissions
             foreach (var role in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim("role", role)); // short role claim
+
                 var permissions = await GetRolePermissionsAsync(role);
                 if (permissions != null)
                 {
                     foreach (var permission in permissions)
                     {
-                        claims.Add(new Claim("permission", permission));
+                        claims.Add(new Claim("permission", permission)); // short permission claim
                     }
                 }
             }

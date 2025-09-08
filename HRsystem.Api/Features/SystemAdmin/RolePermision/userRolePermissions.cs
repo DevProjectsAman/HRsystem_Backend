@@ -31,10 +31,10 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermision
 
     public class AssignPermissionToRoleHandler : IRequestHandler<AssignPermissionToRoleCommand, ResponseResultDTO>
     {
-        private readonly IdentityDbContextHR _dbContext;
+        private readonly DBContextHRsystem _dbContext;
         private readonly ICurrentUserService _currentUser;
 
-        public AssignPermissionToRoleHandler(IdentityDbContextHR db, ICurrentUserService currentUser)
+        public AssignPermissionToRoleHandler(DBContextHRsystem db, ICurrentUserService currentUser)
         {
             _dbContext = db;
             _currentUser = currentUser;

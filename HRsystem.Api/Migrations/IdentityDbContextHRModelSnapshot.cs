@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HRsystem.Api.Migrations
 {
-    [DbContext(typeof(IdentityDbContextHR))]
+    [DbContext(typeof(DBContextHRsystem))]
     partial class IdentityDbContextHRModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
