@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Data;
 
-namespace HRsystem.Api.Features.Groups.GetALL
+namespace HRsystem.Api.Features.Groups.GetGroupById
 {
 
     public record GetGroupByIdCommand(int GroupId) : IRequest<GetGroupResponse>;
@@ -19,11 +20,18 @@ namespace HRsystem.Api.Features.Groups.GetALL
     {
         private readonly DBContextHRsystem _db;
 
-        public GetGroupHandler (DBContextHRsystem db) => _db = db;
+        public GetGroupHandler(DBContextHRsystem db) => _db = db;
 
-        public async Task<GetGroupResponse> Handle(GetGroupByIdCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseResultDTO<GetGroupResponse>> Handle(GetGroupByIdCommand request, CancellationToken cancellationToken)
         {
-            var group = await _db.TbGroups
+            try
+            {
+                var response = new ResponseResultDTO<GetGroupResponse>();
+
+                
+
+
+                var group = await _db.TbGroups
                 .Where(g => g.GroupId == request.GroupId)
                 .Select(g => new GetGroupResponse
                 {
@@ -32,11 +40,35 @@ namespace HRsystem.Api.Features.Groups.GetALL
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (group == null)
-                throw new KeyNotFoundException("Group not found");
+                if (group == null)
+                {
+                    response.Success = false;
+                    response.Message = "Group not found";
 
-            return group;
+                  
+                }
+                else
+                {
+                    response.Success = true;
+                    response.Message = "Data returned successfully";
+                    response.Data = group;
+                    
+                }
 
+                return response;
+
+
+            }
+            catch (Exception ex)
+            {
+
+               return new ResponseResultDTO<GetGroupResponse>
+               {
+                   Success = false,
+                   Message = $"Error occurred in GetGroupById: {ex.Message}"
+               };
+
+            }
         }
     }
 
