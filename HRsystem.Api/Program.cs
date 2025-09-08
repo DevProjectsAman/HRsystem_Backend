@@ -18,6 +18,9 @@ using Microsoft.IdentityModel.Tokens;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
+using HRsystem.Api.Features.Groups.Create;
+
+
 
 
 
@@ -40,7 +43,8 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<DBContextHRsystem>()
     .AddDefaultTokenProviders();
 
- 
+
+builder.Services.AddValidatorsFromAssemblyContaining<CreateGroupValidator>();
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer(); // Needed for minimal APIs
@@ -115,6 +119,7 @@ builder.Services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationP
 builder.Services.AddScoped<IAuthorizationHandler, PermissionHandlerService>();
 
 
+
 var app = builder.Build();
 
 
@@ -146,6 +151,11 @@ app.MapRoleManagement();
 app.MapRoleAssignmentEndpoints();
 app.MapPermissionEndpoints();
 app.MapLogin(); // from LoginEndpoint.cs
+
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+app.MapCreateGroupEndpoint();
 
 
 
