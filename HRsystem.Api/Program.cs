@@ -97,6 +97,15 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.FromMinutes(5); // how often to re-check
+});
+
+// Replace default with our version
+builder.Services.AddScoped<ISecurityStampValidator, PermissionVersionValidator<ApplicationUser>>();
+
+
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
@@ -112,8 +121,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
  
-builder.Services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
-builder.Services.AddScoped<IAuthorizationHandler, PermissionHandlerService>();
+// builder.Services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
+//builder.Services.AddScoped<IAuthorizationHandler, PermissionHandlerService>();
 
 
 var app = builder.Build();
@@ -147,8 +156,6 @@ app.MapRoleManagement();
 app.MapRoleAssignmentEndpoints();
 app.MapPermissionEndpoints();
 app.MapLogin(); // from LoginEndpoint.cs
-app.MapGetGroup();
-
 
 
 

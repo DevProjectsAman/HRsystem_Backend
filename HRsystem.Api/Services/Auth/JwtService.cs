@@ -39,8 +39,10 @@ namespace HRsystem.Api.Services
     {
         // Standard JWT claims
         new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),              // subject (user ID)
+        
         new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),    // email
-        new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty) // username
+        new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty), // username
+         new Claim("PermissionVersion", user.PermissionVersion.ToString())
     };
 
             // Add roles + permissions
