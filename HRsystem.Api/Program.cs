@@ -22,6 +22,8 @@ using HRsystem.Api.Features.Groups.GetALL;
 using HRsystem.Api.Features.Groups.GetALlGroup;
 using HRsystem.Api.Features.Groups.UpdateGroup;
 using HRsystem.Api.Features.Groups.DeleteGroup;
+using HRsystem.Api.Features.Groups.Create;
+using HRsystem.Api.Features.JobManagment;
 
 
 
@@ -167,6 +169,8 @@ app.MapGetGroup();
 app.MapGetAllGroup();
 app.MapUpdateGroup();
 app.MapDeleteGroup();
+app.MapJobLevelEndpoints();
+app.MapCreateGroupEndpoint(); // from CreateGroupEndpoint.cs
 
 app.Run();
 

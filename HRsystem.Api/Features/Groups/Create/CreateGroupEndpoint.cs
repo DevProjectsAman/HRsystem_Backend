@@ -10,7 +10,7 @@ namespace HRsystem.Api.Features.Groups.Create
     {
         public static void MapCreateGroupEndpoint(this IEndpointRouteBuilder app)
         {
-            app.MapPost("/api/groups", async (
+            app.MapPost("/api/addgroups", async (
              [FromBody] CreateGroupRequest dto,
              ISender mediator,
              IValidator<CreateGroupCommand> validator) => // 👈 أضفنا الـ validator هنا
@@ -28,7 +28,10 @@ namespace HRsystem.Api.Features.Groups.Create
 
                 var groupId = await mediator.Send(command);
                 return Results.Ok(new { Id = groupId, Message = "Group created successfully" });
-            });
+            }
+
+            ).WithName("AddNewGroup")
+        .WithTags("Groups"); ;
         }
     }
 }

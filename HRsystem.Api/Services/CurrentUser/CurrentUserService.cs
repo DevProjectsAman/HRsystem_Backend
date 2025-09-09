@@ -4,7 +4,7 @@ namespace HRsystem.Api.Services.CurrentUser
 {
     public interface ICurrentUserService
     {
-        Guid UserId { get; }
+        int UserId { get; }
         string? UserName { get; }
         bool IsAuthenticated { get; }
     }
@@ -17,8 +17,12 @@ namespace HRsystem.Api.Services.CurrentUser
             _httpContextAccessor = httpContextAccessor;
         }
  
-        public Guid UserId =>
-        Guid.Parse( _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+        //public Guid UserId =>
+        //Guid.Parse( _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+
+
+        public int UserId =>
+       Convert.ToInt16(_httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
 
 
         public string? UserName =>
