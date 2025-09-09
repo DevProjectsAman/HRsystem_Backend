@@ -19,6 +19,7 @@ using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using HRsystem.Api.Features.Groups.GetALL;
+using HRsystem.Api.Features.Groups.GetALlGroup;
 
 
 
@@ -160,7 +161,8 @@ app.MapRoleManagement();
 app.MapRoleAssignmentEndpoints();
 app.MapPermissionEndpoints();
 app.MapLogin(); // from LoginEndpoint.cs
-
+app.MapGetGroup();
+app.MapGetAllGroup();
 
 
 
