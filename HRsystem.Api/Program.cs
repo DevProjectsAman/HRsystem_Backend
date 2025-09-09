@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Authorization;
 using HRsystem.Api.Features.Groups.GetALL;
 using HRsystem.Api.Features.Groups.GetALlGroup;
 using HRsystem.Api.Features.Groups.UpdateGroup;
+using HRsystem.Api.Features.Groups.DeleteGroup;
 
 
 
@@ -165,7 +166,7 @@ app.MapLogin(); // from LoginEndpoint.cs
 app.MapGetGroup();
 app.MapGetAllGroup();
 app.MapUpdateGroup();
-
+app.MapDeleteGroup();
 
 app.Run();
 
