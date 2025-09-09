@@ -1,4 +1,7 @@
 ﻿using HRsystem.Api.Features.Company.CreateCompany;
+using HRsystem.Api.Features.Company.GetAllCompany;
+using HRsystem.Api.Features.Company.GetCompanyById;
+using HRsystem.Api.Features.Company.UpdateCompany;
 using MediatR;
 
 namespace HRsystem.Api.Features.Company
@@ -42,14 +45,14 @@ namespace HRsystem.Api.Features.Company
                     : Results.Ok(new { Success = true, Data = result });
             });
 
-            // Delete
-            app.MapDelete("/api/companies/{id}", async (int id, ISender mediator) =>
-            {
-                var result = await mediator.Send(new DeleteCompanyCommand(id));
-                return !result
-                    ? Results.NotFound(new { Success = false, Message = $"Company {id} not found" })
-                    : Results.Ok(new { Success = true, Message = $"Company {id} deleted successfully" });
-            });
+            //// Delete
+            //app.MapDelete("/api/companies/{id}", async (int id, ISender mediator) =>
+            //{
+            //    var result = await mediator.Send(new DeleteCompanyCommand(id));
+            //    return !result
+            //        ? Results.NotFound(new { Success = false, Message = $"Company {id} not found" })
+            //        : Results.Ok(new { Success = true, Message = $"Company {id} deleted successfully" });
+            //});
         }
     }
 

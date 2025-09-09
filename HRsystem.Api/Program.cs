@@ -29,6 +29,7 @@ using HRsystem.Api.Features.Groups.GetALlGroup;
 using HRsystem.Api.Features.Groups.UpdateGroup;
 using HRsystem.Api.Features.Groups.DeleteGroup;
 using HRsystem.Api.Features.Groups.Create;
+using HRsystem.Api.Features.Company;
 using HRsystem.Api.Features.JobManagment;
 using System.Text;
 using Microsoft.OpenApi.Models;
@@ -179,7 +180,7 @@ app.MapUpdateGroup();
 app.MapDeleteGroup();
 app.MapJobLevelEndpoints();
 app.MapCreateGroupEndpoint(); // from CreateGroupEndpoint.cs
-
+app.MapCompanyEndpoints();
 app.Run();
 
 

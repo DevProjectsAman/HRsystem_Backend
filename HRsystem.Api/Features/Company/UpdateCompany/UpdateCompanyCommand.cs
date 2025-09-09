@@ -36,7 +36,8 @@ namespace HRsystem.Api.Features.Company.UpdateCompany
                 throw new KeyNotFoundException($"Company with Id {request.CompanyId} not found");
 
             company.CompanyName = request.CompanyName;
-            company.UpdatedBy = _currentUser.UserId;
+            company.GroupId = request.GroupId;
+            company.UpdatedAt = DateTime.UtcNow;
 
             await _db.SaveChangesAsync(cancellationToken);
 
