@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HRsystem.Api.Features.Groups.GetALL
 {
-
-
     public static class GetGroupByIdEndPoint
     {
         public static void MapGetGroup(this IEndpointRouteBuilder app)
