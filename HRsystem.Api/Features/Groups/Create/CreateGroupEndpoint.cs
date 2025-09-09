@@ -28,10 +28,8 @@ namespace HRsystem.Api.Features.Groups.Create
 
                 var groupId = await mediator.Send(command);
                 return Results.Ok(new { Id = groupId, Message = "Group created successfully" });
-            }
-
-            ).WithName("AddNewGroup")
-        .WithTags("Groups"); ;
+            }).WithName("CreateGroup")
+            .WithTags("Groups"); ;
         }
     }
 }
