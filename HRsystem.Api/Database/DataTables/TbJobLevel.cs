@@ -10,8 +10,9 @@ public partial class TbJobLevel
     [Key]
     public int JobLevelId { get; set; }
 
+    [MaxLength(55)]
     public string? JobLevelDesc { get; set; }
-
+    [MaxLength(25)]
     public string? JobLevelCode { get; set; }
 
     public int? CreatedBy { get; set; }

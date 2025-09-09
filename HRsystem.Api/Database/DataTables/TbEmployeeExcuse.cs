@@ -19,6 +19,7 @@ public partial class TbEmployeeExcuse
 
     public TimeOnly EndTime { get; set; }
 
+    [MaxLength(150)]
     public string? ExcuseReason { get; set; }
 
     public virtual TbEmployeeActivity Activity { get; set; } = null!;

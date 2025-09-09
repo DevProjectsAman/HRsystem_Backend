@@ -11,13 +11,14 @@ public partial class TbProject
     [Key]
     public int ProjectId { get; set; }
 
+    [MaxLength(25)]
     public string? ProjectCode { get; set; }
-
+    [MaxLength(100)]
     public string ProjectName { get; set; } = null!;
 
     public int? CityId { get; set; }
 
-    public string? WorkLocationId { get; set; }
+    public int? WorkLocationId { get; set; }
 
     public int CompanyId { get; set; }
 

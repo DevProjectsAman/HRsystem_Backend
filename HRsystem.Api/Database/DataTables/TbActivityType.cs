@@ -11,10 +11,11 @@ public partial class TbActivityType
     [Key]
     public int ActivityTypeId { get; set; }
 
+    [MaxLength(25)]
     public string ActivityCode { get; set; } = null!;
-
+    [MaxLength(55)]
     public string ActivityName { get; set; } = null!;
-
+    [MaxLength(75)]
     public string? ActivityDescription { get; set; }
 
     public int? CompanyId { get; set; }

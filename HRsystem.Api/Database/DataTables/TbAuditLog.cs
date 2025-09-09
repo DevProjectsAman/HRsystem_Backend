@@ -17,11 +17,13 @@ public partial class TbAuditLog
 
     public DateTime ActionDatetime { get; set; }
 
+    [MaxLength(25)]
     public string TableName { get; set; } = null!;
-
+    [MaxLength(25)]
     public string ActionType { get; set; } = null!;
-
+    [MaxLength(25)]
     public string RecordId { get; set; } = null!;
+
 
     public string? OldData { get; set; }
 

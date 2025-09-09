@@ -10,6 +10,7 @@ public partial class TbGroup
     [Key]
     public int GroupId { get; set; }
 
+    [MaxLength(55)]
     public string GroupName { get; set; } = null!;
 
     public virtual ICollection<TbCompany> TbCompanies { get; set; } = new List<TbCompany>();

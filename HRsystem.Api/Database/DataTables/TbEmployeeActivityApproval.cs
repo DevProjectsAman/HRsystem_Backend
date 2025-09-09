@@ -15,10 +15,11 @@ public partial class TbEmployeeActivityApproval
 
     public int StatusId { get; set; }
 
-    public long ChangedBy { get; set; }
+    public int ChangedBy { get; set; }
 
     public DateTime ChangedDate { get; set; }
 
+    [MaxLength(100)]
     public string? Notes { get; set; }
 
     public virtual TbEmployeeActivity Activity { get; set; } = null!;

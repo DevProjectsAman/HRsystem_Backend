@@ -19,6 +19,7 @@ public partial class TbEmployeeVacation
 
     public int VacationTypeId { get; set; }
 
+    [MaxLength(255)]
     public string? Notes { get; set; }
 
     public int? DaysCount { get; set; }

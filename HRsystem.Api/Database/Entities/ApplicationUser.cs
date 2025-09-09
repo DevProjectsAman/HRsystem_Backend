@@ -8,6 +8,8 @@ namespace HRsystem.Api.Database.Entities
     {
         public Guid RowGuid { get; set; } = Guid.NewGuid();
 
+        public int EmployeeId { get; set; }
+
         [MaxLength(80)] 
         public string UserFullName { get; set; }
 
