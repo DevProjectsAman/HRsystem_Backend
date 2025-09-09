@@ -49,8 +49,12 @@ namespace HRsystem.Api.Database.DataSeeder
 
                     // Custom fields
                     RowGuid = Guid.NewGuid(),
- 
+
                     CompanyId = 1, // assign to default company
+                    
+                    EmployeeId = 1,                // 👈 must be set (since not nullable)
+                    PermissionVersion = 1,         // 👈 initialize with default
+
 
                     IsActive = true,
                     IsToChangePassword = false,
@@ -64,11 +68,16 @@ namespace HRsystem.Api.Database.DataSeeder
                     PreferredLanguage = "en",
 
                     CreatedBy = null, // system seeded
-                   
+
                 }
             );
         }
+    
+    
     }
+
+
+
 
     public class UserRoleConfiguration : IEntityTypeConfiguration<IdentityUserRole<int>>
     {

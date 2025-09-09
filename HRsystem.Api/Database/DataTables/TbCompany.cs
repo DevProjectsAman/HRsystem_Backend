@@ -12,7 +12,7 @@ public partial class TbCompany
     public int CompanyId { get; set; }
 
     public int GroupId { get; set; }
-
+    [MaxLength(100)]
     public string CompanyName { get; set; } = null!;
 
     public int? CreatedBy { get; set; }

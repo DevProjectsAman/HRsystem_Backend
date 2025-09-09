@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,7 +19,7 @@ public partial class TbEmployeeAttendance
     public DateTime? FirstPuchin { get; set; }
 
     public DateTime? LastPuchout { get; set; }
-
+    [Precision(5, 2)]
     public decimal? TotalHours { get; set; }
 
     public virtual TbEmployeeActivity Activity { get; set; } = null!;

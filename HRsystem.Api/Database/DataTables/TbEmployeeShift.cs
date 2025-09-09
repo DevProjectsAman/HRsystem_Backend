@@ -19,6 +19,7 @@ public partial class TbEmployeeShift
 
     public DateOnly? EndDate { get; set; }
 
+    [MaxLength(255)]
     public string? Notes { get; set; }
 
     public int CompanyId { get; set; }

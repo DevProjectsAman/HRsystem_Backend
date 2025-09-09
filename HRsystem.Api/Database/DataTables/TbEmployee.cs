@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static HRsystem.Api.Enums.EnumsList;
 
 namespace HRsystem.Api.Database.DataTables;
 
@@ -11,38 +12,40 @@ public partial class TbEmployee
     [Key]
     public int EmployeeId { get; set; }
 
+    [MaxLength(55)]
     public string? EmployeeCodeFinance { get; set; }
-
+    [MaxLength(55)]
     public string? EmployeeCodeHr { get; set; }
 
     public int JobTitleId { get; set; }
-
+    [MaxLength(55)]
     public string FirstName { get; set; } = null!;
-
+    [MaxLength(55)]
     public string? ArabicFirstName { get; set; }
-
+    [MaxLength(55)]
     public string LastName { get; set; } = null!;
-
+    [MaxLength(100)]
     public string? ArabicLastName { get; set; }
-
-    public string? ArabicFullName { get; set; }
+     
 
     public DateOnly? HireDate { get; set; }
 
     public DateOnly? Birthdate { get; set; }
 
-    public string Gender { get; set; } = null!;
+    [MaxLength(25)]
+    public EnumGenderType Gender { get; set; } = EnumGenderType.Male;
 
-    public string? Nationality { get; set; }
+    public int? NationalityId { get; set; }   // FK
 
+    [MaxLength(25)]
     public string? NationalId { get; set; }
-
+    [MaxLength(25)]
     public string? PassportNumber { get; set; }
+    public int? MaritalStatusId { get; set; }   // FK
 
-    public string? MaritalStatus { get; set; }
-
+    [MaxLength(55)]
     public string? PlaceOfBirth { get; set; }
-
+    [MaxLength(10)]
     public string? BloodGroup { get; set; }
 
     public int? ManagerId { get; set; }
@@ -57,18 +60,13 @@ public partial class TbEmployee
 
     public DateTime? UpdatedAt { get; set; }
 
-    public string? FullName { get; set; }
-
-    public string? UserName { get; set; }
-
-    public string? ArabicUserName { get; set; }
-
+    [MaxLength(25)]
     public string? PrivateMobile { get; set; }
-
+    [MaxLength(25)]
     public string? BuisnessMobile { get; set; }
-
+    [MaxLength(25)]
     public string? Email { get; set; }
-
+    [MaxLength(25)]
     public string? SerialMobile { get; set; }
 
     public DateTime? StartDate { get; set; }
@@ -80,12 +78,8 @@ public partial class TbEmployee
     public sbyte? IsFulldocument { get; set; }
 
     public string? Note { get; set; }
-
+    [MaxLength(25)]
     public string? Status { get; set; }
-
-    public string? Password { get; set; }
-
-    public int? CategoryId { get; set; }
 
     public int? DepartmentId { get; set; }
 
@@ -96,7 +90,7 @@ public partial class TbEmployee
     public virtual ICollection<TbEmployee> InverseManager { get; set; } = new List<TbEmployee>();
 
     public virtual TbJobTitle JobTitle { get; set; } = null!;
-
+    
     public virtual TbEmployee? Manager { get; set; }
 
     public virtual ICollection<TbEmployeeActivity> TbEmployeeActivities { get; set; } = new List<TbEmployeeActivity>();
@@ -108,4 +102,12 @@ public partial class TbEmployee
     public virtual ICollection<TbEmployeeVacationBalance> TbEmployeeVacationBalances { get; set; } = new List<TbEmployeeVacationBalance>();
 
     public virtual ICollection<TbEmployeeWorkLocation> TbEmployeeWorkLocations { get; set; } = new List<TbEmployeeWorkLocation>();
+
+    [ForeignKey(nameof(NationalityId))]
+    public virtual TbNationality? Nationality { get; set; }
+
+
+    [ForeignKey(nameof(MaritalStatusId))]
+    public virtual TbMaritalStatus? MaritalStatus { get; set; }
+
 }

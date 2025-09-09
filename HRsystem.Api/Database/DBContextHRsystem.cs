@@ -78,6 +78,7 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
     public virtual DbSet<TbVacationType> TbVacationTypes { get; set; }
 
     public virtual DbSet<TbWorkLocation> TbWorkLocations { get; set; }
+    public virtual DbSet<TbNationality> TbNationalities { get; set; }
 
 
 
@@ -92,6 +93,37 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
 
+
+        modelBuilder.Entity<TbAuditLog>(entity =>
+        {
+            entity.Property(e => e.OldData)
+                  .HasColumnType("json");   // 🔑 Force MySQL JSON
+
+            entity.Property(e => e.NewData)
+                  .HasColumnType("json");   // 🔑 Force MySQL JSON
+        });
+
+        modelBuilder.Entity<TbEmployee>(entity =>
+        {
+            entity.Property(e => e.Gender)
+                  .HasConversion<string>() // store enum as string
+                  .HasColumnType("ENUM('Male','Female')"); // MySQL enum type
+        });
+
+        modelBuilder.Entity<TbVacationRule>(entity =>
+        {
+            entity.Property(e => e.Gender)
+                  .HasConversion<string>() // store enum as string
+                  .HasColumnType("ENUM('Male','Female')"); // MySQL enum type
+
+            entity.Property(e => e.Religion)
+                .HasConversion<string>() // store enum as string
+                .HasColumnType("ENUM('All','Muslim','Christian')"); // MySQL enum type
+
+
+
+
+        });
 
 
         modelBuilder.Entity<AspRolePermissions>()

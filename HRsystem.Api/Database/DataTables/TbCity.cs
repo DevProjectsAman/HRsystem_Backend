@@ -12,7 +12,7 @@ public partial class TbCity
     public int CityId { get; set; }
 
     public int? GovId { get; set; }
-
+    [MaxLength(75)]
     public string? CityName { get; set; }
 
     public int? CreatedBy { get; set; }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,12 +14,14 @@ public partial class TbWorkLocation
 
     public int CompanyId { get; set; }
 
+    [MaxLength(25)]
     public string? WorkLocationCode { get; set; }
-
+    [MaxLength(100)]
     public string LocationName { get; set; } = null!;
 
+    [Precision(9, 6)]
     public decimal? Latitude { get; set; }
-
+    [Precision(9, 6)]
     public decimal? Longitude { get; set; }
 
     public int? AllowedRadiusM { get; set; }

@@ -17,8 +17,10 @@ public partial class TbEmployeeMission
 
     public DateTime EndDatetime { get; set; }
 
+    [MaxLength(255)]
     public string? MissionLocation { get; set; }
 
+    [MaxLength(200)]
     public string? MissionReason { get; set; }
 
     public virtual TbEmployeeActivity Activity { get; set; } = null!;

@@ -12,6 +12,7 @@ public partial class TbJobTitle
 
     public int DepartmentId { get; set; }
 
+    [MaxLength(55)]
     public string TitleName { get; set; } = null!;
 
     public int? JobLevelId { get; set; }

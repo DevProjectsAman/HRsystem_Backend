@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,10 +18,11 @@ public partial class TbEmployeeVacationBalance
 
     public int Year { get; set; }
 
+    [Precision(5, 2)]
     public decimal TotalDays { get; set; }
-
+    [Precision(5, 2)]
     public decimal? UsedDays { get; set; }
-
+    [Precision(5, 2)]
     public decimal? RemainingDays { get; set; }
 
     public virtual TbEmployee Employee { get; set; } = null!;

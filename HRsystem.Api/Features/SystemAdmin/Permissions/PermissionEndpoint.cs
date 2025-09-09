@@ -22,22 +22,32 @@ public static class PermissionEndpoints
         app.MapGet("/api/get-permissions", async (IMediator mediator) =>
             await mediator.Send(new GetPermissionsQuery()))
 
+                     ///// this is an   AND  condition 
 
-             .RequireAuthorization(policy =>
-    policy.RequireAssertion(ctx =>
-        ctx.User.IsInRole("SystemAdmin") ||
-        ctx.User.HasClaim("Permission", "CanViewPermissions")))
+                     .RequireAuthorization(policy =>
+            policy.RequireAssertion(ctx =>
+                ctx.User.IsInRole("SystemAdmin") ||
+                ctx.User.HasClaim("Permission", "CanViewPermissions")))
 
-
+            ///// this is an OR  condition
+             
 
             .WithName("GetPermissions")
             .WithTags("Permission Management");
 
         app.MapPost("/api/add-permissions", async (IMediator mediator, AddPermissionCommand command) =>
             await mediator.Send(command))
-           .RequireAuthorization(policy => policy
-        .RequireRole("FinanceAdmin")
-        .RequireClaim("permission", "CanManagePermissions"))
+            
+            ////  this is an   OR
+              .RequireAuthorization(policy =>
+            policy.RequireAssertion(ctx =>
+                ctx.User.IsInRole("FinanceAdmin") ||
+                ctx.User.HasClaim("Permission", "CanViewPermissions")))
+
+            ////  this is an AND  
+            //   .RequireAuthorization(policy => policy
+            //.RequireRole("FinanceAdmin")
+            //.RequireClaim("permission", "CanManagePermissions"))
 
             .WithName("AddPermission")
             .WithTags("Permission Management");

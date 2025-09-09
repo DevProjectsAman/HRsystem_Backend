@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static HRsystem.Api.Enums.EnumsList;
 
 namespace HRsystem.Api.Database.DataTables;
 
@@ -10,6 +12,9 @@ public partial class TbVacationRule
 {
     [Key]
     public int RuleId { get; set; }
+
+    [MaxLength(100)]
+    public string RuleName { get; set; }
 
     public int VacationTypeId { get; set; }
 
@@ -21,9 +26,9 @@ public partial class TbVacationRule
 
     public int? MaxServiceYears { get; set; }
 
-    public string? Gender { get; set; }
+    public EnumGenderType Gender { get; set; } = EnumGenderType.Male;
 
-    public string? Religion { get; set; }
+    public EnumReligionType Religion { get; set; } = EnumReligionType.All;
 
     public int YearlyBalance { get; set; }
 
