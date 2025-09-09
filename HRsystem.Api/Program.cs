@@ -30,6 +30,8 @@ using HRsystem.Api.Features.Groups.UpdateGroup;
 using HRsystem.Api.Features.Groups.DeleteGroup;
 using HRsystem.Api.Features.Groups.Create;
 using HRsystem.Api.Features.JobManagment;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 
 
