@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.Company.UpdateCompany
 {
-    public record UpdateCompanyCommand(int CompanyId, string CompanyName, int GroupId) : IRequest<UpdateCompanyResponse>;
+    public record UpdateCompanyCommand(int CompanyId, string CompanyName, int GroupId , string CompanyLogo) : IRequest<UpdateCompanyResponse>;
 
     public class UpdateCompanyResponse
     {
@@ -14,6 +14,8 @@ namespace HRsystem.Api.Features.Company.UpdateCompany
         public string CompanyName { get; set; }
 
         public int GroupId { get; set; }
+
+        public string CompanyLogo { get; set; }
     }
 
     /****/
@@ -43,6 +45,7 @@ namespace HRsystem.Api.Features.Company.UpdateCompany
             company.CompanyName = request.CompanyName;
             company.GroupId = request.GroupId;
             company.UpdatedBy = _currentUser.UserId; // optional
+            company.CompanyLogo = request.CompanyLogo;
             company.UpdatedAt = DateTime.UtcNow;
 
             try
@@ -58,7 +61,9 @@ namespace HRsystem.Api.Features.Company.UpdateCompany
             {
                 CompanyId = company.CompanyId,
                 CompanyName = company.CompanyName,
-                GroupId = company.GroupId
+                GroupId = company.GroupId,
+                CompanyLogo = company.CompanyLogo,
+
             };
         }
 

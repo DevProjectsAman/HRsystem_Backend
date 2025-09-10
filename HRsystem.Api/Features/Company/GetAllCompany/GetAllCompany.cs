@@ -15,6 +15,7 @@ namespace HRsystem.Api.Features.Company.GetAllCompany
         public string CompanyName { get; set; }
         public int GroupId { get; set; }
 
+        public string CompanyLogo { get; set; }
 
     };
 
@@ -36,6 +37,7 @@ namespace HRsystem.Api.Features.Company.GetAllCompany
                 CompanyId =g.CompanyId,
                 CompanyName = g.CompanyName,
                 GroupId = g.GroupId,
+                CompanyLogo = g.CompanyLogo,
             }).ToListAsync(cancellationToken);
 
             return company;

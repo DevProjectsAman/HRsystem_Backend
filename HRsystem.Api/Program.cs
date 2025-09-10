@@ -11,7 +11,13 @@ using HRsystem.Api.Features.ActivityType;
 using HRsystem.Api.Features.ActivityType.CreateActivityType;
 using HRsystem.Api.Features.ActivityType.UpdateActivityType;
 using HRsystem.Api.Features.Auth.UserManagement;
+using HRsystem.Api.Features.City;
+using HRsystem.Api.Features.City.CreateCity;
+using HRsystem.Api.Features.City.UpdateCity;
 using HRsystem.Api.Features.Company;
+using HRsystem.Api.Features.Department;
+using HRsystem.Api.Features.Department.CreateDepartment;
+using HRsystem.Api.Features.Department.UpdateDepartment;
 using HRsystem.Api.Features.Gov;
 using HRsystem.Api.Features.Gov.CreateGov;
 using HRsystem.Api.Features.Gov.UpdateGov;
@@ -88,6 +94,13 @@ builder.Services.AddValidatorsFromAssemblyContaining<UpdateActivityTypeValidator
 builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityTypeValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateGovValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateGovValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateCityCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateCityCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateDepartmentValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateDepartmentValidator>();
+
+
+
 
 
 
@@ -229,8 +242,12 @@ app.MapWorkLocationEndpoints();
 app.MapActivityStatusEndpoints();
 app.MapActivityTypeEndpoints();
 app.MapGovEndpoints();
+app.MapCityEndpoints();
+app.MapDepartmentEndpoints();
+
 
 app.Run();
+
 
 
 

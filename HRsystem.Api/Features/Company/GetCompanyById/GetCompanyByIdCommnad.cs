@@ -13,6 +13,8 @@ namespace HRsystem.Api.Features.Company.GetCompanyById
         public string CompanyName { get; set; }
 
         public int GroupId { get; set; }
+
+        public string  CompanyLogo { get; set; }
     }
 
     /**********/
@@ -36,7 +38,10 @@ namespace HRsystem.Api.Features.Company.GetCompanyById
             {
                CompanyId  = company.CompanyId,
                CompanyName = company.CompanyName,
-               GroupId = company.GroupId
+               GroupId = company.GroupId,
+               CompanyLogo = company.CompanyLogo,
+               
+
                 
             };
         }
