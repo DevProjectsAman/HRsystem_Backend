@@ -1,0 +1,59 @@
+﻿using HRsystem.Api.Features.ShiftRule.CreateShiftRule;
+using HRsystem.Api.Features.ShiftRule.GetAllShiftRules;
+using HRsystem.Api.Features.ShiftRule.GetShiftRuleById;
+using HRsystem.Api.Features.ShiftRule.UpdateShiftRule;
+using HRsystem.Api.Features.ShiftRule.DeleteShiftRule;
+using MediatR;
+
+namespace HRsystem.Api.Features.ShiftRule
+{
+    public static class ShiftRuleEndpoints
+    {
+        public static void MapShiftRuleEndpoints(this IEndpointRouteBuilder app)
+        {
+            // Get all
+            app.MapGet("/api/shiftrules", async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetAllShiftRulesQuery());
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
+            // Get by Id
+            app.MapGet("/api/shiftrules/{id}", async (int id, ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetShiftRuleByIdQuery(id));
+                return result == null
+                    ? Results.NotFound(new { Success = false, Message = $"Shift Rule {id} not found" })
+                    : Results.Ok(new { Success = true, Data = result });
+            });
+
+            // Create
+            app.MapPost("/api/shiftrules", async (CreateShiftRuleCommand command, ISender mediator) =>
+            {
+                var result = await mediator.Send(command);
+                return Results.Created($"/api/shiftrules/{result.RuleId}", new { Success = true, Data = result });
+            });
+
+            // Update
+            app.MapPut("/api/shiftrules/{id}", async (int id, UpdateShiftRuleCommand command, ISender mediator) =>
+            {
+                if (id != command.RuleId)
+                    return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
+
+                var result = await mediator.Send(command);
+                return result == null
+                    ? Results.NotFound(new { Success = false, Message = $"Shift Rule {id} not found" })
+                    : Results.Ok(new { Success = true, Data = result });
+            });
+
+            // Delete
+            app.MapDelete("/api/shiftrules/{id}", async (int id, ISender mediator) =>
+            {
+                var result = await mediator.Send(new DeleteShiftRuleCommand(id));
+                return !result
+                    ? Results.NotFound(new { Success = false, Message = $"Shift Rule {id} not found" })
+                    : Results.Ok(new { Success = true, Message = $"Shift Rule {id} deleted successfully" });
+            });
+        }
+    }
+}

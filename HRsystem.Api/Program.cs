@@ -33,6 +33,8 @@ using HRsystem.Api.Features.Company;
 using HRsystem.Api.Features.JobManagment;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using HRsystem.Api.Features.Shift;
+using HRsystem.Api.Features.ShiftRule;
 
 
 
@@ -181,6 +183,9 @@ app.MapDeleteGroup();
 app.MapJobLevelEndpoints();
 app.MapCreateGroupEndpoint(); // from CreateGroupEndpoint.cs
 app.MapCompanyEndpoints();
+app.MapShiftEndpoints();
+app.MapShiftRuleEndpoints();
+
 app.Run();
 
 
