@@ -5,7 +5,7 @@ using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace HRsystem.Api.Features.SystemAdmin.UserRoles
+namespace HRsystem.Api.Features.Auth.UserManagement
 {
     public static class UserRolePermissionsEndpoints
     {
