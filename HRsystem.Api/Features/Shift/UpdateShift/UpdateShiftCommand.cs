@@ -1,4 +1,6 @@
-﻿using HRsystem.Api.Database;
+﻿using FluentValidation;
+using HRsystem.Api.Database;
+using HRsystem.Api.Features.Shift.UpdateShift;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -46,4 +48,14 @@ namespace HRsystem.Api.Features.Shift.UpdateShift
         }
     }
 
+}
+
+public class UpdateShiftValidator : AbstractValidator<UpdateShiftCommand>
+{
+    public UpdateShiftValidator()
+    {
+        RuleFor(x => x.ShiftId).GreaterThan(0);
+        RuleFor(x => x.ShiftName).NotEmpty();
+        RuleFor(x => x.StartTime).LessThan(x => x.EndTime);
+    }
 }

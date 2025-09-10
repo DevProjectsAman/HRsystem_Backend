@@ -11,15 +11,17 @@ namespace HRsystem.Api.Features.VacationRule
     {
         public static void MapVacationRuleEndpoints(this IEndpointRouteBuilder app)
         {
+            var group = app.MapGroup("/api/vacationrules").WithTags("VacationRules");
+
             // Get all
-            app.MapGet("/api/vacationrules", async (ISender mediator) =>
+            group.MapGet("/Listofvacationrules", async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllVacationRulesQuery());
                 return Results.Ok(new { Success = true, Data = result });
             });
 
             // Get by Id
-            app.MapGet("/api/vacationrules/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOnevacationrules/{id}", async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetVacationRuleByIdQuery(id));
                 return result == null
@@ -28,14 +30,14 @@ namespace HRsystem.Api.Features.VacationRule
             });
 
             // Create
-            app.MapPost("/api/vacationrules", async (CreateVacationRuleCommand command, ISender mediator) =>
+            group.MapPost("/Createvacationrules", async (CreateVacationRuleCommand command, ISender mediator) =>
             {
                 var result = await mediator.Send(command);
                 return Results.Created($"/api/vacationrules/{result.RuleId}", new { Success = true, Data = result });
             });
 
             // Update
-            app.MapPut("/api/vacationrules/{id}", async (int id, UpdateVacationRuleCommand command, ISender mediator) =>
+            group.MapPut("/Updatevacationrules/{id}", async (int id, UpdateVacationRuleCommand command, ISender mediator) =>
             {
                 if (id != command.RuleId)
                     return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
@@ -47,7 +49,7 @@ namespace HRsystem.Api.Features.VacationRule
             });
 
             // Delete
-            app.MapDelete("/api/vacationrules/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/Deletevacationrules/{id}", async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteVacationRuleCommand(id));
                 return !result
