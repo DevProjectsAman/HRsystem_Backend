@@ -2,6 +2,7 @@
 using HRsystem.Api.Features.Groups.UpdateGroup;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.Company.UpdateCompany
 {
@@ -35,11 +36,23 @@ namespace HRsystem.Api.Features.Company.UpdateCompany
             if (company == null)
                 throw new KeyNotFoundException($"Company with Id {request.CompanyId} not found");
 
+            var groupExists = await _db.TbGroups.AnyAsync(g => g.GroupId == request.GroupId, cancellationToken);
+            if (!groupExists)
+                throw new KeyNotFoundException($"Group with Id {request.GroupId} not found");
+
             company.CompanyName = request.CompanyName;
             company.GroupId = request.GroupId;
+            company.UpdatedBy = _currentUser.UserId; // optional
             company.UpdatedAt = DateTime.UtcNow;
 
-            await _db.SaveChangesAsync(cancellationToken);
+            try
+            {
+                await _db.SaveChangesAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Database error: {ex.InnerException?.Message ?? ex.Message}", ex);
+            }
 
             return new UpdateCompanyResponse
             {
@@ -48,6 +61,7 @@ namespace HRsystem.Api.Features.Company.UpdateCompany
                 GroupId = company.GroupId
             };
         }
+
 
     }
 }

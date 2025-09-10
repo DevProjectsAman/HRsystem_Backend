@@ -23,6 +23,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Microsoft.OpenApi.Models;
+using HRsystem.Api.Features.Shift;
+using HRsystem.Api.Features.ShiftRule;
 
 
 
@@ -178,6 +181,9 @@ app.MapAspRolePermissionsEndpoints();
 
 app.MapCreateGroupEndpoint(); // from CreateGroupEndpoint.cs
 app.MapCompanyEndpoints();
+app.MapShiftEndpoints();
+app.MapShiftRuleEndpoints();
+
 app.Run();
 
 
