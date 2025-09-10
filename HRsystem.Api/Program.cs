@@ -1,42 +1,31 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
-using HRsystem.Api.Features.Auth.ChangePassword;
-using HRsystem.Api.Features.Auth.Login;
-using HRsystem.Api.Features.Groups;
+using HRsystem.Api.Features.Auth.UserManagement;
+using HRsystem.Api.Features.Company;
+using HRsystem.Api.Features.Groups.Create;
 using HRsystem.Api.Features.Groups.DeleteGroup;
 using HRsystem.Api.Features.Groups.GetALL;
 using HRsystem.Api.Features.Groups.GetALlGroup;
 using HRsystem.Api.Features.Groups.UpdateGroup;
-using HRsystem.Api.Features.SystemAdmin.Permissions;
-using HRsystem.Api.Features.SystemAdmin.RolePermision;
-using HRsystem.Api.Features.SystemAdmin.Roles;
+using HRsystem.Api.Features.JobManagment;
+using HRsystem.Api.Features.Shift;
+using HRsystem.Api.Features.ShiftRule;
+using HRsystem.Api.Features.SystemAdmin.RolePermission;
 using HRsystem.Api.Services;
 using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using HRsystem.Api.Services.CurrentUser;
-using HRsystem.Api.Services.Auth;
-using Microsoft.AspNetCore.Authorization;
-using HRsystem.Api.Features.Groups.GetALL;
-using HRsystem.Api.Features.Groups.GetALlGroup;
-using HRsystem.Api.Features.Groups.UpdateGroup;
-using HRsystem.Api.Features.Groups.DeleteGroup;
-using HRsystem.Api.Features.Groups.Create;
-using HRsystem.Api.Features.Company;
-using HRsystem.Api.Features.JobManagment;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using HRsystem.Api.Features.Shift;
 using HRsystem.Api.Features.ShiftRule;
-using HRsystem.Api.Features.VacationRule;
-using HRsystem.Api.Features.VacationType;
 
 
 
@@ -173,16 +162,23 @@ app.UseAuthentication(); // Must come before Authorization
 app.UseAuthorization();
 
 
-app.MapChangePassword();
-app.MapRoleManagement();
-app.MapRoleAssignmentEndpoints();
-app.MapPermissionEndpoints();
-app.MapLogin(); // from LoginEndpoint.cs
+app.MapUserManagementEndpoints();
+ 
+//app.MapRoleAssignmentEndpoints();
+ 
+ 
 app.MapGetGroup();
 app.MapGetAllGroup();
 app.MapUpdateGroup();
 app.MapDeleteGroup();
+
 app.MapJobLevelEndpoints();
+app.MapJobTitleEndpoints();
+
+app.MapAspPermissionsEndpoints();
+app.MapAspRolePermissionsEndpoints();
+
+
 app.MapCreateGroupEndpoint(); // from CreateGroupEndpoint.cs
 app.MapCompanyEndpoints();
 app.MapShiftEndpoints();

@@ -2,6 +2,7 @@
 using global::HRsystem.Api.Database.DataTables;
 using global::HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Database;
+using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,17 +22,17 @@ namespace HRsystem.Api.Features.JobManagment
             app.MapGet("/api/ListJobLevels", [Authorize] async (IMediator mediator) =>
                 await mediator.Send(new GetAllJobLevelsQuery()))
                 .WithName("ListJobLevels")
-                .WithTags("Job Levels");
+                .WithTags("Job Management");
 
             app.MapGet("/api/GetOneJobLevel/{id}", [Authorize] async (IMediator mediator, int id) =>
                 await mediator.Send(new GetJobLevelByIdQuery(id)))
                 .WithName("GetOneJobLevel")
-                .WithTags("Job Levels");
+                .WithTags("Job Management");
 
             app.MapPost("/api/CreateJobLevel", [Authorize] async (IMediator mediator, CreateJobLevelCommand cmd) =>
                 await mediator.Send(cmd))
                 .WithName("CreateJobLevel")
-                .WithTags("Job Levels");
+                .WithTags("Job Management");
 
             app.MapPut("/api/UpdateJobLevel/{id}", [Authorize] async (IMediator mediator, int id, UpdateJobLevelCommand cmd) =>
             {
@@ -39,12 +40,12 @@ namespace HRsystem.Api.Features.JobManagment
                 return await mediator.Send(cmd);
             })
             .WithName("UpdateJobLevel")
-            .WithTags("Job Levels");
+            .WithTags("Job Management");
 
             app.MapDelete("/api/DeleteJobLevel/{id}", [Authorize] async (IMediator mediator, int id) =>
                 await mediator.Send(new DeleteJobLevelCommand(id)))
                 .WithName("DeleteJobLevel")
-                .WithTags("Job Levels");
+                .WithTags("Job Management");
         }
     }
 
@@ -101,8 +102,13 @@ namespace HRsystem.Api.Features.JobManagment
 
     public class CreateJobLevelHandler(DBContextHRsystem db ,ICurrentUserService userService) : IRequestHandler<CreateJobLevelCommand, ResponseResultDTO<int>>
     {
+
         public async Task<ResponseResultDTO<int>> Handle(CreateJobLevelCommand request, CancellationToken ct)
         {
+            try
+            {
+
+          
             var entity = new TbJobLevel
             {
                 JobLevelDesc = request.JobLevelDesc,
@@ -121,6 +127,18 @@ namespace HRsystem.Api.Features.JobManagment
                 Message = "JobLevel created successfully",
                 Data = entity.JobLevelId
             };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new ResponseResultDTO<int>
+                {
+                    Success = false,
+                    Message = ex.InnerException.Message
+
+                }; ;
+            }
         }
     }
     #endregion
