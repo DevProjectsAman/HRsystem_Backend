@@ -1,5 +1,7 @@
-﻿using HRsystem.Api.Database;
+﻿using FluentValidation;
+using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
+using HRsystem.Api.Features.Shift;
 using MediatR;
 using System;
 
@@ -45,5 +47,14 @@ namespace HRsystem.Api.Features.Shift
             await _db.SaveChangesAsync(ct);
             return shift.ShiftId;
         }
+    }
+}
+
+public class CreateShiftValidator : AbstractValidator<CreateShiftCommand>
+{
+    public CreateShiftValidator()
+    {
+        RuleFor(x => x.ShiftName).NotEmpty().WithMessage("Shift name is required");
+        RuleFor(x => x.StartTime).LessThan(x => x.EndTime).WithMessage("Start time must be before end time");
     }
 }

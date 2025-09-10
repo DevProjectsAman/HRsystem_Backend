@@ -1,8 +1,20 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
+using HRsystem.Api.Features.ActivityStatus;
+using HRsystem.Api.Features.ActivityStatus.CreateActivityStatus;
+using HRsystem.Api.Features.ActivityStatus.DeleteActivityStatus;
+using HRsystem.Api.Features.ActivityStatus.GetActivityStatusById;
+using HRsystem.Api.Features.ActivityStatus.GetAllActivityStatuses;
+using HRsystem.Api.Features.ActivityStatus.UpdateActivityStatus;
+using HRsystem.Api.Features.ActivityType;
+using HRsystem.Api.Features.ActivityType.CreateActivityType;
+using HRsystem.Api.Features.ActivityType.UpdateActivityType;
 using HRsystem.Api.Features.Auth.UserManagement;
 using HRsystem.Api.Features.Company;
+using HRsystem.Api.Features.Gov;
+using HRsystem.Api.Features.Gov.CreateGov;
+using HRsystem.Api.Features.Gov.UpdateGov;
 using HRsystem.Api.Features.Groups.Create;
 using HRsystem.Api.Features.Groups.DeleteGroup;
 using HRsystem.Api.Features.Groups.GetALL;
@@ -10,8 +22,20 @@ using HRsystem.Api.Features.Groups.GetALlGroup;
 using HRsystem.Api.Features.Groups.UpdateGroup;
 using HRsystem.Api.Features.JobManagment;
 using HRsystem.Api.Features.Shift;
+using HRsystem.Api.Features.Shift;
+using HRsystem.Api.Features.Shift.Endpoints;
+using HRsystem.Api.Features.ShiftEndpoints;
+using HRsystem.Api.Features.ShiftRule;
 using HRsystem.Api.Features.ShiftRule;
 using HRsystem.Api.Features.SystemAdmin.RolePermission;
+using HRsystem.Api.Features.VacationRule;
+using HRsystem.Api.Features.VacationRule.CreateVacationRule;
+using HRsystem.Api.Features.VacationRule.UpdateVacationRule;
+using HRsystem.Api.Features.VacationType.CreateVacationType;
+using HRsystem.Api.Features.VacationType.UpdateVacationType;
+using HRsystem.Api.Features.WorkLocation;
+using HRsystem.Api.Features.WorkLocation.CreateWorkLocation;
+using HRsystem.Api.Features.WorkLocation.UpdateWorkLocation;
 using HRsystem.Api.Services;
 using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.CurrentUser;
@@ -21,6 +45,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
@@ -49,6 +74,24 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
 
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateGroupValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateShiftRuleValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateShiftRuleValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateVacationTypeValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateVacationTypeValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateVacationRuleValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateVacationRuleValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateWorkLocationValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateWorkLocationValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateActivityStatusValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityStatusValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateActivityTypeValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityTypeValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateGovValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateGovValidator>();
+
+
+
+
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer(); // Needed for minimal APIs
@@ -180,6 +223,12 @@ app.MapCreateGroupEndpoint(); // from CreateGroupEndpoint.cs
 app.MapCompanyEndpoints();
 app.MapShiftEndpoints();
 app.MapShiftRuleEndpoints();
+app.MapVacationRuleEndpoints();
+app.MapVacationTypeEndpoints();
+app.MapWorkLocationEndpoints();
+app.MapActivityStatusEndpoints();
+app.MapActivityTypeEndpoints();
+app.MapGovEndpoints();
 
 app.Run();
 

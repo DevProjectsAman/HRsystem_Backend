@@ -4,6 +4,7 @@ using HRsystem.Api.Features.ShiftRule.GetShiftRuleById;
 using HRsystem.Api.Features.ShiftRule.UpdateShiftRule;
 using HRsystem.Api.Features.ShiftRule.DeleteShiftRule;
 using MediatR;
+using FluentValidation;
 
 namespace HRsystem.Api.Features.ShiftRule
 {
@@ -11,15 +12,17 @@ namespace HRsystem.Api.Features.ShiftRule
     {
         public static void MapShiftRuleEndpoints(this IEndpointRouteBuilder app)
         {
+            var group = app.MapGroup("/api/shiftrules").WithTags("ShiftRules");
+
             // Get all
-            app.MapGet("/api/shiftrules", async (ISender mediator) =>
+            group.MapGet("/ListShiftRules", async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllShiftRulesQuery());
                 return Results.Ok(new { Success = true, Data = result });
             });
 
             // Get by Id
-            app.MapGet("/api/shiftrules/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneShiftRule/{id}", async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetShiftRuleByIdQuery(id));
                 return result == null
@@ -28,17 +31,25 @@ namespace HRsystem.Api.Features.ShiftRule
             });
 
             // Create
-            app.MapPost("/api/shiftrules", async (CreateShiftRuleCommand command, ISender mediator) =>
+            group.MapPost("/CreateShiftRule", async (CreateShiftRuleCommand command, ISender mediator, IValidator<CreateShiftRuleCommand> validator) =>
             {
+                var validation = await validator.ValidateAsync(command);
+                if (!validation.IsValid)
+                    return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
+
                 var result = await mediator.Send(command);
                 return Results.Created($"/api/shiftrules/{result.RuleId}", new { Success = true, Data = result });
             });
 
             // Update
-            app.MapPut("/api/shiftrules/{id}", async (int id, UpdateShiftRuleCommand command, ISender mediator) =>
+            group.MapPut("/UpdateShiftRule/{id}", async (int id, UpdateShiftRuleCommand command, ISender mediator, IValidator<UpdateShiftRuleCommand> validator) =>
             {
                 if (id != command.RuleId)
                     return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
+
+                var validation = await validator.ValidateAsync(command);
+                if (!validation.IsValid)
+                    return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
 
                 var result = await mediator.Send(command);
                 return result == null
@@ -47,7 +58,7 @@ namespace HRsystem.Api.Features.ShiftRule
             });
 
             // Delete
-            app.MapDelete("/api/shiftrules/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteShiftRule/{id}", async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteShiftRuleCommand(id));
                 return !result

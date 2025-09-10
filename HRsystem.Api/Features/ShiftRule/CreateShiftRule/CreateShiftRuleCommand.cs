@@ -1,5 +1,7 @@
-﻿using HRsystem.Api.Database;
+﻿using FluentValidation;
+using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
+using HRsystem.Api.Features.ShiftRule.CreateShiftRule;
 using MediatR;
 
 namespace HRsystem.Api.Features.ShiftRule.CreateShiftRule
@@ -40,4 +42,13 @@ namespace HRsystem.Api.Features.ShiftRule.CreateShiftRule
         }
     }
 
+}
+
+public class CreateShiftRuleValidator : AbstractValidator<CreateShiftRuleCommand>
+{
+    public CreateShiftRuleValidator()
+    {
+        RuleFor(x => x.ShiftId).GreaterThan(0).WithMessage("ShiftId is required");
+        RuleFor(x => x.CompanyId).GreaterThan(0).WithMessage("CompanyId is required");
+    }
 }

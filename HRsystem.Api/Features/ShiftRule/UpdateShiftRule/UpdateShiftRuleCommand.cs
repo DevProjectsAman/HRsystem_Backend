@@ -1,7 +1,9 @@
-﻿using HRsystem.Api.Database;
+﻿using FluentValidation;
+using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
-using Microsoft.EntityFrameworkCore;
+using HRsystem.Api.Features.ShiftRule.UpdateShiftRule;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.ShiftRule.UpdateShiftRule
 {
@@ -38,5 +40,15 @@ namespace HRsystem.Api.Features.ShiftRule.UpdateShiftRule
             await _db.SaveChangesAsync(ct);
             return entity;
         }
+    }
+}
+
+public class UpdateShiftRuleValidator : AbstractValidator<UpdateShiftRuleCommand>
+{
+    public UpdateShiftRuleValidator()
+    {
+        RuleFor(x => x.RuleId).GreaterThan(0).WithMessage("RuleId is required");
+        RuleFor(x => x.ShiftId).GreaterThan(0).WithMessage("ShiftId is required");
+        RuleFor(x => x.CompanyId).GreaterThan(0).WithMessage("CompanyId is required");
     }
 }
