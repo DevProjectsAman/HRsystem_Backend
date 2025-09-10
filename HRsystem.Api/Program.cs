@@ -12,6 +12,9 @@ using HRsystem.Api.Features.ActivityType.CreateActivityType;
 using HRsystem.Api.Features.ActivityType.UpdateActivityType;
 using HRsystem.Api.Features.Auth.UserManagement;
 using HRsystem.Api.Features.Company;
+using HRsystem.Api.Features.Gov;
+using HRsystem.Api.Features.Gov.CreateGov;
+using HRsystem.Api.Features.Gov.UpdateGov;
 using HRsystem.Api.Features.Groups.Create;
 using HRsystem.Api.Features.Groups.DeleteGroup;
 using HRsystem.Api.Features.Groups.GetALL;
@@ -83,9 +86,11 @@ builder.Services.AddValidatorsFromAssemblyContaining<UpdateActivityStatusValidat
 builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityStatusValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateActivityTypeValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityTypeValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateGovValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateGovValidator>();
 
 
-    
+
 
 
 // Add services to the container
@@ -223,6 +228,7 @@ app.MapVacationTypeEndpoints();
 app.MapWorkLocationEndpoints();
 app.MapActivityStatusEndpoints();
 app.MapActivityTypeEndpoints();
+app.MapGovEndpoints();
 
 app.Run();
 
