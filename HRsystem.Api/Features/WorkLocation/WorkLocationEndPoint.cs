@@ -4,6 +4,7 @@ using HRsystem.Api.Features.WorkLocation.GetWorkLocationById;
 using HRsystem.Api.Features.WorkLocation.UpdateWorkLocation;
 using HRsystem.Api.Features.WorkLocation.DeleteWorkLocation;
 using MediatR;
+using FluentValidation;
 
 namespace HRsystem.Api.Features.WorkLocation
 {
@@ -11,15 +12,17 @@ namespace HRsystem.Api.Features.WorkLocation
     {
         public static void MapWorkLocationEndpoints(this IEndpointRouteBuilder app)
         {
+            var group = app.MapGroup("/api/work-locations").WithTags("WorkLocations");
+
             // Get all
-            app.MapGet("/api/work-locations", async (ISender mediator) =>
+            group.MapGet("/List", async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllWorkLocationsQuery());
                 return Results.Ok(new { Success = true, Data = result });
             });
 
             // Get by Id
-            app.MapGet("/api/work-locations/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOne", async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetWorkLocationByIdQuery(id));
                 return result == null
@@ -28,17 +31,25 @@ namespace HRsystem.Api.Features.WorkLocation
             });
 
             // Create
-            app.MapPost("/api/work-locations", async (CreateWorkLocationCommand cmd, ISender mediator) =>
+            group.MapPost("/Create", async (CreateWorkLocationCommand cmd, ISender mediator, IValidator<CreateWorkLocationCommand> validator) =>
             {
+                var validation = await validator.ValidateAsync(cmd);
+                if (!validation.IsValid)
+                    return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
+
                 var result = await mediator.Send(cmd);
                 return Results.Created($"/api/work-locations/{result.WorkLocationId}", new { Success = true, Data = result });
             });
 
             // Update
-            app.MapPut("/api/work-locations/{id}", async (int id, UpdateWorkLocationCommand cmd, ISender mediator) =>
+            group.MapPut("/Update", async (int id, UpdateWorkLocationCommand cmd, ISender mediator, IValidator<UpdateWorkLocationCommand> validator) =>
             {
                 if (id != cmd.WorkLocationId)
                     return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
+
+                var validation = await validator.ValidateAsync(cmd);
+                if (!validation.IsValid)
+                    return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
 
                 var result = await mediator.Send(cmd);
                 return result == null
@@ -47,7 +58,7 @@ namespace HRsystem.Api.Features.WorkLocation
             });
 
             // Delete
-            app.MapDelete("/api/work-locations/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/Delete", async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteWorkLocationCommand(id));
                 return !result

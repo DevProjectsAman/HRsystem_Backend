@@ -21,6 +21,9 @@ using HRsystem.Api.Features.VacationRule.CreateVacationRule;
 using HRsystem.Api.Features.VacationRule.UpdateVacationRule;
 using HRsystem.Api.Features.VacationType.CreateVacationType;
 using HRsystem.Api.Features.VacationType.UpdateVacationType;
+using HRsystem.Api.Features.WorkLocation;
+using HRsystem.Api.Features.WorkLocation.CreateWorkLocation;
+using HRsystem.Api.Features.WorkLocation.UpdateWorkLocation;
 using HRsystem.Api.Services;
 using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.CurrentUser;
@@ -65,6 +68,9 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateVacationTypeValidator
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateVacationTypeValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateVacationRuleValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateVacationRuleValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateWorkLocationValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateWorkLocationValidator>();
+
 
 
 
@@ -201,6 +207,7 @@ app.MapShiftEndpoints();
 app.MapShiftRuleEndpoints();
 app.MapVacationRuleEndpoints();
 app.MapVacationTypeEndpoints();
+app.MapWorkLocationEndpoints();
 
 app.Run();
 
