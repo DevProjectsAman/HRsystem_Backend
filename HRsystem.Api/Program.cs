@@ -35,6 +35,8 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using HRsystem.Api.Features.Shift;
 using HRsystem.Api.Features.ShiftRule;
+using HRsystem.Api.Features.VacationRule;
+using HRsystem.Api.Features.VacationType;
 
 
 
@@ -185,6 +187,8 @@ app.MapCreateGroupEndpoint(); // from CreateGroupEndpoint.cs
 app.MapCompanyEndpoints();
 app.MapShiftEndpoints();
 app.MapShiftRuleEndpoints();
+app.MapVacationRuleEndpoints();
+app.MapVacationTypeEndpoints();
 
 app.Run();
 
