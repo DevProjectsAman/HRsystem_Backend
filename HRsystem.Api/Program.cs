@@ -1,6 +1,15 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
+using HRsystem.Api.Features.ActivityStatus;
+using HRsystem.Api.Features.ActivityStatus.CreateActivityStatus;
+using HRsystem.Api.Features.ActivityStatus.DeleteActivityStatus;
+using HRsystem.Api.Features.ActivityStatus.GetActivityStatusById;
+using HRsystem.Api.Features.ActivityStatus.GetAllActivityStatuses;
+using HRsystem.Api.Features.ActivityStatus.UpdateActivityStatus;
+using HRsystem.Api.Features.ActivityType;
+using HRsystem.Api.Features.ActivityType.CreateActivityType;
+using HRsystem.Api.Features.ActivityType.UpdateActivityType;
 using HRsystem.Api.Features.Auth.UserManagement;
 using HRsystem.Api.Features.Company;
 using HRsystem.Api.Features.Groups.Create;
@@ -70,9 +79,13 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateVacationRuleValidator
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateVacationRuleValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateWorkLocationValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateWorkLocationValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateActivityStatusValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityStatusValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateActivityTypeValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityTypeValidator>();
 
 
-
+    
 
 
 // Add services to the container
@@ -208,6 +221,8 @@ app.MapShiftRuleEndpoints();
 app.MapVacationRuleEndpoints();
 app.MapVacationTypeEndpoints();
 app.MapWorkLocationEndpoints();
+app.MapActivityStatusEndpoints();
+app.MapActivityTypeEndpoints();
 
 app.Run();
 
