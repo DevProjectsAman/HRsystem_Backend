@@ -25,6 +25,10 @@ public partial class TbCompany
 
     public virtual TbGroup Group { get; set; } = null!;
 
+    [MaxLength(400)]
+    public string  CompanyLogo { get; set; } = null!;
+
+
     public virtual ICollection<TbActivityStatus> TbActivityStatuses { get; set; } = new List<TbActivityStatus>();
 
     public virtual ICollection<TbActivityType> TbActivityTypes { get; set; } = new List<TbActivityType>();
