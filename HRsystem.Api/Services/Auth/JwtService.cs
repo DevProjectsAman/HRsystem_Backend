@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 
 
 namespace HRsystem.Api.Services
@@ -48,11 +49,13 @@ namespace HRsystem.Api.Services
             // Add roles + permissions
             foreach (var role in roles)
             {
-                claims.Add(new Claim("role", role)); // short role claim
+                claims.Add(new Claim(ClaimTypes.Role, role)); // short role claim
 
                 var permissions = await GetRolePermissionsAsync(role);
                 if (permissions != null)
                 {
+                    //claims.Add(new Claim("permission", JsonSerializer.Serialize(permissions)));
+
                     foreach (var permission in permissions)
                     {
                         claims.Add(new Claim("permission", permission)); // short permission claim
