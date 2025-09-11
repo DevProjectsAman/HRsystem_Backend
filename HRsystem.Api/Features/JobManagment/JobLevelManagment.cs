@@ -3,6 +3,7 @@ using global::HRsystem.Api.Database.DataTables;
 using global::HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
+using HRsystem.Api.Features.JobManagment.GetJobTitlesByFilter;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -46,6 +47,15 @@ namespace HRsystem.Api.Features.JobManagment
                 await mediator.Send(new DeleteJobLevelCommand(id)))
                 .WithName("DeleteJobLevel")
                 .WithTags("Job Management");
+
+            var group = app.MapGroup("/api/jobtitles").WithTags("Job Titles");
+
+            
+            group.MapGet("/filter", async (int companyId, int departmentId, int jobLevelId, ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetJobTitlesByFilterQuery(companyId, departmentId, jobLevelId));
+                return Results.Ok(new { Success = true, Data = result });
+            });
         }
     }
 
