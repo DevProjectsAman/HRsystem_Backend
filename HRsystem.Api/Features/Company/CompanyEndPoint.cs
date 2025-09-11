@@ -2,7 +2,10 @@
 using HRsystem.Api.Features.Company.GetAllCompany;
 using HRsystem.Api.Features.Company.GetCompanyById;
 using HRsystem.Api.Features.Company.UpdateCompany;
+//using HRsystem.Api.Features.Company.DeleteCompany;
 using MediatR;
+using FluentValidation;
+using System.Linq;
 
 namespace HRsystem.Api.Features.Company
 {
@@ -10,15 +13,17 @@ namespace HRsystem.Api.Features.Company
     {
         public static void MapCompanyEndpoints(this IEndpointRouteBuilder app)
         {
-            // Get all
-            app.MapGet("/api/companies", async (ISender mediator) =>
+            var group = app.MapGroup("/api/companies").WithTags("Companies");
+
+            // Get All
+            group.MapGet("/ListOfCompany", async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllCompanyCommand());
                 return Results.Ok(new { Success = true, Data = result });
             });
 
-            // Get by Id
-            app.MapGet("/api/companies/{id}", async (int id, ISender mediator) =>
+            // Get One
+            group.MapGet("/GetOneCompany/{id}", async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetCompanyByIdCommand(id));
                 return result == null
@@ -27,26 +32,42 @@ namespace HRsystem.Api.Features.Company
             });
 
             // Create
-            app.MapPost("/api/companies", async (CreateCompanyCommand command, ISender mediator) =>
+            group.MapPost("/CreateCompany", async (CreateCompanyCommand cmd, ISender mediator, IValidator<CreateCompanyCommand> validator) =>
             {
-                var result = await mediator.Send(command);
+                var validationResult = await validator.ValidateAsync(cmd);
+                if (!validationResult.IsValid)
+                    return Results.BadRequest(new
+                    {
+                        Success = false,
+                        Errors = validationResult.Errors.Select(e => e.ErrorMessage)
+                    });
+
+                var result = await mediator.Send(cmd);
                 return Results.Created($"/api/companies/{result.CompanyId}", new { Success = true, Data = result });
             });
 
             // Update
-            app.MapPut("/api/companies/{id}", async (int id, UpdateCompanyCommand command, ISender mediator) =>
+            group.MapPut("/UpdateCompany/{id}", async (int id, UpdateCompanyCommand cmd, ISender mediator, IValidator<UpdateCompanyCommand> validator) =>
             {
-                if (id != command.CompanyId)
+                if (id != cmd.CompanyId)
                     return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
 
-                var result = await mediator.Send(command);
+                var validationResult = await validator.ValidateAsync(cmd);
+                if (!validationResult.IsValid)
+                    return Results.BadRequest(new
+                    {
+                        Success = false,
+                        Errors = validationResult.Errors.Select(e => e.ErrorMessage)
+                    });
+
+                var result = await mediator.Send(cmd);
                 return result == null
                     ? Results.NotFound(new { Success = false, Message = $"Company {id} not found" })
                     : Results.Ok(new { Success = true, Data = result });
             });
 
-            //// Delete
-            //app.MapDelete("/api/companies/{id}", async (int id, ISender mediator) =>
+            // Delete
+            //group.MapDelete("/{id}", async (int id, ISender mediator) =>
             //{
             //    var result = await mediator.Send(new DeleteCompanyCommand(id));
             //    return !result
@@ -55,5 +76,4 @@ namespace HRsystem.Api.Features.Company
             //});
         }
     }
-
 }

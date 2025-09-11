@@ -10,11 +10,16 @@ using HRsystem.Api.Features.ActivityStatus.UpdateActivityStatus;
 using HRsystem.Api.Features.ActivityType;
 using HRsystem.Api.Features.ActivityType.CreateActivityType;
 using HRsystem.Api.Features.ActivityType.UpdateActivityType;
+using HRsystem.Api.Features.AuditLog;
+using HRsystem.Api.Features.AuditLog.CreateAuditLog;
+using HRsystem.Api.Features.AuditLog.UpdateAuditLog;
 using HRsystem.Api.Features.Auth.UserManagement;
 using HRsystem.Api.Features.City;
 using HRsystem.Api.Features.City.CreateCity;
 using HRsystem.Api.Features.City.UpdateCity;
 using HRsystem.Api.Features.Company;
+using HRsystem.Api.Features.Company.CreateCompany;
+using HRsystem.Api.Features.Company.UpdateCompany;
 using HRsystem.Api.Features.Department;
 using HRsystem.Api.Features.Department.CreateDepartment;
 using HRsystem.Api.Features.Department.UpdateDepartment;
@@ -27,6 +32,9 @@ using HRsystem.Api.Features.Groups.GetALL;
 using HRsystem.Api.Features.Groups.GetALlGroup;
 using HRsystem.Api.Features.Groups.UpdateGroup;
 using HRsystem.Api.Features.JobManagment;
+using HRsystem.Api.Features.Project;
+using HRsystem.Api.Features.Project.CreateProject;
+using HRsystem.Api.Features.Project.UpdateProject;
 using HRsystem.Api.Features.Shift;
 using HRsystem.Api.Features.Shift;
 using HRsystem.Api.Features.Shift.Endpoints;
@@ -98,11 +106,16 @@ builder.Services.AddValidatorsFromAssemblyContaining<UpdateCityCommandValidator>
 builder.Services.AddValidatorsFromAssemblyContaining<CreateCityCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateDepartmentValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateDepartmentValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateCompanyValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateCompanyValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateAuditLogValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateAuditLogValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateProjectValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateProjectValidator>();
 
 
 
-
-
+    
 
 
 
@@ -244,7 +257,8 @@ app.MapActivityTypeEndpoints();
 app.MapGovEndpoints();
 app.MapCityEndpoints();
 app.MapDepartmentEndpoints();
-
+app.MapAuditLogEndpoints();
+app.MapProjectEndpoints();
 
 app.Run();
 

@@ -1,4 +1,5 @@
-﻿using HRsystem.Api.Database;
+﻿using FluentValidation;
+using HRsystem.Api.Database;
 using HRsystem.Api.Features.Groups.UpdateGroup;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
@@ -68,5 +69,25 @@ namespace HRsystem.Api.Features.Company.UpdateCompany
         }
 
 
+    }
+
+    public class UpdateCompanyValidator : AbstractValidator<UpdateCompanyCommand>
+    {
+        public UpdateCompanyValidator()
+        {
+            RuleFor(x => x.CompanyId)
+                .GreaterThan(0).WithMessage("CompanyId must be greater than 0");
+
+            RuleFor(x => x.GroupId)
+                .GreaterThan(0).WithMessage("GroupId must be greater than 0");
+
+            RuleFor(x => x.CompanyName)
+                .NotEmpty().WithMessage("Company name is required")
+                .MaximumLength(100).WithMessage("Company name cannot exceed 100 characters");
+
+            RuleFor(x => x.CompanyLogo)
+                .NotEmpty().WithMessage("Company logo is required")
+                .MaximumLength(250).WithMessage("Company logo URL cannot exceed 250 characters");
+        }
     }
 }
