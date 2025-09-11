@@ -89,34 +89,37 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
 
 
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateGroupValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateShiftRuleValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateShiftRuleValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateVacationTypeValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateVacationTypeValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateVacationRuleValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateVacationRuleValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateWorkLocationValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateWorkLocationValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateActivityStatusValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityStatusValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateActivityTypeValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityTypeValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateGovValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateGovValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateCityCommandValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateCityCommandValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateDepartmentValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateDepartmentValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateCompanyValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateCompanyValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateAuditLogValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateAuditLogValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateProjectValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateProjectValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateGroupValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateShiftRuleValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<UpdateShiftRuleValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateVacationTypeValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<UpdateVacationTypeValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateVacationRuleValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<UpdateVacationRuleValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<UpdateWorkLocationValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateWorkLocationValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<UpdateActivityStatusValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityStatusValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<UpdateActivityTypeValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityTypeValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<UpdateGovValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateGovValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<UpdateCityCommandValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateCityCommandValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateDepartmentValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<UpdateDepartmentValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateCompanyValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<UpdateCompanyValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<UpdateAuditLogValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateAuditLogValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateProjectValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<UpdateProjectValidator>();
 
 
 
+// C# Code - Program.cs or Startup.cs
+var alloworg = builder.Configuration.GetSection("Cors:AllowedOrigins");
+var allowedOrigins = alloworg.Get<string[]>();
 
 builder.Services.AddCors(options =>
 {
@@ -129,6 +132,7 @@ builder.Services.AddCors(options =>
         });
 });
 
+ 
 
 
 // Add services to the container
