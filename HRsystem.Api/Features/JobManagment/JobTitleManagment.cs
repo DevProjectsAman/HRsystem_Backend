@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
+using HRsystem.Api.Features.JobTitles.GetFilteredJobTitles;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
@@ -41,6 +42,18 @@ namespace HRsystem.Api.Features.JobManagment
                 await mediator.Send(new DeleteJobTitleCommand(id)))
                 .WithName("DeleteJobTitle")
                 .WithTags("Job Management");
+
+            var group = app.MapGroup("/api/jobtitles").WithTags("Job Titles");
+
+            group.MapGet("/filter", async (int companyId, int departmentId, int jobLevelId, ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetFilteredJobTitlesQuery(companyId, departmentId, jobLevelId));
+
+                if (result == null || !result.Any())
+                    return Results.NotFound(new { Success = false, Message = "No job titles found for the given filters" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
         }
     }
 

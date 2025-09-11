@@ -1,29 +1,25 @@
-﻿using global::HRsystem.Api.Database;
+﻿using HRsystem.Api.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.JobManagment.GetJobTitlesByFilter
+namespace HRsystem.Api.Features.JobTitles.GetFilteredJobTitles
 {
-    public record GetJobTitlesByFilterQuery(int CompanyId, int DepartmentId, int JobLevelId) : IRequest<List<JobTitleDto>>;
+    public record GetFilteredJobTitlesQuery(int CompanyId, int DepartmentId, int JobLevelId) : IRequest<List<JobTitleDto>>;
 
-    public class GetJobTitlesByFilterHandler : IRequestHandler<GetJobTitlesByFilterQuery, List<JobTitleDto>>
+    public class GetFilteredJobTitlesHandler : IRequestHandler<GetFilteredJobTitlesQuery, List<JobTitleDto>>
     {
         private readonly DBContextHRsystem _db;
 
-        public GetJobTitlesByFilterHandler(DBContextHRsystem db) => _db = db;
+        public GetFilteredJobTitlesHandler(DBContextHRsystem db) => _db = db;
 
-        public async Task<List<JobTitleDto>> Handle(GetJobTitlesByFilterQuery request, CancellationToken cancellationToken)
+        public async Task<List<JobTitleDto>> Handle(GetFilteredJobTitlesQuery request, CancellationToken cancellationToken)
         {
-            var jobTitles = await _db.TbJobTitles
-                .Where(j =>
-                    j.CompanyId == request.CompanyId &&
-                    j.DepartmentId == request.DepartmentId &&
-                    j.JobLevelId == request.JobLevelId
-                )
+            return await _db.TbJobTitles
+                .Where(j => j.CompanyId == request.CompanyId &&
+                            j.DepartmentId == request.DepartmentId &&
+                            j.JobLevelId == request.JobLevelId)
                 .Select(j => new JobTitleDto(j.JobTitleId, j.TitleName))
                 .ToListAsync(cancellationToken);
-
-            return jobTitles;
         }
     }
 
