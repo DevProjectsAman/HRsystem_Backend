@@ -87,6 +87,8 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddDefaultTokenProviders();
 
 
+
+
 builder.Services.AddValidatorsFromAssemblyContaining<CreateGroupValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateShiftRuleValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateShiftRuleValidator>();
@@ -115,7 +117,17 @@ builder.Services.AddValidatorsFromAssemblyContaining<UpdateProjectValidator>();
 
 
 
-    
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazorWasm",
+        policy =>
+        {
+            policy.WithOrigins(allowedOrigins ?? Array.Empty<string>())
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
 
 
 
@@ -222,6 +234,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+
+// 🔥 apply CORS before authentication/authorization
+app.UseCors("AllowBlazorWasm");
 
 
 app.UseAuthentication(); // Must come before Authorization
