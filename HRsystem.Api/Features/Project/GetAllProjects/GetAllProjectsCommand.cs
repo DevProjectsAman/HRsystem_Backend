@@ -1,27 +1,51 @@
 ﻿using HRsystem.Api.Database;
+using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.Design;
 
 namespace HRsystem.Api.Features.Project.GetAllProjects
 {
     public record GetAllProjectsCommand() : IRequest<List<ProjectResponse>>;
 
-    public record ProjectResponse(
-        int ProjectId,
-        string ProjectCode,
-        string ProjectName,
-        int? CityId,
-        int? WorkLocationId,
-        int CompanyId
-    );
-
-    public class Handler(DBContextHRsystem db) : IRequestHandler<GetAllProjectsCommand, List<ProjectResponse>>
+    public class ProjectResponse
     {
+       public int ProjectId { get; set; }
+        public string ProjectCode { get; set; }
+        public string ProjectName { get; set; }
+        public int? CityId { get; set; }
+        public int? WorkLocationId { get; set; }
+        public int CompanyId { get; set; }
+        }
+
+
+    public class Handler : IRequestHandler<GetAllProjectsCommand, List<ProjectResponse>>
+    {
+        private readonly DBContextHRsystem _db;
+
+        private readonly ICurrentUserService _currentUser;
+        public  Handler(DBContextHRsystem db , ICurrentUserService currentUser)
+        {
+            _currentUser = currentUser;
+            _db = db;
+        }
         public async Task<List<ProjectResponse>> Handle(GetAllProjectsCommand request, CancellationToken ct)
         {
-            return await db.TbProjects
-                .Select(p => new ProjectResponse(p.ProjectId, p.ProjectCode, p.ProjectName, p.CityId, p.WorkLocationId, p.CompanyId))
-                .ToListAsync(ct);
+            var statues = await _db.TbProjects.ToListAsync(ct);
+            var lang = _currentUser.UserLanguage ?? "en";
+
+
+            return statues.Select(p => new ProjectResponse
+            {
+                  ProjectId = p.ProjectId,
+                  ProjectCode = p.ProjectCode,
+                  ProjectName = p.ProjectName.GetTranslation(lang),
+                  CityId = p.CityId,
+                  WorkLocationId = p.WorkLocationId,
+                  CompanyId = p.CompanyId
+                }).ToList();
+
         }
     }
 }
