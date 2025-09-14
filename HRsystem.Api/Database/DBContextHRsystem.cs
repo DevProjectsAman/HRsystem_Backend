@@ -94,6 +94,13 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
 
 
+        modelBuilder.Entity<TbActivityStatus>(entity =>
+        {
+            entity.Property(e => e.StatusName)
+                                .HasColumnType("json"); // MySQL supports json
+        });
+
+
         modelBuilder.Entity<TbAuditLog>(entity =>
         {
             entity.Property(e => e.OldData)

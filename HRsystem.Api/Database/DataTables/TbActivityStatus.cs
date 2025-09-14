@@ -13,8 +13,9 @@ public partial class TbActivityStatus
 
     [MaxLength(25)]
     public string StatusCode { get; set; } = null!;
-    [MaxLength(55)]
-    public string StatusName { get; set; } = null!;
+
+    //[Column(TypeName = "json")]
+    public string StatusName { get; set; } 
 
     public bool IsFinal { get; set; }
 
