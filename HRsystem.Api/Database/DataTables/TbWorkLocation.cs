@@ -16,7 +16,7 @@ public partial class TbWorkLocation
 
     [MaxLength(25)]
     public string? WorkLocationCode { get; set; }
-    [MaxLength(100)]
+    //[MaxLength(100)]
     public string LocationName { get; set; } = null!;
 
     [Precision(9, 6)]

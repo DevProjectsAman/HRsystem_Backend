@@ -101,6 +101,30 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
         });
 
 
+        modelBuilder.Entity<TbActivityType>(entity =>
+        {
+            entity.Property(e => e.ActivityName)
+                                .HasColumnType("json"); // MySQL supports json
+        });
+
+        modelBuilder.Entity<TbVacationType>(entity =>
+        {
+            entity.Property(e => e.VacationName)
+                                .HasColumnType("json"); // MySQL supports json
+        });
+
+        modelBuilder.Entity<TbWorkLocation>(entity =>
+        {
+            entity.Property(e => e.LocationName)
+                                .HasColumnType("json"); // MySQL supports json
+        });
+
+        modelBuilder.Entity<TbShift>(entity =>
+        {
+            entity.Property(e => e.ShiftName)
+                                .HasColumnType("json"); // MySQL supports json
+        });
+
         modelBuilder.Entity<TbAuditLog>(entity =>
         {
             entity.Property(e => e.OldData)

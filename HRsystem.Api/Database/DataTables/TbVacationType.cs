@@ -12,7 +12,7 @@ public partial class TbVacationType
     [Key]
     public int VacationTypeId { get; set; }
 
-    [MaxLength(55)]
+    //[MaxLength(55)]
     public string VacationName { get; set; } = null!;
 
     [MaxLength(80)]
