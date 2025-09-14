@@ -55,7 +55,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Tb_Activity_Status");
+                    b.ToTable("Tb_Activity_Status", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbActivityType", b =>
@@ -93,7 +93,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Tb_Activity_Type");
+                    b.ToTable("Tb_Activity_Type", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbAuditLog", b =>
@@ -138,7 +138,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Tb_Audit_Log");
+                    b.ToTable("Tb_Audit_Log", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbCity", b =>
@@ -172,7 +172,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("GovId");
 
-                    b.ToTable("Tb_City");
+                    b.ToTable("Tb_City", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbCompany", b =>
@@ -212,7 +212,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("Tb_Company");
+                    b.ToTable("Tb_Company", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbDepartment", b =>
@@ -251,7 +251,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Tb_Department");
+                    b.ToTable("Tb_Department", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployee", b =>
@@ -395,7 +395,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("NationalityId");
 
-                    b.ToTable("Tb_Employee");
+                    b.ToTable("Tb_Employee", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeActivity", b =>
@@ -438,7 +438,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("Tb_Employee_Activity");
+                    b.ToTable("Tb_Employee_Activity", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeActivityApproval", b =>
@@ -471,7 +471,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("Tb_Employee_Activity_Approval");
+                    b.ToTable("Tb_Employee_Activity_Approval", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeAttendance", b =>
@@ -502,7 +502,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("Tb_Employee_Attendance");
+                    b.ToTable("Tb_Employee_Attendance", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeAttendancePunch", b =>
@@ -532,7 +532,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("AttendanceId");
 
-                    b.ToTable("Tb_Employee_Attendance_Punch");
+                    b.ToTable("Tb_Employee_Attendance_Punch", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeExcuse", b =>
@@ -563,7 +563,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("Tb_Employee_Excuse");
+                    b.ToTable("Tb_Employee_Excuse", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeMission", b =>
@@ -595,7 +595,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("Tb_Employee_Mission");
+                    b.ToTable("Tb_Employee_Mission", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeProject", b =>
@@ -635,7 +635,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Tb_Employee_Project");
+                    b.ToTable("Tb_Employee_Project", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeShift", b =>
@@ -685,7 +685,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("ShiftId");
 
-                    b.ToTable("Tb_Employee_Shift");
+                    b.ToTable("Tb_Employee_Shift", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeVacation", b =>
@@ -721,7 +721,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("VacationTypeId");
 
-                    b.ToTable("Tb_Employee_Vacation");
+                    b.ToTable("Tb_Employee_Vacation", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeVacationBalance", b =>
@@ -759,7 +759,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("VacationTypeId");
 
-                    b.ToTable("Tb_Employee_Vacation_Balance");
+                    b.ToTable("Tb_Employee_Vacation_Balance", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeWorkLocation", b =>
@@ -802,7 +802,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("WorkLocationId");
 
-                    b.ToTable("Tb_Employee_Work_Location");
+                    b.ToTable("Tb_Employee_Work_Location", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbGov", b =>
@@ -827,7 +827,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasKey("GovId");
 
-                    b.ToTable("Tb_Gov");
+                    b.ToTable("Tb_Gov", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbGroup", b =>
@@ -845,7 +845,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasKey("GroupId");
 
-                    b.ToTable("Tb_Group");
+                    b.ToTable("Tb_Group", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbJobLevel", b =>
@@ -878,7 +878,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasKey("JobLevelId");
 
-                    b.ToTable("Tb_Job_Level");
+                    b.ToTable("Tb_Job_Level", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbJobTitle", b =>
@@ -923,7 +923,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("JobLevelId");
 
-                    b.ToTable("Tb_Job_Title");
+                    b.ToTable("Tb_Job_Title", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbMaritalStatus", b =>
@@ -945,7 +945,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasKey("MaritalStatusId");
 
-                    b.ToTable("Tb_Marital_Status");
+                    b.ToTable("Tb_Marital_Status", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbNationality", b =>
@@ -967,7 +967,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasKey("NationalityId");
 
-                    b.ToTable("Tb_Nationality");
+                    b.ToTable("Tb_Nationality", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbProject", b =>
@@ -1014,7 +1014,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Tb_Project");
+                    b.ToTable("Tb_Project", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbShift", b =>
@@ -1075,7 +1075,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Tb_Shift");
+                    b.ToTable("Tb_Shift", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbShiftRule", b =>
@@ -1128,7 +1128,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("WorkingLocationId");
 
-                    b.ToTable("Tb_Shift_Rule");
+                    b.ToTable("Tb_Shift_Rule", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbVacationRule", b =>
@@ -1177,7 +1177,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("VacationTypeId");
 
-                    b.ToTable("Tb_Vacation_Rule");
+                    b.ToTable("Tb_Vacation_Rule", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbVacationType", b =>
@@ -1205,7 +1205,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasKey("VacationTypeId");
 
-                    b.ToTable("Tb_Vacation_Type");
+                    b.ToTable("Tb_Vacation_Type", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkLocation", b =>
@@ -1260,7 +1260,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Tb_Work_Location");
+                    b.ToTable("Tb_Work_Location", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.Entities.ApplicationRole", b =>
@@ -1482,7 +1482,7 @@ namespace HRsystem.Api.Migrations
                     b.HasIndex("PermissionName")
                         .IsUnique();
 
-                    b.ToTable("AspPermissions");
+                    b.ToTable("AspPermissions", (string)null);
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.Entities.AspRolePermissions", b =>
@@ -1503,7 +1503,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("AspRolePermissions");
+                    b.ToTable("AspRolePermissions", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

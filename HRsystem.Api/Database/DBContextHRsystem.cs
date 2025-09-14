@@ -125,6 +125,12 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
                                 .HasColumnType("json"); // MySQL supports json
         });
 
+        modelBuilder.Entity<TbJobTitle>(entity =>
+        {
+            entity.Property(e => e.TitleName)
+                                .HasColumnType("json"); // MySQL supports json
+        });
+
         modelBuilder.Entity<TbAuditLog>(entity =>
         {
             entity.Property(e => e.OldData)

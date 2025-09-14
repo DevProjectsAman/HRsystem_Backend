@@ -12,7 +12,7 @@ public partial class TbShift
     [Key]
     public int ShiftId { get; set; }
 
-    [MaxLength(55)]
+    //[MaxLength(55)]
     public string ShiftName { get; set; } = null!;
 
     public TimeOnly StartTime { get; set; }
