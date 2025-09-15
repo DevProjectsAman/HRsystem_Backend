@@ -13,7 +13,7 @@ public partial class TbDepartment
 
     [MaxLength(25)]
     public string? DepartmentCode { get; set; }
-    [MaxLength(55)]
+    //[MaxLength(55)]
     public string DepartmentName { get; set; } = null!;
 
     public int? CompanyId { get; set; }

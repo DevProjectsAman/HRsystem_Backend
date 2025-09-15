@@ -13,7 +13,7 @@ public partial class TbActivityType
 
     [MaxLength(25)]
     public string ActivityCode { get; set; } = null!;
-    [MaxLength(55)]
+    //[MaxLength(55)]
     public string ActivityName { get; set; } = null!;
     [MaxLength(75)]
     public string? ActivityDescription { get; set; }

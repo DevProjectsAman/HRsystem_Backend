@@ -13,7 +13,7 @@ public partial class TbProject
 
     [MaxLength(25)]
     public string? ProjectCode { get; set; }
-    [MaxLength(100)]
+    //[MaxLength(100)]
     public string ProjectName { get; set; } = null!;
 
     public int? CityId { get; set; }

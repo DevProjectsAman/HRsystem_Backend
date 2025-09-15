@@ -4,6 +4,7 @@ using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.JobTitles.GetFilteredJobTitles;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
+using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
@@ -58,27 +59,57 @@ namespace HRsystem.Api.Features.JobManagment
     }
 
     #region Get All
-    public record GetAllJobTitlesQuery : IRequest<ResponseResultDTO<List<TbJobTitle>>>;
+        public record GetAllJobTitlesQuery() : IRequest<List<JobTitleDto>>;
 
-    public class GetAllJobTitlesHandler(DBContextHRsystem db) : IRequestHandler<GetAllJobTitlesQuery, ResponseResultDTO<List<TbJobTitle>>>
-    {
-        public async Task<ResponseResultDTO<List<TbJobTitle>>> Handle(GetAllJobTitlesQuery request, CancellationToken ct)
+        public class JobTitleDto
         {
-            var data = await db.TbJobTitles
-                .AsNoTracking()
-                .Include(x => x.Department)
-                .Include(x => x.Company)
-                .Include(x => x.JobLevel)
-                .ToListAsync(ct);
-
-            return new ResponseResultDTO<List<TbJobTitle>>
-            {
-                Success = true,
-                Message = "Data returned successfully",
-                Data = data
-            };
+            public int JobTitleId { get; set; }
+            public string TitleName { get; set; }
+            public int CompanyId { get; set; }
+            public string CompanyName { get; set; }
+            public int DepartmentId { get; set; }
+            public string DepartmentName { get; set; }
+            public int? JobLevelId { get; set; }
+            public string JobLevelDesc { get; set; }
         }
-    }
+
+        public class Handler : IRequestHandler<GetAllJobTitlesQuery, List<JobTitleDto>>
+        {
+            private readonly DBContextHRsystem _db;
+            private readonly ICurrentUserService _currentUser;
+
+            public Handler(DBContextHRsystem db, ICurrentUserService currentUser)
+            {
+                _db = db;
+                _currentUser = currentUser;
+            }
+
+            public async Task<List<JobTitleDto>> Handle(GetAllJobTitlesQuery request, CancellationToken ct)
+            {
+                var lang = _currentUser.UserLanguage ?? "en";
+
+                var jobTitles = await _db.TbJobTitles
+                    .Include(j => j.Company)
+                    .Include(j => j.Department)
+                    .Include(j => j.JobLevel)
+                    .AsNoTracking()
+                    .ToListAsync(ct);
+
+                return jobTitles.Select(j => new JobTitleDto
+                {
+                    JobTitleId = j.JobTitleId,
+                    TitleName = j.TitleName.GetTranslation(lang), // ✅ multi-language
+                    CompanyId = j.CompanyId,
+                    CompanyName = j.Company.CompanyName,
+                    DepartmentId = j.DepartmentId,
+                    DepartmentName = j.Department.DepartmentName,
+                    JobLevelId = j.JobLevelId,
+                    JobLevelDesc = j.JobLevel.JobLevelDesc
+                }).ToList();
+            }
+        }
+    
+
     #endregion
 
     #region Get One
