@@ -3,8 +3,10 @@ using HRsystem.Api.Database.DataTables;
 
 //using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Database.Entities;
+using HRsystem.Api.Shared.DTO;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace HRsystem.Api.Database;
 
@@ -97,6 +99,10 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
         modelBuilder.Entity<TbActivityStatus>(entity =>
         {
             entity.Property(e => e.StatusName)
+            .HasConversion(
+            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
+        )
                                 .HasColumnType("json"); // MySQL supports json
         });
 
@@ -104,42 +110,70 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
         modelBuilder.Entity<TbActivityType>(entity =>
         {
             entity.Property(e => e.ActivityName)
+            .HasConversion(
+            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
+        )
                                 .HasColumnType("json"); // MySQL supports json
         });
 
         modelBuilder.Entity<TbProject>(entity =>
         {
             entity.Property(e => e.ProjectName)
+             .HasConversion(
+            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
+        )
                                 .HasColumnType("json"); // MySQL supports json
         });
 
         modelBuilder.Entity<TbDepartment>(entity =>
         {
             entity.Property(e => e.DepartmentName)
+             .HasConversion(
+            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
+        )
                                 .HasColumnType("json"); // MySQL supports json
         });
 
         modelBuilder.Entity<TbVacationType>(entity =>
         {
             entity.Property(e => e.VacationName)
+            .HasConversion(
+            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
+        )
                                 .HasColumnType("json"); // MySQL supports json
         });
 
         modelBuilder.Entity<TbWorkLocation>(entity =>
         {
             entity.Property(e => e.LocationName)
+             .HasConversion(
+            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
+        )
                                 .HasColumnType("json"); // MySQL supports json
         });
 
         modelBuilder.Entity<TbShift>(entity =>
         {
             entity.Property(e => e.ShiftName)
+            .HasConversion(
+            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
+        )
                                 .HasColumnType("json"); // MySQL supports json
         });
 
         modelBuilder.Entity<TbJobTitle>(entity =>
         {
             entity.Property(e => e.TitleName)
+            .HasConversion(
+            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
+        )
                                 .HasColumnType("json"); // MySQL supports json
         });
 

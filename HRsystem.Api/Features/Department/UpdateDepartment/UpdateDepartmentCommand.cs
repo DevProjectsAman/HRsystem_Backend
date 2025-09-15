@@ -5,13 +5,14 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using System;
+using HRsystem.Api.Shared.DTO;
 
 namespace HRsystem.Api.Features.Department.UpdateDepartment
 {
     public record UpdateDepartmentCommand(
         int DepartmentId,
         string? DepartmentCode,
-        string DepartmentName,
+        LocalizedData DepartmentName,
         int? CompanyId,
         int? UpdatedBy
     ) : IRequest<TbDepartment>;
@@ -42,7 +43,8 @@ namespace HRsystem.Api.Features.Department.UpdateDepartment
         public UpdateDepartmentValidator()
         {
             RuleFor(x => x.DepartmentId).GreaterThan(0);
-            RuleFor(x => x.DepartmentName).NotEmpty().MaximumLength(55);
+            RuleFor(x => x.DepartmentName.En).NotEmpty();
+            RuleFor(x => x.DepartmentName.Ar).NotEmpty();
             RuleFor(x => x.DepartmentCode).MaximumLength(25);
             RuleFor(x => x.CompanyId).NotNull();
         }

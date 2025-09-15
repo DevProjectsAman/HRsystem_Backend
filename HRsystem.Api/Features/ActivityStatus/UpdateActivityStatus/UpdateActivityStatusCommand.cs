@@ -2,6 +2,7 @@
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.ActivityStatus.UpdateActivityStatus;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,7 @@ namespace HRsystem.Api.Features.ActivityStatus.UpdateActivityStatus
     public record UpdateActivityStatusCommand(
         int StatusId,
         string StatusCode,
-        string StatusName,
+        LocalizedData StatusName,
         bool IsFinal,
         int? CompanyId
     ) : IRequest<TbActivityStatus?>;
@@ -42,6 +43,7 @@ public class UpdateActivityStatusValidator : AbstractValidator<UpdateActivitySta
     {
         RuleFor(x => x.StatusId).GreaterThan(0);
         RuleFor(x => x.StatusCode).NotEmpty().MaximumLength(25);
-        RuleFor(x => x.StatusName).NotEmpty().MaximumLength(55);
+        RuleFor(x => x.StatusName.En).NotEmpty().MaximumLength(55);
+        RuleFor(x => x.StatusName.Ar).NotEmpty().MaximumLength(55);
     }
 }

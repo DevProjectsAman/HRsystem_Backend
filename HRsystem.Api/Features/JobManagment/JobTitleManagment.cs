@@ -102,7 +102,7 @@ namespace HRsystem.Api.Features.JobManagment
                     CompanyId = j.CompanyId,
                     CompanyName = j.Company.CompanyName,
                     DepartmentId = j.DepartmentId,
-                    DepartmentName = j.Department.DepartmentName,
+                    DepartmentName = j.Department.DepartmentName.GetTranslation(lang),
                     JobLevelId = j.JobLevelId,
                     JobLevelDesc = j.JobLevel.JobLevelDesc
                 }).ToList();
@@ -139,7 +139,7 @@ namespace HRsystem.Api.Features.JobManagment
     #region Create
     public record CreateJobTitleCommand(
         int DepartmentId,
-        string TitleName,
+        LocalizedData TitleName,
         int? JobLevelId,
         int CompanyId
     ) : IRequest<ResponseResultDTO<int>>;
@@ -150,7 +150,8 @@ namespace HRsystem.Api.Features.JobManagment
         {
             RuleFor(x => x.DepartmentId).GreaterThan(0);
             RuleFor(x => x.CompanyId).GreaterThan(0);
-            RuleFor(x => x.TitleName).NotEmpty().MaximumLength(55);
+            RuleFor(x => x.TitleName.En).NotEmpty().MaximumLength(55);
+            RuleFor(x => x.TitleName.Ar).NotEmpty().MaximumLength(55);
         }
     }
 
@@ -187,7 +188,7 @@ namespace HRsystem.Api.Features.JobManagment
     {
         public int JobTitleId { get; set; }
         public int DepartmentId { get; set; }
-        public string TitleName { get; set; } = string.Empty;
+        public LocalizedData TitleName { get; set; } = new();
         public int? JobLevelId { get; set; }
         public int CompanyId { get; set; }
     }
@@ -199,7 +200,8 @@ namespace HRsystem.Api.Features.JobManagment
             RuleFor(x => x.JobTitleId).GreaterThan(0);
             RuleFor(x => x.DepartmentId).GreaterThan(0);
             RuleFor(x => x.CompanyId).GreaterThan(0);
-            RuleFor(x => x.TitleName).NotEmpty().MaximumLength(55);
+            RuleFor(x => x.TitleName.En).NotEmpty().MaximumLength(55);
+            RuleFor(x => x.TitleName.Ar).NotEmpty().MaximumLength(55);
         }
     }
 

@@ -1,12 +1,13 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 
 namespace HRsystem.Api.Features.VacationType.CreateVacationType
 {
     public record CreateVacationTypeCommand(
-        string VacationName,
+        LocalizedData VacationName,
         string? Description,
         bool? IsPaid,
         bool? RequiresHrApproval
@@ -42,7 +43,11 @@ namespace HRsystem.Api.Features.VacationType.CreateVacationType
     {
         public CreateVacationTypeValidator()
         {
-            RuleFor(x => x.VacationName)
+            RuleFor(x => x.VacationName.En)
+                .NotEmpty().WithMessage("VacationName is required")
+                .MaximumLength(100).WithMessage("VacationName must not exceed 100 characters");
+
+            RuleFor(x => x.VacationName.Ar)
                 .NotEmpty().WithMessage("VacationName is required")
                 .MaximumLength(100).WithMessage("VacationName must not exceed 100 characters");
 

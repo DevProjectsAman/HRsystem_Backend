@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRsystem.Api.Shared.DTO;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,7 +15,7 @@ public partial class TbProject
     [MaxLength(25)]
     public string? ProjectCode { get; set; }
     //[MaxLength(100)]
-    public string ProjectName { get; set; } = null!;
+    public LocalizedData ProjectName { get; set; } = null!;
 
     public int? CityId { get; set; }
 

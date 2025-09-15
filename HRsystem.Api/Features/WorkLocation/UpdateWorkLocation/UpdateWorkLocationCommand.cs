@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,7 @@ namespace HRsystem.Api.Features.WorkLocation.UpdateWorkLocation
         int WorkLocationId,
         int CompanyId,
         string? WorkLocationCode,
-        string LocationName,
+        LocalizedData LocationName,
         decimal? Latitude,
         decimal? Longitude,
         int? AllowedRadiusM,
@@ -55,9 +56,13 @@ namespace HRsystem.Api.Features.WorkLocation.UpdateWorkLocation
             RuleFor(x => x.CompanyId)
                 .GreaterThan(0).WithMessage("CompanyId is required");
 
-            RuleFor(x => x.LocationName)
+            RuleFor(x => x.LocationName.En)
                 .NotEmpty().WithMessage("LocationName is required")
                 .MaximumLength(200).WithMessage("LocationName must not exceed 200 characters");
+
+            RuleFor(x => x.LocationName.Ar)
+               .NotEmpty().WithMessage("LocationName is required")
+               .MaximumLength(200).WithMessage("LocationName must not exceed 200 characters");
 
             RuleFor(x => x.WorkLocationCode)
                 .MaximumLength(50).WithMessage("WorkLocationCode must not exceed 50 characters");

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRsystem.Api.Shared.DTO;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,7 +14,7 @@ public partial class TbVacationType
     public int VacationTypeId { get; set; }
 
     //[MaxLength(55)]
-    public string VacationName { get; set; } = null!;
+    public LocalizedData VacationName { get; set; } = null!;
 
     [MaxLength(80)]
     public string? Description { get; set; }

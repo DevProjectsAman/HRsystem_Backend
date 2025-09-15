@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRsystem.Api.Shared.DTO;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,7 +15,7 @@ public partial class TbDepartment
     [MaxLength(25)]
     public string? DepartmentCode { get; set; }
     //[MaxLength(55)]
-    public string DepartmentName { get; set; } = null!;
+    public LocalizedData DepartmentName { get; set; } = null!;
 
     public int? CompanyId { get; set; }
 
