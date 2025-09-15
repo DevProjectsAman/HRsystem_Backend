@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 
 namespace HRsystem.Api.Features.Project.CreateProject
 {
     public record CreateProjectCommand(
         string? ProjectCode,
-        string ProjectName,
+        LocalizedData ProjectName,
         int? CityId,
         int? WorkLocationId,
         int CompanyId,
@@ -17,7 +18,7 @@ namespace HRsystem.Api.Features.Project.CreateProject
     public record CreateProjectResponse(
         int ProjectId,
         string ProjectCode,
-        string ProjectName,
+        LocalizedData ProjectName,
         int? CityId,
         int? WorkLocationId,
         int CompanyId
@@ -49,7 +50,8 @@ namespace HRsystem.Api.Features.Project.CreateProject
     {
         public CreateProjectValidator()
         {
-            RuleFor(x => x.ProjectName).NotEmpty().MaximumLength(100);
+            RuleFor(x => x.ProjectName.En).NotEmpty().MaximumLength(100);
+            RuleFor(x => x.ProjectName.Ar).NotEmpty().MaximumLength(100);
             RuleFor(x => x.ProjectCode).MaximumLength(25);
         }
     }

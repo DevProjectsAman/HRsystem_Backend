@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRsystem.Api.Shared.DTO;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,7 +16,7 @@ public partial class TbActivityStatus
     public string StatusCode { get; set; } = null!;
 
     //[Column(TypeName = "json")]
-    public string StatusName { get; set; } 
+    public LocalizedData StatusName { get; set; } 
 
     public bool IsFinal { get; set; }
 

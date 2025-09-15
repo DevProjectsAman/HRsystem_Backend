@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Text.Json;
 
-namespace HRsystem.Api.Services
+namespace HRsystem.Api.Shared.Tools
 {
     public class GlobalExceptionMiddleware
     {
@@ -50,7 +50,7 @@ namespace HRsystem.Api.Services
                 {
                     success = false,
                     message = "An unexpected error occurred.",
-                    error = ex.Message
+                    error = ex.InnerException.Message ?? ex.Message
                 };
 
                 var json = JsonSerializer.Serialize(response);

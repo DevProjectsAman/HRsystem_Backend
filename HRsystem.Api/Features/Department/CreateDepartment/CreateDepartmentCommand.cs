@@ -2,6 +2,7 @@
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 using System;
 using System.Threading;
@@ -11,7 +12,7 @@ namespace HRsystem.Api.Features.Department.CreateDepartment
 {
     public record CreateDepartmentCommand(
         string? DepartmentCode,
-        string DepartmentName,
+        LocalizedData DepartmentName,
         int? CompanyId
         
     ) : IRequest<TbDepartment>;
@@ -55,9 +56,13 @@ namespace HRsystem.Api.Features.Department.CreateDepartment
     {
         public CreateDepartmentValidator()
         {
-            RuleFor(x => x.DepartmentName)
-                .NotEmpty().WithMessage("Department name is required")
-                .MaximumLength(55).WithMessage("Department name cannot exceed 55 characters");
+            RuleFor(x => x.DepartmentName.En)
+            .NotEmpty().WithMessage("English department name is required")
+            .MaximumLength(55).WithMessage("English department name cannot exceed 55 characters");
+
+            RuleFor(x => x.DepartmentName.Ar)
+                .NotEmpty().WithMessage("Arabic department name is required")
+                .MaximumLength(55).WithMessage("Arabic department name cannot exceed 55 characters");
 
             RuleFor(x => x.DepartmentCode)
                 .MaximumLength(25);

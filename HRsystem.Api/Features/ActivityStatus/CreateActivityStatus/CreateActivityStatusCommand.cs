@@ -2,13 +2,14 @@
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.ActivityStatus.CreateActivityStatus;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 
 namespace HRsystem.Api.Features.ActivityStatus.CreateActivityStatus
 {
     public record CreateActivityStatusCommand(
         string StatusCode,
-        string StatusName,
+        LocalizedData StatusName,
         bool IsFinal,
         int? CreatedBy,
         int? CompanyId
@@ -45,6 +46,7 @@ public class CreateActivityStatusValidator : AbstractValidator<CreateActivitySta
     public CreateActivityStatusValidator()
     {
         RuleFor(x => x.StatusCode).NotEmpty().MaximumLength(25);
-        RuleFor(x => x.StatusName).NotEmpty().MaximumLength(55);
+        RuleFor(x => x.StatusName.En).NotEmpty().MaximumLength(55);
+        RuleFor(x => x.StatusName.Ar).NotEmpty().MaximumLength(55);
     }
 }

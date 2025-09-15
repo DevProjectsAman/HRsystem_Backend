@@ -7,15 +7,15 @@ using HRsystem.Api.Database;
 using HRsystem.Api.Shared.DTO;
 using Microsoft.EntityFrameworkCore;
 
-public record CreateEmployeeCommand(EmployeeCreateDto Employee) : IRequest<ResponseResultDTO<NewEmployeeIdDTO>>;
+public record CreateEmployeeCommand(EmployeeCreateDto Employee) : IRequest<NewEmployeeIdDTO>;
 
-public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, ResponseResultDTO<NewEmployeeIdDTO>>
+public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, NewEmployeeIdDTO>
 {
     private readonly  DBContextHRsystem _db;
 
     public CreateEmployeeHandler(DBContextHRsystem db) => _db = db;
 
-    public async Task<ResponseResultDTO<NewEmployeeIdDTO>> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
+    public async Task<NewEmployeeIdDTO> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
     {
         try
         {
@@ -23,47 +23,47 @@ public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, Resp
       
         var dto = request.Employee;
 
-            var errors = new List<ResponseErrorDTO>();
+            //var errors = new List<ResponseErrorDTO>();
 
-            if (!await _db.TbJobTitles.AnyAsync(j => j.JobTitleId == dto.JobTitleId, cancellationToken))
-            {
-                errors.Add(new ResponseErrorDTO
-                {
-                    Property = nameof(dto.JobTitleId),
-                    Error = $"JobTitleId {dto.JobTitleId} is not valid."
-                });
-            }
+            //if (!await _db.TbJobTitles.AnyAsync(j => j.JobTitleId == dto.JobTitleId, cancellationToken))
+            //{
+            //    errors.Add(new ResponseErrorDTO
+            //    {
+            //        Property = nameof(dto.JobTitleId),
+            //        Error = $"JobTitleId {dto.JobTitleId} is not valid."
+            //    });
+            //}
 
-            if (!await _db.TbCompanies.AnyAsync(c => c.CompanyId == dto.CompanyId, cancellationToken))
-            {
-                errors.Add(new ResponseErrorDTO
-                {
-                    Property = nameof(dto.CompanyId),
-                    Error = $"CompanyId {dto.CompanyId} is not valid."
-                });
-            }
+            //if (!await _db.TbCompanies.AnyAsync(c => c.CompanyId == dto.CompanyId, cancellationToken))
+            //{
+            //    errors.Add(new ResponseErrorDTO
+            //    {
+            //        Property = nameof(dto.CompanyId),
+            //        Error = $"CompanyId {dto.CompanyId} is not valid."
+            //    });
+            //}
 
-            if (dto.DepartmentId.HasValue &&
-                !await _db.TbDepartments.AnyAsync(d => d.DepartmentId == dto.DepartmentId, cancellationToken))
-            {
-                errors.Add(new ResponseErrorDTO
-                {
-                    Property = nameof(dto.DepartmentId),
-                    Error = $"DepartmentId {dto.DepartmentId} is not valid."
-                });
-            }
+            //if (dto.DepartmentId.HasValue &&
+            //    !await _db.TbDepartments.AnyAsync(d => d.DepartmentId == dto.DepartmentId, cancellationToken))
+            //{
+            //    errors.Add(new ResponseErrorDTO
+            //    {
+            //        Property = nameof(dto.DepartmentId),
+            //        Error = $"DepartmentId {dto.DepartmentId} is not valid."
+            //    });
+            //}
 
 
-            // 🔹 If validation failed → return all errors
-            if (errors.Any())
-            {
-                return new ResponseResultDTO<NewEmployeeIdDTO>
-                {
-                    Success = false,
-                    Message = "Validation Error ",
-                    Errors = errors // ✅ you can extend your ResponseResultDTO with List<string> Errors
-                };
-            }
+            //// 🔹 If validation failed → return all errors
+            //if (errors.Any())
+            //{
+            //    return new ResponseResultDTO<NewEmployeeIdDTO>
+            //    {
+            //        Success = false,
+            //        Message = "Validation Error ",
+            //        Errors = errors // ✅ you can extend your ResponseResultDTO with List<string> Errors
+            //    };
+            //}
 
 
             var employee = new TbEmployee
@@ -101,13 +101,7 @@ public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, Resp
             };
 
 
-            return new ResponseResultDTO<NewEmployeeIdDTO>
-            {
-                Success = true,
-                Message = "Succ",
-                 Data= _newEmp
-
-            };
+            return _newEmp ;
 
 
 
@@ -116,16 +110,10 @@ public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, Resp
 
 
         }
-        catch (Exception ex)
+        catch (Exception)
         {
 
-            return new ResponseResultDTO<NewEmployeeIdDTO>
-            {
-                Success = false ,
-                Message = ex.InnerException.Message,
-                 
-
-            };
+            throw;
         }
 
          

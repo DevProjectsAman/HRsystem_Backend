@@ -10,6 +10,7 @@
 	  <Compile Remove="Features\Auth\UserManagement\userRolePermissions.cs" />
 	  <Compile Remove="Services\Auth\CustomAuthorizationPolicyProvider.cs" />
 	  <Compile Remove="Services\Auth\PermissionHandlerService.cs" />
+	  <Compile Remove="Shared\Tools\ValidationExtensions.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

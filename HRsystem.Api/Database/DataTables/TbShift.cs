@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HRsystem.Api.Shared.DTO;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,7 +14,7 @@ public partial class TbShift
     public int ShiftId { get; set; }
 
     //[MaxLength(55)]
-    public string ShiftName { get; set; } = null!;
+    public LocalizedData ShiftName { get; set; } = null!;
 
     public TimeOnly StartTime { get; set; }
 

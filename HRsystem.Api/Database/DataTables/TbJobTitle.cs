@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRsystem.Api.Shared.DTO;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,7 +14,7 @@ public partial class TbJobTitle
     public int DepartmentId { get; set; }
 
     //[MaxLength(55)]
-    public string TitleName { get; set; } = null!;
+    public LocalizedData TitleName { get; set; } = null!;
 
     public int? JobLevelId { get; set; }
 

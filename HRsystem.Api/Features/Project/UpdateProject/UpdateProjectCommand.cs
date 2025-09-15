@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +9,7 @@ namespace HRsystem.Api.Features.Project.UpdateProject
     public record UpdateProjectCommand(
         int ProjectId,
         string? ProjectCode,
-        string ProjectName,
+        LocalizedData ProjectName,
         int? CityId,
         int? WorkLocationId,
         int CompanyId,
@@ -18,7 +19,7 @@ namespace HRsystem.Api.Features.Project.UpdateProject
     public record UpdateProjectResponse(
         int ProjectId,
         string ProjectCode,
-        string ProjectName,
+        LocalizedData ProjectName,
         int? CityId,
         int? WorkLocationId,
         int CompanyId
@@ -49,7 +50,8 @@ namespace HRsystem.Api.Features.Project.UpdateProject
     {
         public UpdateProjectValidator()
         {
-            RuleFor(x => x.ProjectName).NotEmpty().MaximumLength(100);
+            RuleFor(x => x.ProjectName.En).NotEmpty().MaximumLength(100);
+            RuleFor(x => x.ProjectName.Ar).NotEmpty().MaximumLength(100);
             RuleFor(x => x.ProjectCode).MaximumLength(25);
         }
     }

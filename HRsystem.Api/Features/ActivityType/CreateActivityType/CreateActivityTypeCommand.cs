@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 
 namespace HRsystem.Api.Features.ActivityType.CreateActivityType
 {
     public record CreateActivityTypeCommand(
         string ActivityCode,
-        string ActivityName,
+        LocalizedData ActivityName,
         string? ActivityDescription,
         int? CompanyId,
         int? CreatedBy
@@ -50,9 +51,13 @@ namespace HRsystem.Api.Features.ActivityType.CreateActivityType
                 .NotEmpty().WithMessage("Activity code is required")
                 .MaximumLength(25).WithMessage("Activity code cannot exceed 25 characters");
 
-            RuleFor(x => x.ActivityName)
+            RuleFor(x => x.ActivityName.En)
                 .NotEmpty().WithMessage("Activity name is required")
                 .MaximumLength(55).WithMessage("Activity name cannot exceed 55 characters");
+
+            RuleFor(x => x.ActivityName.Ar)
+               .NotEmpty().WithMessage("Activity name is required")
+               .MaximumLength(55).WithMessage("Activity name cannot exceed 55 characters");
 
             RuleFor(x => x.ActivityDescription)
                 .MaximumLength(75).WithMessage("Activity description cannot exceed 75 characters")

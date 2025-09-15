@@ -2,6 +2,7 @@
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.VacationType.UpdateVacationType;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +10,7 @@ namespace HRsystem.Api.Features.VacationType.UpdateVacationType
 {
     public record UpdateVacationTypeCommand(
         int VacationTypeId,
-        string VacationName,
+        LocalizedData VacationName,
         string? Description,
         bool? IsPaid,
         bool? RequiresHrApproval
@@ -46,9 +47,13 @@ namespace HRsystem.Api.Features.VacationType.UpdateVacationType
             RuleFor(x => x.VacationTypeId)
                 .GreaterThan(0).WithMessage("VacationTypeId is required");
 
-            RuleFor(x => x.VacationName)
+            RuleFor(x => x.VacationName.En)
                 .NotEmpty().WithMessage("VacationName is required")
                 .MaximumLength(100).WithMessage("VacationName must not exceed 100 characters");
+
+            RuleFor(x => x.VacationName.Ar)
+               .NotEmpty().WithMessage("VacationName is required")
+               .MaximumLength(100).WithMessage("VacationName must not exceed 100 characters");
 
             RuleFor(x => x.Description)
                 .MaximumLength(250).WithMessage("Description must not exceed 250 characters");

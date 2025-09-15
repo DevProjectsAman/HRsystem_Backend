@@ -1,6 +1,8 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Features.Employee.DTO;
+using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
+using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,8 +16,12 @@ namespace HRsystem.Api.Features.Employee
     public class GetEmployeeByIdHandler : IRequestHandler<GetEmployeeByIdQuery, ResponseResultDTO<EmployeeReadDto?>>
     {
         private readonly DBContextHRsystem _db;
-
-        public GetEmployeeByIdHandler(DBContextHRsystem db) => _db = db;
+        private readonly ICurrentUserService _currentUser;
+        public GetEmployeeByIdHandler(DBContextHRsystem db , ICurrentUserService currentUser)
+        {
+            _db = db;
+            _currentUser = currentUser;
+        }
 
         public async Task<ResponseResultDTO<EmployeeReadDto?>> Handle(GetEmployeeByIdQuery request, CancellationToken cancellationToken)
         {
@@ -41,7 +47,7 @@ namespace HRsystem.Api.Features.Employee
                 e.PrivateMobile,
                 e.BuisnessMobile,
                 e.Gender,
-                e.JobTitle.TitleName,
+                e.JobTitle.TitleName.GetTranslation(_currentUser.UserLanguage),
                 e.Company.CompanyName,
                 e.DepartmentId?.ToString(),
                 e.Manager != null ? e.Manager.FirstName + " " + e.Manager.LastName : null,

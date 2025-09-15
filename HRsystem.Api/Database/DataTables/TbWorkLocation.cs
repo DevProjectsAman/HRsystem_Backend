@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HRsystem.Api.Shared.DTO;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,7 +18,7 @@ public partial class TbWorkLocation
     [MaxLength(25)]
     public string? WorkLocationCode { get; set; }
     //[MaxLength(100)]
-    public string LocationName { get; set; } = null!;
+    public LocalizedData LocationName { get; set; } = null!;
 
     [Precision(9, 6)]
     public decimal? Latitude { get; set; }

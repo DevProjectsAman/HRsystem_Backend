@@ -2,13 +2,14 @@
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.Shift;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 using System;
 
 namespace HRsystem.Api.Features.Shift
 {
     public record CreateShiftCommand(
-    string ShiftName,
+    LocalizedData ShiftName,
     TimeOnly StartTime,
     TimeOnly EndTime,
     bool IsFlexible,

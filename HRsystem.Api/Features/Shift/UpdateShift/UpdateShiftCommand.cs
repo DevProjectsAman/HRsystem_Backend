@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Features.Shift.UpdateShift;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,7 +10,7 @@ namespace HRsystem.Api.Features.Shift.UpdateShift
 {
     public record UpdateShiftCommand(
         int ShiftId,
-        string ShiftName,
+        LocalizedData ShiftName,
         TimeOnly StartTime,
         TimeOnly EndTime,
         bool IsFlexible,

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRsystem.Api.Shared.DTO;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,7 +15,7 @@ public partial class TbActivityType
     [MaxLength(25)]
     public string ActivityCode { get; set; } = null!;
     //[MaxLength(55)]
-    public string ActivityName { get; set; } = null!;
+    public LocalizedData ActivityName { get; set; } = null!;
     [MaxLength(75)]
     public string? ActivityDescription { get; set; }
 
