@@ -93,6 +93,9 @@ public partial class TbEmployee
     
     public virtual TbEmployee? Manager { get; set; }
 
+    public virtual TbDepartment? Department { get; set; }
+
+
     public virtual ICollection<TbEmployeeActivity> TbEmployeeActivities { get; set; } = new List<TbEmployeeActivity>();
 
     public virtual ICollection<TbEmployeeProject> TbEmployeeProjects { get; set; } = new List<TbEmployeeProject>();
@@ -106,6 +109,9 @@ public partial class TbEmployee
     [ForeignKey(nameof(NationalityId))]
     public virtual TbNationality? Nationality { get; set; }
 
+
+    [ForeignKey(nameof(ShiftId))]
+    public virtual TbShift? Shifts { get; set; }
 
     [ForeignKey(nameof(MaritalStatusId))]
     public virtual TbMaritalStatus? MaritalStatus { get; set; }

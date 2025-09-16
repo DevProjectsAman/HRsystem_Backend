@@ -30,4 +30,7 @@ public partial class TbDepartment
     public virtual TbCompany? Company { get; set; }
 
     public virtual ICollection<TbJobTitle> TbJobTitles { get; set; } = new List<TbJobTitle>();
+    // Collection navigation property for employees in this department
+    public virtual ICollection<TbEmployee> TbEmployees { get; set; } = new List<TbEmployee>();
+
 }
