@@ -47,11 +47,11 @@ namespace HRsystem.Api.Features.VacationType.UpdateVacationType
             RuleFor(x => x.VacationTypeId)
                 .GreaterThan(0).WithMessage("VacationTypeId is required");
 
-            RuleFor(x => x.VacationName.En)
+            RuleFor(x => x.VacationName.en)
                 .NotEmpty().WithMessage("VacationName is required")
                 .MaximumLength(100).WithMessage("VacationName must not exceed 100 characters");
 
-            RuleFor(x => x.VacationName.Ar)
+            RuleFor(x => x.VacationName.ar)
                .NotEmpty().WithMessage("VacationName is required")
                .MaximumLength(100).WithMessage("VacationName must not exceed 100 characters");
 

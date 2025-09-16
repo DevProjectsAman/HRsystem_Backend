@@ -56,11 +56,11 @@ namespace HRsystem.Api.Features.Department.CreateDepartment
     {
         public CreateDepartmentValidator()
         {
-            RuleFor(x => x.DepartmentName.En)
+            RuleFor(x => x.DepartmentName.en)
             .NotEmpty().WithMessage("English department name is required")
             .MaximumLength(55).WithMessage("English department name cannot exceed 55 characters");
 
-            RuleFor(x => x.DepartmentName.Ar)
+            RuleFor(x => x.DepartmentName.ar)
                 .NotEmpty().WithMessage("Arabic department name is required")
                 .MaximumLength(55).WithMessage("Arabic department name cannot exceed 55 characters");
 

@@ -51,11 +51,11 @@ namespace HRsystem.Api.Features.ActivityType.CreateActivityType
                 .NotEmpty().WithMessage("Activity code is required")
                 .MaximumLength(25).WithMessage("Activity code cannot exceed 25 characters");
 
-            RuleFor(x => x.ActivityName.En)
+            RuleFor(x => x.ActivityName.en)
                 .NotEmpty().WithMessage("Activity name is required")
                 .MaximumLength(55).WithMessage("Activity name cannot exceed 55 characters");
 
-            RuleFor(x => x.ActivityName.Ar)
+            RuleFor(x => x.ActivityName.ar)
                .NotEmpty().WithMessage("Activity name is required")
                .MaximumLength(55).WithMessage("Activity name cannot exceed 55 characters");
 

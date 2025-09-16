@@ -163,6 +163,9 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
             if (entity == null)
                 return new ResponseResultDTO<bool> { Success = false, Message = "Not found" };
 
+
+             
+
             // check duplicate name
             var exists = await db.AspPermissions
                 .AnyAsync(x => x.PermissionName == request.PermissionName && x.PermissionId != request.PermissionId, ct);

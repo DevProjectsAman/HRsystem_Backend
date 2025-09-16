@@ -17,7 +17,7 @@ public partial class TbEmployee
     [MaxLength(55)]
     public string? EmployeeCodeHr { get; set; }
 
-    public int JobTitleId { get; set; }
+    public int? JobTitleId { get; set; }
     [MaxLength(55)]
     public string FirstName { get; set; } = null!;
     [MaxLength(55)]
@@ -89,7 +89,7 @@ public partial class TbEmployee
 
     public virtual ICollection<TbEmployee> InverseManager { get; set; } = new List<TbEmployee>();
 
-    public virtual TbJobTitle JobTitle { get; set; } = null!;
+    public virtual TbJobTitle? JobTitle { get; set; } = null!;
     
     public virtual TbEmployee? Manager { get; set; }
 

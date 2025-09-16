@@ -71,7 +71,7 @@ namespace HRsystem.Api.Features.Employee
                         EmployeeId: e.EmployeeId,
                         EmployeeCodeFinance: e.EmployeeCodeFinance,
                         EmployeeCodeHr: e.EmployeeCodeHr,
-                        JobTitleId: e.JobTitleId,
+                        JobTitleId:(int) e.JobTitleId,
                         JobTitleName: jobTitleName,
                         FirstName: e.FirstName,
                         ArabicFirstName: e.ArabicFirstName,

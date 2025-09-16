@@ -18,7 +18,7 @@ public record EmployeeCreateDto(
         string? PassportNumber,
         string? PlaceOfBirth,
         string? BloodGroup,
-        int JobTitleId,
+        int? JobTitleId,
         int CompanyId,
         int? DepartmentId,
         int? ManagerId,

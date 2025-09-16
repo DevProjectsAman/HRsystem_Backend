@@ -56,11 +56,11 @@ namespace HRsystem.Api.Features.WorkLocation.UpdateWorkLocation
             RuleFor(x => x.CompanyId)
                 .GreaterThan(0).WithMessage("CompanyId is required");
 
-            RuleFor(x => x.LocationName.En)
+            RuleFor(x => x.LocationName.en)
                 .NotEmpty().WithMessage("LocationName is required")
                 .MaximumLength(200).WithMessage("LocationName must not exceed 200 characters");
 
-            RuleFor(x => x.LocationName.Ar)
+            RuleFor(x => x.LocationName.ar)
                .NotEmpty().WithMessage("LocationName is required")
                .MaximumLength(200).WithMessage("LocationName must not exceed 200 characters");
 
