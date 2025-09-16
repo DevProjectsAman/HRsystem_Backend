@@ -3,8 +3,8 @@
     public class LocalizedData
     {
         
-            public string En { get; set; } = string.Empty;
-            public string Ar { get; set; } = string.Empty;
+            public string en { get; set; } = string.Empty;
+            public string ar { get; set; } = string.Empty;
         
     }
 }

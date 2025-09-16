@@ -50,8 +50,8 @@ namespace HRsystem.Api.Features.Project.CreateProject
     {
         public CreateProjectValidator()
         {
-            RuleFor(x => x.ProjectName.En).NotEmpty().MaximumLength(100);
-            RuleFor(x => x.ProjectName.Ar).NotEmpty().MaximumLength(100);
+            RuleFor(x => x.ProjectName.en).NotEmpty().MaximumLength(100);
+            RuleFor(x => x.ProjectName.ar).NotEmpty().MaximumLength(100);
             RuleFor(x => x.ProjectCode).MaximumLength(25);
         }
     }

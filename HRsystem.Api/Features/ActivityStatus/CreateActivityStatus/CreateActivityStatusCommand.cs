@@ -46,7 +46,7 @@ public class CreateActivityStatusValidator : AbstractValidator<CreateActivitySta
     public CreateActivityStatusValidator()
     {
         RuleFor(x => x.StatusCode).NotEmpty().MaximumLength(25);
-        RuleFor(x => x.StatusName.En).NotEmpty().MaximumLength(55);
-        RuleFor(x => x.StatusName.Ar).NotEmpty().MaximumLength(55);
+        RuleFor(x => x.StatusName.en).NotEmpty().MaximumLength(55);
+        RuleFor(x => x.StatusName.ar).NotEmpty().MaximumLength(55);
     }
 }

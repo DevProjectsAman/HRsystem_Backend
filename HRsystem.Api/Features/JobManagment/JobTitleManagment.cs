@@ -150,8 +150,8 @@ namespace HRsystem.Api.Features.JobManagment
         {
             RuleFor(x => x.DepartmentId).GreaterThan(0);
             RuleFor(x => x.CompanyId).GreaterThan(0);
-            RuleFor(x => x.TitleName.En).NotEmpty().MaximumLength(55);
-            RuleFor(x => x.TitleName.Ar).NotEmpty().MaximumLength(55);
+            RuleFor(x => x.TitleName.en).NotEmpty().MaximumLength(55);
+            RuleFor(x => x.TitleName.ar).NotEmpty().MaximumLength(55);
         }
     }
 
@@ -200,8 +200,8 @@ namespace HRsystem.Api.Features.JobManagment
             RuleFor(x => x.JobTitleId).GreaterThan(0);
             RuleFor(x => x.DepartmentId).GreaterThan(0);
             RuleFor(x => x.CompanyId).GreaterThan(0);
-            RuleFor(x => x.TitleName.En).NotEmpty().MaximumLength(55);
-            RuleFor(x => x.TitleName.Ar).NotEmpty().MaximumLength(55);
+            RuleFor(x => x.TitleName.en).NotEmpty().MaximumLength(55);
+            RuleFor(x => x.TitleName.ar).NotEmpty().MaximumLength(55);
         }
     }
 

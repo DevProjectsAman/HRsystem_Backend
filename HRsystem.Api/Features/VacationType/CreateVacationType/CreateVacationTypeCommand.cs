@@ -43,11 +43,11 @@ namespace HRsystem.Api.Features.VacationType.CreateVacationType
     {
         public CreateVacationTypeValidator()
         {
-            RuleFor(x => x.VacationName.En)
+            RuleFor(x => x.VacationName.en)
                 .NotEmpty().WithMessage("VacationName is required")
                 .MaximumLength(100).WithMessage("VacationName must not exceed 100 characters");
 
-            RuleFor(x => x.VacationName.Ar)
+            RuleFor(x => x.VacationName.ar)
                 .NotEmpty().WithMessage("VacationName is required")
                 .MaximumLength(100).WithMessage("VacationName must not exceed 100 characters");
 

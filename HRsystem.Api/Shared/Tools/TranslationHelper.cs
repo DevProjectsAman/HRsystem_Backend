@@ -33,11 +33,11 @@ namespace HRsystem.Api.Shared.Tools
 
             return language.ToLower() switch
             {
-                "en" when !string.IsNullOrWhiteSpace(data.En) => data.En,
-                "ar" when !string.IsNullOrWhiteSpace(data.Ar) => data.Ar,
-                _ when fallback == "ar" && !string.IsNullOrWhiteSpace(data.Ar) => data.Ar,
-                _ when fallback == "en" && !string.IsNullOrWhiteSpace(data.En) => data.En,
-                _ => data.En ?? data.Ar ?? string.Empty
+                "en" when !string.IsNullOrWhiteSpace(data.en) => data.en,
+                "ar" when !string.IsNullOrWhiteSpace(data.ar) => data.ar,
+                _ when fallback == "ar" && !string.IsNullOrWhiteSpace(data.ar) => data.ar,
+                _ when fallback == "en" && !string.IsNullOrWhiteSpace(data.en) => data.en,
+                _ => data.en ?? data.ar ?? string.Empty
             };
         }
 

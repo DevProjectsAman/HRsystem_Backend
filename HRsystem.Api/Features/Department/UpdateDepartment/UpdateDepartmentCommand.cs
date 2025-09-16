@@ -43,8 +43,8 @@ namespace HRsystem.Api.Features.Department.UpdateDepartment
         public UpdateDepartmentValidator()
         {
             RuleFor(x => x.DepartmentId).GreaterThan(0);
-            RuleFor(x => x.DepartmentName.En).NotEmpty();
-            RuleFor(x => x.DepartmentName.Ar).NotEmpty();
+            RuleFor(x => x.DepartmentName.en).NotEmpty();
+            RuleFor(x => x.DepartmentName.ar).NotEmpty();
             RuleFor(x => x.DepartmentCode).MaximumLength(25);
             RuleFor(x => x.CompanyId).NotNull();
         }
