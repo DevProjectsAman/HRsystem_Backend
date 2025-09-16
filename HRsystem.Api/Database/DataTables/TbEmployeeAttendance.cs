@@ -14,7 +14,7 @@ public partial class TbEmployeeAttendance
 
     public long ActivityId { get; set; }
 
-    public DateOnly AttendanceDate { get; set; }
+    public DateTime AttendanceDate { get; set; }
 
     public DateTime? FirstPuchin { get; set; }
 
