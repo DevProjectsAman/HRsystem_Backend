@@ -3,25 +3,27 @@ using HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
-[Route("api/[controller]")]
-public class EmployeeWorkflowController : ControllerBase
+namespace HRsystem.Api.Features.AttendanceController
 {
-    private readonly IMediator _mediator;
-    public EmployeeWorkflowController(IMediator mediator) => _mediator = mediator;
-
-    // ------------------ PUNCH ------------------
-    [HttpPost("punch/in")]
-    public async Task<ActionResult<EmployeeAttendanceDto>> PunchIn([FromBody] PunchInCommand command)
+    public static class EmployeePunchEndpoints
     {
-        var result = await _mediator.Send(command);
-        return Ok(result);
-    }
+        public static void MapEmployeePunchEndpoints(this IEndpointRouteBuilder app)
+        {
+            var group = app.MapGroup("/api/employee/punch").WithTags("Employee Punch");
 
-    [HttpPost("punch/out")]
-    public async Task<ActionResult<EmployeeAttendanceDto>> PunchOut([FromBody] PunchOutCommand command)
-    {
-        var result = await _mediator.Send(command);
-        return Ok(result);
+            // Punch In
+            group.MapPost("/in", async (PunchInCommand cmd, ISender mediator) =>
+            {
+                var result = await mediator.Send(cmd);
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
+            // Punch Out
+            group.MapPost("/out", async (PunchOutCommand cmd, ISender mediator) =>
+            {
+                var result = await mediator.Send(cmd);
+                return Results.Ok(new { Success = true, Data = result });
+            });
+        }
     }
 }

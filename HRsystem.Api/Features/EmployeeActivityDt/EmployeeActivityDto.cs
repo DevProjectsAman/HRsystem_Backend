@@ -40,7 +40,7 @@ namespace HRsystem.Api.Features.Attendance
     {
         public long PunchId { get; set; }
         public long AttendanceId { get; set; }
-        public DateTime PunchIn { get; set; }
+        public DateTime? PunchIn { get; set; }
         public DateTime? PunchOut { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }

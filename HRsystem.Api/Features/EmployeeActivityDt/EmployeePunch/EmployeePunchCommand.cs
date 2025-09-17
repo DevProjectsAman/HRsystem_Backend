@@ -17,8 +17,8 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
         int ActivityTypeId,   // To create a new Activity if not exists
         int LocationId,
         double Latitude,
-        double Longitude,
-        double AllowRadiusMeters
+        double Longitude
+        //double AllowRadiusMeters
     ) : IRequest<EmployeeAttendanceDto>;
 
     // PunchOutCommand.cs
@@ -26,8 +26,8 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
         long ActivityId,
         int LocationId,
         double Latitude,
-        double Longitude,
-        double AllowRadiusMeters
+        double Longitude
+        //double AllowRadiusMeters
     ) : IRequest<EmployeeAttendanceDto>;
 
     public class PunchInHandler : IRequestHandler<PunchInCommand, EmployeeAttendanceDto>
@@ -47,16 +47,12 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             var employee = await _db.TbEmployees.FirstOrDefaultAsync(e => e.EmployeeId == employeeId, ct);
             if (employee == null) throw new Exception("Employee not found");
 
-            // 1️⃣ Check allowed location
             var location = await _db.TbWorkLocations.FirstOrDefaultAsync(l => l.WorkLocationId == request.LocationId, ct);
             if (location == null) throw new Exception("Location not found");
 
-            if (!LocationHelper.IsWithinAllowedRadius(request.Latitude, request.Longitude, (double)location.Latitude, (double)location.Longitude, request.AllowRadiusMeters))
-                throw new Exception("Employee is out of allowed working area");
-
             var today = DateTime.UtcNow.Date;
 
-            // 2️⃣ Check if Activity exists today
+            // Activity
             var activity = await _db.TbEmployeeActivities
                 .FirstOrDefaultAsync(a => a.ActivityId == request.ActivityId && a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today, ct);
 
@@ -66,7 +62,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 {
                     EmployeeId = employee.EmployeeId,
                     ActivityTypeId = request.ActivityTypeId,
-                    StatusId = 1, // Started
+                    StatusId = 1,
                     RequestBy = employee.EmployeeId,
                     RequestDate = DateTime.UtcNow,
                     CompanyId = employee.CompanyId
@@ -75,7 +71,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 await _db.SaveChangesAsync(ct);
             }
 
-            // 3️⃣ Check if Attendance exists today linked to Activity
+            // Attendance
             var attendance = await _db.TbEmployeeAttendances
                 .FirstOrDefaultAsync(a => a.ActivityId == activity.ActivityId && a.AttendanceDate == today, ct);
 
@@ -91,26 +87,33 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 await _db.SaveChangesAsync(ct);
             }
 
-            // 4️⃣ Record PunchIn with LocationId
-            var punch = new TbEmployeeAttendancePunch
-            {
-                AttendanceId = attendance.AttendanceId,
-                PunchIn = DateTime.UtcNow,
-                LocationId = request.LocationId,
-                DeviceId = employee.EmployeeId
-            };
-            _db.TbEmployeeAttendancePunches.Add(punch);
+            // PunchIn (only if not already punched in)
 
-            // 5️⃣ Record AuditLog
+            var alreadyPunchedIn = await _db.TbEmployeeAttendancePunches
+                .AnyAsync(p => p.AttendanceId == attendance.AttendanceId && p.PunchIn.HasValue, ct);
+
+            if (!alreadyPunchedIn)
+            {
+                var punch = new TbEmployeeAttendancePunch
+                {
+                    AttendanceId = attendance.AttendanceId,
+                    PunchIn = DateTime.UtcNow,
+                    LocationId = request.LocationId,
+                    DeviceId = employee.EmployeeId
+                };
+                _db.TbEmployeeAttendancePunches.Add(punch);
+            }
+
+            // Always record AuditLog
             var audit = new TbAuditLog
             {
                 CompanyId = employee.CompanyId,
                 UserId = employee.EmployeeId,
                 ActionDatetime = DateTime.UtcNow,
                 TableName = "EmployeeAttendancePunch",
-                ActionType = "Insert",
-                RecordId = punch.PunchId.ToString(),
-                NewData = System.Text.Json.JsonSerializer.Serialize(punch)
+                ActionType = "PunchIn",
+                RecordId = attendance.AttendanceId.ToString(),
+                NewData = $"PunchIn Attempt at {DateTime.UtcNow}, LocationId={request.LocationId}"
             };
             _db.TbAuditLogs.Add(audit);
 
@@ -142,60 +145,56 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             var employee = await _db.TbEmployees.FirstOrDefaultAsync(e => e.EmployeeId == employeeId, ct);
             if (employee == null) throw new Exception("Employee not found");
 
-            // 1️⃣ Check allowed location
             var location = await _db.TbWorkLocations.FirstOrDefaultAsync(l => l.WorkLocationId == request.LocationId, ct);
             if (location == null) throw new Exception("Location not found");
 
-            if (!LocationHelper.IsWithinAllowedRadius(request.Latitude, request.Longitude, (double)location.Latitude, (double)location.Longitude, request.AllowRadiusMeters))
-                throw new Exception("Employee is out of allowed working area");
-
             var today = DateTime.UtcNow.Date;
 
-            // 2️⃣ Get today's Activity
+            // Activity
             var activity = await _db.TbEmployeeActivities
                 .FirstOrDefaultAsync(a => a.ActivityId == request.ActivityId && a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today, ct);
 
             if (activity == null) throw new Exception("No activity found for today");
 
-            // 3️⃣ Get today's Attendance linked to Activity
+            // Attendance
             var attendance = await _db.TbEmployeeAttendances
                 .FirstOrDefaultAsync(a => a.ActivityId == activity.ActivityId && a.AttendanceDate == today, ct);
 
             if (attendance == null) throw new Exception("No attendance found for today");
 
-            // 4️⃣ Record PunchOut with LocationId
-            var punch = new TbEmployeeAttendancePunch
-            {
-                AttendanceId = attendance.AttendanceId,
-                PunchOut = DateTime.UtcNow,
-                LocationId = request.LocationId,
-                DeviceId = employee.EmployeeId
-            };
-            _db.TbEmployeeAttendancePunches.Add(punch);
+            // PunchOut (only if not already punched out)
+            var alreadyPunchedOut = await _db.TbEmployeeAttendancePunches
+                .AnyAsync(p => p.AttendanceId == attendance.AttendanceId && p.PunchOut.HasValue, ct);
 
-            // 5️⃣ Update Attendance
-            attendance.LastPuchout = DateTime.UtcNow;
-
-            // Calculate TotalHours in decimal
-            if (attendance.FirstPuchin.HasValue && attendance.LastPuchout.HasValue)
+            if (!alreadyPunchedOut)
             {
-                attendance.TotalHours = (decimal?)((decimal)(attendance.LastPuchout.Value - attendance.FirstPuchin.Value).TotalMinutes / 60m);
+                var punch = new TbEmployeeAttendancePunch
+                {
+                    AttendanceId = attendance.AttendanceId,
+                    PunchOut = DateTime.UtcNow,
+                    LocationId = request.LocationId,
+                    DeviceId = employee.EmployeeId
+                };
+                _db.TbEmployeeAttendancePunches.Add(punch);
+
+                // Update Attendance
+                attendance.LastPuchout = DateTime.UtcNow;
+                if (attendance.FirstPuchin.HasValue)
+                {
+                    attendance.TotalHours =((decimal)(attendance.LastPuchout.Value - attendance.FirstPuchin.Value).TotalMinutes) / 60m;
+                }
             }
-            else
-            {
-                attendance.TotalHours = null;
-            }
 
-            // 6️⃣ Record AuditLog
+            // Always record AuditLog
             var audit = new TbAuditLog
             {
                 CompanyId = employee.CompanyId,
                 UserId = employee.EmployeeId,
                 ActionDatetime = DateTime.UtcNow,
                 TableName = "EmployeeAttendancePunch",
-                ActionType = "Update",
-                RecordId = punch.PunchId.ToString(),
-                NewData = System.Text.Json.JsonSerializer.Serialize(punch)
+                ActionType = "PunchOut",
+                RecordId = attendance.AttendanceId.ToString(),
+                NewData = $"PunchOut Attempt at {DateTime.UtcNow}, LocationId={request.LocationId}"
             };
             _db.TbAuditLogs.Add(audit);
 
@@ -211,29 +210,6 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             };
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

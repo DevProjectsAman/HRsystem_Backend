@@ -13,7 +13,7 @@ public partial class TbEmployeeAttendancePunch
 
     public long AttendanceId { get; set; }
 
-    public DateTime PunchIn { get; set; }
+    public DateTime? PunchIn { get; set; }
 
     public DateTime? PunchOut { get; set; }
 
