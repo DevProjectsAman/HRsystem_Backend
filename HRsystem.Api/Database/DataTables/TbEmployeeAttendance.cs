@@ -22,6 +22,9 @@ public partial class TbEmployeeAttendance
     [Precision(5, 2)]
     public decimal? TotalHours { get; set; }
 
+    [Precision(5, 2)]
+    public decimal? ActualWorkingHours { get; set; }
+
     public virtual TbEmployeeActivity Activity { get; set; } = null!;
 
     public virtual ICollection<TbEmployeeAttendancePunch> TbEmployeeAttendancePunches { get; set; } = new List<TbEmployeeAttendancePunch>();
