@@ -13,9 +13,10 @@ public partial class TbEmployeeAttendancePunch
 
     public long AttendanceId { get; set; }
 
-    public DateTime? PunchIn { get; set; }
+    public DateTime? PunchTime { get; set; }
 
-    public DateTime? PunchOut { get; set; }
+    [MaxLength(25)]
+    public string PunchType  { get; set; }
 
     public int? LocationId { get; set; }
 
