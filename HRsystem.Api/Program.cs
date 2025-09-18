@@ -10,6 +10,7 @@ using HRsystem.Api.Features.Company;
 using HRsystem.Api.Features.Department;
 using HRsystem.Api.Features.Employee;
 using HRsystem.Api.Features.EmployeeAttendance;
+using HRsystem.Api.Features.EmployeeVacation;
 using HRsystem.Api.Features.Gov;
 using HRsystem.Api.Features.Groups.Create;
 using HRsystem.Api.Features.Groups.DeleteGroup;
@@ -231,9 +232,8 @@ app.MapCityEndpoints();
 app.MapDepartmentEndpoints();
 app.MapAuditLogEndpoints();
 app.MapProjectEndpoints();
-
 app.MapEmployeePunchEndpoints(); // from EmployeePunchEndpoints.cs
-
+app.MapVacationEndpoints();
 app.MapEmployeeEndpoints();
 
 app.Run();
