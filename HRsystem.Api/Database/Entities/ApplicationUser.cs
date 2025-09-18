@@ -8,12 +8,12 @@ namespace HRsystem.Api.Database.Entities
     {
         public Guid RowGuid { get; set; } = Guid.NewGuid();
 
-        public int EmployeeId { get; set; }
+        public int? EmployeeId { get; set; }
 
         [MaxLength(80)] 
         public string UserFullName { get; set; }
 
-        public int CompanyId { get; set; }
+        public int? CompanyId { get; set; }
 
         public bool IsActive { get; set; }
         public bool IsToChangePassword { get; set; }
@@ -28,7 +28,7 @@ namespace HRsystem.Api.Database.Entities
              
        
         [MaxLength(10)]
-        public string PreferredLanguage { get; set; } // e.g. "en", "ar"
+        public string? PreferredLanguage { get; set; } // e.g. "en", "ar"
 
         // 🔑 New field
         public int PermissionVersion { get; set; } = 1;
