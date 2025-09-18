@@ -18,9 +18,16 @@ namespace HRsystem.Api.Features.Mission
             {
                 var result = await mediator.Send(command);
 
-                return Results.Created($"/api/missionRequest/{result.MissionId}", new
+                //return Results.Created($"/api/missionRequest/{result.MissionId}", new
+                //{
+                //    Success = true,
+                //    Data = result
+                //});
+
+                return Results.Ok(new
                 {
                     Success = true,
+                    Message = "Vacation requested successfully",
                     Data = result
                 });
             });

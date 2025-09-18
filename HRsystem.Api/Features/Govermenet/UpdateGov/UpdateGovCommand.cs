@@ -16,7 +16,10 @@ namespace HRsystem.Api.Features.Gov.UpdateGov
         public async Task<TbGov?> Handle(UpdateGovCommand request, CancellationToken ct)
         {
             var entity = await _db.TbGovs.FirstOrDefaultAsync(g => g.GovId == request.GovId, ct);
-            if (entity == null) return null;
+            if (entity == null)
+            {
+                throw new KeyNotFoundException($"Gov with ID {request.GovId} not found.");
+            }
 
             entity.GoveCode = request.GoveCode;
             entity.GovName = request.GovName;

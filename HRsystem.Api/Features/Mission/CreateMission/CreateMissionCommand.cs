@@ -3,12 +3,14 @@ using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Database;
 using MediatR;
 using HRsystem.Api.Services.CurrentUser;
+using Microsoft.EntityFrameworkCore;
+using HRsystem.Api.Shared.ExceptionHandling;
 
 namespace HRsystem.Api.Features.Mission.CreateMission
 {
     public record CreateMissionCommand(
            // int EmployeeId,
-            int ActivityTypeId,
+            //int ActivityTypeId,
             int StatusId,
            // long RequestBy,
            // long ApprovedBy,
@@ -52,11 +54,19 @@ namespace HRsystem.Api.Features.Mission.CreateMission
         {
             var employeeId = _currentUser.EmployeeID ?? 0;
             var companyId = _currentUser.CompanyID ?? 0;
+
+            var activityType = await _db.TbActivityTypes
+            .FirstOrDefaultAsync(x => x.ActivityCode == "REQ_MISSION", ct);
+
+            if (activityType == null)
+                throw new NotFoundException("Invalid ActivityType code:", "REQ_MISSION");
+            
+
             // 1️⃣ Create the Activity first
             var activity = new TbEmployeeActivity
             {
                 EmployeeId = employeeId,
-                ActivityTypeId = request.ActivityTypeId,
+                ActivityTypeId = activityType.ActivityTypeId,
                 StatusId = request.StatusId,
                 RequestBy = employeeId,
               //  ApprovedBy = request.ApprovedBy,
@@ -101,7 +111,7 @@ namespace HRsystem.Api.Features.Mission.CreateMission
         {
             // Activity validation
             //RuleFor(x => x.EmployeeId).GreaterThan(0);
-            RuleFor(x => x.ActivityTypeId).GreaterThan(0);
+            //RuleFor(x => x.ActivityTypeId).GreaterThan(0);
             RuleFor(x => x.StatusId).GreaterThan(0);
          //   RuleFor(x => x.RequestBy).GreaterThan(0);
             //RuleFor(x => x.ApprovedBy).GreaterThan(0);
