@@ -106,17 +106,16 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
         }
     }
 
-    public class PunchOutHandler : IRequestHandler<PunchOutCommand, EmployeeAttendanceDto>
+public class PunchOutHandler : IRequestHandler<PunchOutCommand, EmployeeAttendanceDto>
+{
+    private readonly DBContextHRsystem _db;
+    private readonly ICurrentUserService _currentUserService;
+
+    public PunchOutHandler(DBContextHRsystem db, ICurrentUserService currentUserService)
     {
-        private readonly DBContextHRsystem _db;
-        private readonly ICurrentUserService _currentUserService;
-
-        public PunchOutHandler(DBContextHRsystem db, ICurrentUserService currentUserService)
-        {
-            _db = db;
-            _currentUserService = currentUserService;
-        }
-
+        _db = db;
+        _currentUserService = currentUserService;
+    }
         public async Task<EmployeeAttendanceDto> Handle(PunchOutCommand request, CancellationToken ct)
         {
             var employeeId = _currentUserService.EmployeeID;
@@ -162,7 +161,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                     {
                         ActivityId = activity.ActivityId,
                         AttendanceDate = today,
-                        FirstPuchin = now.AddMinutes(-1),   // علشان يبقى في فرق وقت
+                        FirstPuchin = now.AddMinutes(-1),
                         LastPuchout = now,
                         TotalHours = (decimal)1 / 60m
                     };
@@ -171,10 +170,11 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 else
                 {
                     attendance.LastPuchout = now;
+
                     if (attendance.FirstPuchin.HasValue)
                     {
                         attendance.TotalHours =
-                            ((decimal)(attendance.LastPuchout.Value - attendance.FirstPuchin.Value).TotalMinutes) / 60m;
+                            (decimal)(attendance.LastPuchout.Value - attendance.FirstPuchin.Value).TotalMinutes / 60m;
                     }
                     else
                     {
@@ -182,7 +182,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                     }
                 }
 
-                // دايمًا ضيف PunchOut مرتبط بالـ Attendance
+                // سجل PunchOut جديد
                 var punch = new TbEmployeeAttendancePunch
                 {
                     AttendanceId = attendance.AttendanceId,
@@ -193,6 +193,32 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 _db.TbEmployeeAttendancePunches.Add(punch);
 
                 await _db.SaveChangesAsync(ct);
+
+                // === حساب ActualWorkingHours من كل PunchIn / PunchOut ===
+                var punches = await _db.TbEmployeeAttendancePunches
+                    .Where(p => p.AttendanceId == attendance.AttendanceId)
+                    .OrderBy(p => p.PunchTime)
+                    .ToListAsync(ct);
+
+                double totalMinutes = 0;
+                DateTime? lastIn = null;
+
+                foreach (var p in punches)
+                {
+                    if (p.PunchType == "PunchIn")
+                    {
+                        lastIn = p.PunchTime;
+                    }
+                    else if (p.PunchType == "PunchOut" && lastIn.HasValue)
+                    {
+                        totalMinutes += (p.PunchTime.Value - lastIn.Value).TotalMinutes;
+
+                        lastIn = null; // Reset بعد ما نقفل السيشن
+                    }
+                }
+
+                attendance.ActualWorkingHours = (decimal)(totalMinutes / 60.0);
+                await _db.SaveChangesAsync(ct);
             }
 
             return new EmployeeAttendanceDto
@@ -202,10 +228,12 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 ActivityId = activity.ActivityId,
                 FirstPunchIn = attendance?.FirstPuchin,
                 LastPunchOut = attendance?.LastPuchout,
-                TotalHours = attendance?.TotalHours
+                TotalHours = attendance?.TotalHours,
+                ActualWorkingHours = attendance?.ActualWorkingHours
             };
         }
     }
+
 
 
 

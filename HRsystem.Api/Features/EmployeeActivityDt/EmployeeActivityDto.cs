@@ -33,6 +33,9 @@ namespace HRsystem.Api.Features.Attendance
         public DateTime? FirstPunchIn { get; set; }
         public DateTime? LastPunchOut { get; set; }
         public decimal? TotalHours { get; set; }
+
+        public decimal? ActualWorkingHours { get; set; }
+        
     }
 
     // AttendancePunchDto.cs
