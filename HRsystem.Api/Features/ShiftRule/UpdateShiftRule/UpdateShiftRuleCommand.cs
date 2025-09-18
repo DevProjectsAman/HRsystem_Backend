@@ -26,7 +26,12 @@ namespace HRsystem.Api.Features.ShiftRule.UpdateShiftRule
         public async Task<TbShiftRule?> Handle(UpdateShiftRuleCommand request, CancellationToken ct)
         {
             var entity = await _db.TbShiftRules.FirstOrDefaultAsync(r => r.RuleId == request.RuleId, ct);
-            if (entity == null) return null;
+            if (entity == null)
+            {
+                throw new KeyNotFoundException($"ShiftRule with RuleId {request.RuleId} not found.");
+
+            }
+            
 
             entity.JobTitleId = request.JobTitleId;
             entity.WorkingLocationId = request.WorkingLocationId;

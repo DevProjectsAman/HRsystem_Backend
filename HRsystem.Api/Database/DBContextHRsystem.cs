@@ -203,9 +203,6 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
                 .HasConversion<string>() // store enum as string
                 .HasColumnType("ENUM('All','Muslim','Christian')"); // MySQL enum type
 
-
-
-
         });
 
 

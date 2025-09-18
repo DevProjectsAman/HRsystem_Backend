@@ -9,7 +9,7 @@ using System;
 using System.Threading;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace HRsystem.Api.Features.Attendance
+namespace HRsystem.Api.Features.EmployeeActivityDt
 {
 
     // EmployeeActivityDto.cs
@@ -35,7 +35,7 @@ namespace HRsystem.Api.Features.Attendance
         public decimal? TotalHours { get; set; }
 
         public decimal? ActualWorkingHours { get; set; }
-        
+
     }
 
     // AttendancePunchDto.cs
