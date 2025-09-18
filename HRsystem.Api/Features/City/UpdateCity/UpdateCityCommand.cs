@@ -13,7 +13,10 @@ namespace HRsystem.Api.Features.City.UpdateCity
         public async Task<TbCity?> Handle(UpdateCityCommand request, CancellationToken ct)
         {
             var entity = await db.TbCities.FirstOrDefaultAsync(x => x.CityId == request.CityId, ct);
-            if (entity == null) return null;
+            if (entity == null)
+            {
+                throw new KeyNotFoundException($"City with ID {request.CityId} not found.");
+            }
 
             entity.CityName = request.CityName;
             entity.GovId = request.GovId;

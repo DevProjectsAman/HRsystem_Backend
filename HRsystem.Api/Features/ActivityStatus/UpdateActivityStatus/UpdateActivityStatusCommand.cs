@@ -24,9 +24,11 @@ namespace HRsystem.Api.Features.ActivityStatus.UpdateActivityStatus
         public async Task<TbActivityStatus?> Handle(UpdateActivityStatusCommand request, CancellationToken ct)
         {
             var entity = await _db.TbActivityStatuses.FirstOrDefaultAsync(x => x.StatusId == request.StatusId, ct);
-            if (entity == null) return null;
-
-            entity.StatusCode = request.StatusCode;
+            if (entity == null)
+            {
+                throw new KeyNotFoundException($"Activity Status with ID {request.StatusId} not found.");
+            }
+                entity.StatusCode = request.StatusCode;
             entity.StatusName = request.StatusName;
             entity.IsFinal = request.IsFinal;
             entity.CompanyId = request.CompanyId;

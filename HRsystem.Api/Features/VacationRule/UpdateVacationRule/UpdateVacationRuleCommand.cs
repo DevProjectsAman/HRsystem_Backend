@@ -30,9 +30,12 @@ namespace HRsystem.Api.Features.VacationRule.UpdateVacationRule
         public async Task<TbVacationRule?> Handle(UpdateVacationRuleCommand request, CancellationToken ct)
         {
             var entity = await _db.TbVacationRules.FirstOrDefaultAsync(r => r.RuleId == request.RuleId, ct);
-            if (entity == null) return null;
+            if (entity == null)
+            {
+                throw new KeyNotFoundException($"Vacation Rule with ID {request.RuleId} not found.");
+            }
 
-            entity.VacationTypeId = request.VacationTypeId;
+                entity.VacationTypeId = request.VacationTypeId;
             entity.MinAge = request.MinAge;
             entity.MaxAge = request.MaxAge;
             entity.MinServiceYears = request.MinServiceYears;

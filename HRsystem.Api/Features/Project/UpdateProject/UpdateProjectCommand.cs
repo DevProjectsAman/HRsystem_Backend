@@ -30,9 +30,13 @@ namespace HRsystem.Api.Features.Project.UpdateProject
         public async Task<UpdateProjectResponse?> Handle(UpdateProjectCommand request, CancellationToken ct)
         {
             var entity = await db.TbProjects.FirstOrDefaultAsync(x => x.ProjectId == request.ProjectId, ct);
-            if (entity is null) return null;
+            if (entity is null)
+            {
+                throw new KeyNotFoundException($"Project with ID {request.ProjectId} not found.");
+            }
 
-            entity.ProjectCode = request.ProjectCode;
+
+                entity.ProjectCode = request.ProjectCode;
             entity.ProjectName = request.ProjectName;
             entity.CityId = request.CityId;
             entity.WorkLocationId = request.WorkLocationId;

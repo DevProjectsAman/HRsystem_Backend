@@ -39,7 +39,10 @@ namespace HRsystem.Api.Features.AuditLog.UpdateAuditLog
         {
             var entity = await _db.TbAuditLogs.FirstOrDefaultAsync(x => x.AuditId == request.AuditId, ct);
 
-            if (entity == null) return null;
+            if (entity == null)
+            {
+                throw new KeyNotFoundException($"Audit Log with ID {request.AuditId} not found.");
+            }
 
             entity.CompanyId = request.CompanyId;
             entity.UserId = request.UserId;

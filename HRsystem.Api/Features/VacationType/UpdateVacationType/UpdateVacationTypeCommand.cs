@@ -26,9 +26,12 @@ namespace HRsystem.Api.Features.VacationType.UpdateVacationType
             var entity = await _db.TbVacationTypes
                 .FirstOrDefaultAsync(x => x.VacationTypeId == request.VacationTypeId, ct);
 
-            if (entity == null) return null;
+            if (entity == null)
+            {
+                throw new KeyNotFoundException($"Vacation Type with ID {request.VacationTypeId} not found.");
+            }
 
-            entity.VacationName = request.VacationName;
+                entity.VacationName = request.VacationName;
             entity.Description = request.Description;
             entity.IsPaid = request.IsPaid;
             entity.RequiresHrApproval = request.RequiresHrApproval;
