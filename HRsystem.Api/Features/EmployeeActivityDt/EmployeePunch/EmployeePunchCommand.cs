@@ -166,6 +166,7 @@ public class PunchOutHandler : IRequestHandler<PunchOutCommand, EmployeeAttendan
                         TotalHours = (decimal)1 / 60m
                     };
                     _db.TbEmployeeAttendances.Add(attendance);
+                    await _db.SaveChangesAsync(ct);
                 }
                 else
                 {
