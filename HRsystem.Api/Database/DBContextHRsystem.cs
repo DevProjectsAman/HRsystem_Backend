@@ -197,7 +197,7 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
         {
             entity.Property(e => e.Gender)
                   .HasConversion<string>() // store enum as string
-                  .HasColumnType("ENUM('Male','Female')"); // MySQL enum type
+                  .HasColumnType("ENUM('Male','Female','All')"); // MySQL enum type
 
             entity.Property(e => e.Religion)
                 .HasConversion<string>() // store enum as string

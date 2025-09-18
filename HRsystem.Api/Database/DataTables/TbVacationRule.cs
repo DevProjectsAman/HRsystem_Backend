@@ -25,8 +25,9 @@ public partial class TbVacationRule
     public int? MinServiceYears { get; set; }
 
     public int? MaxServiceYears { get; set; }
+    public int? WorkingYearsAtCompany  { get; set; }
 
-    public EnumGenderType Gender { get; set; } = EnumGenderType.Male;
+    public EnumGenderType Gender { get; set; } = EnumGenderType.All;
 
     public EnumReligionType Religion { get; set; } = EnumReligionType.All;
 

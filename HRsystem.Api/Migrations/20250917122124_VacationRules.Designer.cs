@@ -4,6 +4,7 @@ using HRsystem.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    partial class DBContextHRsystemModelSnapshot : ModelSnapshot
+    [Migration("20250917122124_VacationRules")]
+    partial class VacationRules
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1142,7 +1145,7 @@ namespace HRsystem.Api.Migrations
 
                     b.Property<string>("Gender")
                         .IsRequired()
-                        .HasColumnType("ENUM('Male','Female','All')");
+                        .HasColumnType("ENUM('Male','Female')");
 
                     b.Property<int?>("MaxAge")
                         .HasColumnType("int");
@@ -1425,7 +1428,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 9, 17, 15, 29, 27, 968, DateTimeKind.Local).AddTicks(8444),
+                            CreatedAt = new DateTime(2025, 9, 17, 15, 21, 20, 120, DateTimeKind.Local).AddTicks(8882),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -1433,7 +1436,7 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2025, 9, 17, 12, 29, 27, 969, DateTimeKind.Utc).AddTicks(1503),
+                            LastPasswordChangedAt = new DateTime(2025, 9, 17, 12, 21, 20, 121, DateTimeKind.Utc).AddTicks(2309),
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
@@ -1442,7 +1445,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("6afe1ece-d32a-4a93-94c7-f87bd5d4e46b"),
+                            RowGuid = new Guid("f47cd4d3-3720-41e7-b9cb-652e6f3d86c6"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",
