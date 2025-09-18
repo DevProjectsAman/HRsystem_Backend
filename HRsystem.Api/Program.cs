@@ -61,12 +61,22 @@ builder.Services.AddDbContext<DBContextHRsystem>(options =>
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
 
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
+
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+{
+    // Configure password requirements
+    options.Password.RequiredLength = 3; // Minimum password length
+    options.Password.RequireDigit = false; // Require at least one digit (0-9)
+    options.Password.RequireLowercase = false; // Require at least one lowercase letter
+    options.Password.RequireUppercase = false; // Require at least one uppercase letter
+    options.Password.RequireNonAlphanumeric = false; // Require at least one special character (e.g., !@#$%)
+    options.Password.RequiredUniqueChars = 2; // Require at least 4 unique characters
+})
     .AddEntityFrameworkStores<DBContextHRsystem>()
     .AddDefaultTokenProviders();
 
 
- 
+
 
 
 // C# Code - Program.cs or Startup.cs
