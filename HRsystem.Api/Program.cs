@@ -3,6 +3,7 @@ using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Features.ActivityStatus;
 using HRsystem.Api.Features.ActivityType;
+using HRsystem.Api.Features.AttendanceController;
 using HRsystem.Api.Features.AuditLog;
 using HRsystem.Api.Features.Auth.UserManagement;
 using HRsystem.Api.Features.City;
@@ -231,7 +232,7 @@ app.MapDepartmentEndpoints();
 app.MapAuditLogEndpoints();
 app.MapProjectEndpoints();
 
-app();
+app.MapEmployeePunchEndpoints(); // from EmployeePunchEndpoints.cs
 
 app.MapEmployeeEndpoints();
 
