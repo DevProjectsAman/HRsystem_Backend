@@ -1,6 +1,5 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Features.Attendance;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

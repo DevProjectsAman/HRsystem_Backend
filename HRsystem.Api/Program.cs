@@ -3,7 +3,6 @@ using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Features.ActivityStatus;
 using HRsystem.Api.Features.ActivityType;
-using HRsystem.Api.Features.AttendanceController;
 using HRsystem.Api.Features.AuditLog;
 using HRsystem.Api.Features.Auth.UserManagement;
 using HRsystem.Api.Features.City;
@@ -25,8 +24,10 @@ using HRsystem.Api.Features.SystemAdmin.RolePermission;
 using HRsystem.Api.Features.VacationRule;
 using HRsystem.Api.Features.WorkLocation;
 using HRsystem.Api.Services;
+using HRsystem.Api.Services.AuditLog;
 using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.ExceptionHandling;
 using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -152,6 +153,10 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 
+
+builder.Services.AddScoped<AuditLogService>();
+
+
 // Register your services
 builder.Services.AddScoped<JwtService>();
 
@@ -226,7 +231,7 @@ app.MapDepartmentEndpoints();
 app.MapAuditLogEndpoints();
 app.MapProjectEndpoints();
 
-app.MapEmployeePunchEndpoints();
+app();
 
 app.MapEmployeeEndpoints();
 

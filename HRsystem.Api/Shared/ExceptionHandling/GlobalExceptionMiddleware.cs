@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Text.Json;
 
-namespace HRsystem.Api.Shared.Tools
+namespace HRsystem.Api.Shared.ExceptionHandling
 {
     public class GlobalExceptionMiddleware
     {
