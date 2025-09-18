@@ -1,8 +1,10 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
+using HRsystem.Api.Shared.EncryptText;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.Design;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -36,14 +38,21 @@ namespace HRsystem.Api.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            
+
             var claims = new List<Claim>
     {
+              
+
+
         // Standard JWT claims
         new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),              // subject (user ID)
         
         new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),    // email
         new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty), // username
-         new Claim("PermissionVersion", user.PermissionVersion.ToString())
+        new Claim("PermissionVersion", user.PermissionVersion.ToString()),
+        new Claim("eid", SimpleCrypto.Encrypt(user.EmployeeId.ToString())),
+        new Claim("cid", SimpleCrypto.Encrypt(user.CompanyId.ToString()))
     };
 
             // Add roles + permissions

@@ -28,8 +28,9 @@ using HRsystem.Api.Services;
 using HRsystem.Api.Services.AuditLog;
 using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.EncryptText;
 using HRsystem.Api.Shared.ExceptionHandling;
-using HRsystem.Api.Shared.Tools;
+using HRsystem.Api.Shared.ValidationHandler;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -45,6 +46,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
+SimpleCrypto.Initialize(builder.Configuration);
 
 // Read JWT settings from config
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -151,7 +155,7 @@ builder.Services.AddMediatR(cfg =>
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PipelineValidationHandler<,>));
 
 
 
