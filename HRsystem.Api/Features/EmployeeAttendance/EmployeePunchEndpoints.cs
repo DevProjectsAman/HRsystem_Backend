@@ -1,9 +1,8 @@
-﻿ 
-using HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch;
+﻿using HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HRsystem.Api.Features.AttendanceController
+namespace HRsystem.Api.Features.EmployeeAttendance
 {
     public static class EmployeePunchEndpoints
     {
