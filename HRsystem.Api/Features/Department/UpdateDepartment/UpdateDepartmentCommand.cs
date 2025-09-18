@@ -25,7 +25,10 @@ namespace HRsystem.Api.Features.Department.UpdateDepartment
         public async Task<TbDepartment> Handle(UpdateDepartmentCommand request, CancellationToken ct)
         {
             var entity = await _db.TbDepartments.FindAsync(request.DepartmentId);
-            if (entity == null) return null;
+            if (entity == null)
+            {
+                throw new KeyNotFoundException($"Department with ID {request.DepartmentId} not found.");
+            }
 
             entity.DepartmentName = request.DepartmentName;
             entity.DepartmentCode = request.DepartmentCode;

@@ -29,8 +29,9 @@ using HRsystem.Api.Services;
 using HRsystem.Api.Services.AuditLog;
 using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.EncryptText;
 using HRsystem.Api.Shared.ExceptionHandling;
-using HRsystem.Api.Shared.Tools;
+using HRsystem.Api.Shared.ValidationHandler;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -47,6 +48,9 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 
+
+SimpleCrypto.Initialize(builder.Configuration);
+
 // Read JWT settings from config
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
@@ -58,12 +62,22 @@ builder.Services.AddDbContext<DBContextHRsystem>(options =>
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
 
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
+
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+{
+    // Configure password requirements
+    options.Password.RequiredLength = 3; // Minimum password length
+    options.Password.RequireDigit = false; // Require at least one digit (0-9)
+    options.Password.RequireLowercase = false; // Require at least one lowercase letter
+    options.Password.RequireUppercase = false; // Require at least one uppercase letter
+    options.Password.RequireNonAlphanumeric = false; // Require at least one special character (e.g., !@#$%)
+    options.Password.RequiredUniqueChars = 2; // Require at least 4 unique characters
+})
     .AddEntityFrameworkStores<DBContextHRsystem>()
     .AddDefaultTokenProviders();
 
 
- 
+
 
 
 // C# Code - Program.cs or Startup.cs
@@ -152,7 +166,7 @@ builder.Services.AddMediatR(cfg =>
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PipelineValidationHandler<,>));
 
 
 

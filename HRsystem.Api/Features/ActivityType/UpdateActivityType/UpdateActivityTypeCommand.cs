@@ -23,7 +23,10 @@ namespace HRsystem.Api.Features.ActivityType.UpdateActivityType
         public async Task<TbActivityType?> Handle(UpdateActivityTypeCommand request, CancellationToken ct)
         {
             var entity = await _db.TbActivityTypes.FirstOrDefaultAsync(x => x.ActivityTypeId == request.ActivityTypeId, ct);
-            if (entity == null) return null;
+            if (entity == null)
+            {
+                throw new KeyNotFoundException($"Activity Type with ID {request.ActivityTypeId} not found.");
+            }
 
             entity.ActivityCode = request.ActivityCode;
             entity.ActivityName = request.ActivityName;

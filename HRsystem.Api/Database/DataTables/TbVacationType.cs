@@ -20,6 +20,7 @@ public partial class TbVacationType
     public string? Description { get; set; }
 
     public bool? IsPaid { get; set; }
+    public bool? IsDeductable { get; set; }
 
     public bool? RequiresHrApproval { get; set; }
 

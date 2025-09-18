@@ -28,9 +28,12 @@ namespace HRsystem.Api.Features.WorkLocation.UpdateWorkLocation
             var entity = await _db.TbWorkLocations
                 .FirstOrDefaultAsync(x => x.WorkLocationId == request.WorkLocationId, ct);
 
-            if (entity == null) return null;
+            if (entity == null)
+            {
+                throw new KeyNotFoundException($"Work Location with ID {request.WorkLocationId} not found.");
+            }
 
-            entity.CompanyId = request.CompanyId;
+                entity.CompanyId = request.CompanyId;
             entity.WorkLocationCode = request.WorkLocationCode;
             entity.LocationName = request.LocationName;
             entity.Latitude = request.Latitude;

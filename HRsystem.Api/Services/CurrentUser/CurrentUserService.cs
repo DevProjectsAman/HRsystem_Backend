@@ -1,4 +1,6 @@
 ﻿using HRsystem.Api.Database.Entities;
+using HRsystem.Api.Shared.EncryptText;
+using HRsystem.Api.Shared.Tools; // where SimpleCrypto lives
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -11,41 +13,30 @@ namespace HRsystem.Api.Services.CurrentUser
         bool IsAuthenticated { get; }
         string UserLanguage { get; }
 
-        int? EmployeeID { get;  }
+        int? EmployeeID { get; }
+        int? CompanyID { get; }
     }
 
     public class CurrentUserService : ICurrentUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly UserManager<ApplicationUser> _userManager;
+         
 
-        public CurrentUserService(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser>  userManager)
+        public CurrentUserService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
-            _userManager = userManager;
         }
+
+        private ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
 
         public int UserId =>
-            Convert.ToInt32(_httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            Convert.ToInt32(User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
         public string? UserName =>
-            _httpContextAccessor.HttpContext?.User?.Identity?.Name;
-
-        public int? EmployeeID
-        {
-            get
-            {
-                var userId = UserId;
-                if (userId == 0)
-                    return null;
-                var user = _userManager.FindByIdAsync(userId.ToString()).Result;
-                return user?.EmployeeId;
-            }
-        }
-
+            User?.Identity?.Name;
 
         public bool IsAuthenticated =>
-            _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+            User?.Identity?.IsAuthenticated ?? false;
 
         public string UserLanguage
         {
@@ -55,12 +46,50 @@ namespace HRsystem.Api.Services.CurrentUser
                     .Request.Headers["Accept-Language"]
                     .FirstOrDefault();
 
-                // normalize to "en" or "ar"
                 if (string.IsNullOrWhiteSpace(lang))
                     return "en";
 
-                // Handle cases like "en-US" or "ar-EG"
                 return lang.Split('-')[0].ToLower();
+            }
+        }
+
+        public int? EmployeeID
+        {
+            get
+            {
+                var encrypted = User?.FindFirst("eid")?.Value;
+                if (string.IsNullOrEmpty(encrypted))
+                    return null;
+
+                try
+                {
+                    var decrypted = SimpleCrypto.Decrypt(encrypted);
+                    return int.TryParse(decrypted, out var id) ? id : null;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+
+        public int? CompanyID
+        {
+            get
+            {
+                var encrypted = User?.FindFirst("cid")?.Value;
+                if (string.IsNullOrEmpty(encrypted))
+                    return null;
+
+                try
+                {
+                    var decrypted = SimpleCrypto.Decrypt(encrypted);
+                    return int.TryParse(decrypted, out var id) ? id : null;
+                }
+                catch
+                {
+                    return null;
+                }
             }
         }
     }
