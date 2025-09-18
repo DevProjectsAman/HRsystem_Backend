@@ -17,6 +17,7 @@ using HRsystem.Api.Features.Groups.GetALL;
 using HRsystem.Api.Features.Groups.GetALlGroup;
 using HRsystem.Api.Features.Groups.UpdateGroup;
 using HRsystem.Api.Features.JobManagment;
+using HRsystem.Api.Features.Mission;
 using HRsystem.Api.Features.Project;
 using HRsystem.Api.Features.Shift.Endpoints;
 using HRsystem.Api.Features.ShiftEndpoints;
@@ -235,6 +236,7 @@ app.MapCityEndpoints();
 app.MapDepartmentEndpoints();
 app.MapAuditLogEndpoints();
 app.MapProjectEndpoints();
+app.MapMissionEndPoint();
 
 app.MapEmployeePunchEndpoints(); // from EmployeePunchEndpoints.cs
 
