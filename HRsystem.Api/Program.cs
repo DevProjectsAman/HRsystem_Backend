@@ -9,6 +9,7 @@ using HRsystem.Api.Features.City;
 using HRsystem.Api.Features.Company;
 using HRsystem.Api.Features.Department;
 using HRsystem.Api.Features.Employee;
+using HRsystem.Api.Features.EmployeeApproval;
 using HRsystem.Api.Features.EmployeeAttendance;
 using HRsystem.Api.Features.EmployeeVacation;
 using HRsystem.Api.Features.Gov;
@@ -251,6 +252,9 @@ app.MapMissionEndPoint();
 app.MapEmployeePunchEndpoints(); // from EmployeePunchEndpoints.cs
 app.MapVacationEndpoints();
 app.MapEmployeeEndpoints();
+app.MapEmployeeActivityApprovalEndpoints();
+
+
 
 app.Run();
 

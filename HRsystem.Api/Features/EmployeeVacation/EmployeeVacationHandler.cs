@@ -65,10 +65,14 @@ namespace HRsystem.Api.Features.EmployeeVacation
                 };
                 _db.TbEmployeeVacations.Add(vacation);
 
-                // ✅ Step 3: Update Balance
-                balance.UsedDays += request.DaysCount;
-                balance.RemainingDays -= request.DaysCount;
+                var check = await _db.TbVacationTypes.FirstOrDefaultAsync(e => e.VacationTypeId == request.VacationTypeId, ct);
 
+                if (check.IsDeductable == true)
+                {
+                    // ✅ Step 3: Update Balance
+                    balance.UsedDays += request.DaysCount;
+                    balance.RemainingDays -= request.DaysCount;
+                }
                 await _db.SaveChangesAsync(ct);
 
                 // ✅ Step 4: Commit

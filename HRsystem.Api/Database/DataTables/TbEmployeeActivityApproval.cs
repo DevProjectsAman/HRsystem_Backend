@@ -15,7 +15,7 @@ public partial class TbEmployeeActivityApproval
 
     public int StatusId { get; set; }
 
-    public int ChangedBy { get; set; }
+    public int? ChangedBy { get; set; }
 
     public DateTime ChangedDate { get; set; }
 
