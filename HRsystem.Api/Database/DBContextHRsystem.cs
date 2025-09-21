@@ -83,6 +83,8 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
     public virtual DbSet<TbNationality> TbNationalities { get; set; }
 
 
+    public DbSet<TbActivityTypeStatus> TbActivityTypeStatuses { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
