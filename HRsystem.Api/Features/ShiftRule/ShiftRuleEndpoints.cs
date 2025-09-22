@@ -5,6 +5,7 @@ using HRsystem.Api.Features.ShiftRule.UpdateShiftRule;
 using HRsystem.Api.Features.ShiftRule.DeleteShiftRule;
 using MediatR;
 using FluentValidation;
+using HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters;
 
 namespace HRsystem.Api.Features.ShiftRule
 {
@@ -30,6 +31,16 @@ namespace HRsystem.Api.Features.ShiftRule
                     : Results.Ok(new { Success = true, Data = result });
             });
 
+            // ✅ NEW: Get by parameters (progressive filter)
+            group.MapPost("/GetMatchingShiftRules", async (
+                GetMatchingShiftRulesQuery query,
+                ISender mediator) =>
+            {
+                var result = await mediator.Send(query);
+                return result.Success
+                    ? Results.Ok(result)
+                    : Results.NotFound(result);
+            });
             // Create
             group.MapPost("/CreateShiftRule", async (CreateShiftRuleCommand command, ISender mediator, IValidator<CreateShiftRuleCommand> validator) =>
             {

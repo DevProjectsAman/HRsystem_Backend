@@ -8,8 +8,12 @@ namespace HRsystem.Api.Database.DataTables;
 [Table("Tb_Shift_Rule")]
 public partial class TbShiftRule
 {
+
     [Key]
     public int RuleId { get; set; }
+
+    public int? GovID { get; set; }
+    public int? CityID { get; set; }
 
     public int? JobTitleId { get; set; }
 

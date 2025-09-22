@@ -8,6 +8,8 @@ namespace HRsystem.Api.Features.ShiftRule.CreateShiftRule
 {
     public record CreateShiftRuleCommand(
         int? JobTitleId,
+        int? GovId,
+        int? CityId,
         int? WorkingLocationId,
         int? ProjectId,
         int ShiftId,
@@ -27,6 +29,8 @@ namespace HRsystem.Api.Features.ShiftRule.CreateShiftRule
             {
                 JobTitleId = request.JobTitleId,
                 WorkingLocationId = request.WorkingLocationId,
+                GovID = request.GovId ,
+                CityID = request.CityId ,
                 ProjectId = request.ProjectId,
                 ShiftId = request.ShiftId,
                 Priority = request.Priority,
