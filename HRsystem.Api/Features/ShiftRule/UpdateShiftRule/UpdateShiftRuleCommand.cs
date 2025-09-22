@@ -10,6 +10,8 @@ namespace HRsystem.Api.Features.ShiftRule.UpdateShiftRule
     public record UpdateShiftRuleCommand(
         int RuleId,
         int? JobTitleId,
+        int? GovId,
+        int? CityId,
         int? WorkingLocationId,
         int? ProjectId,
         int ShiftId,
@@ -36,6 +38,8 @@ namespace HRsystem.Api.Features.ShiftRule.UpdateShiftRule
             entity.JobTitleId = request.JobTitleId;
             entity.WorkingLocationId = request.WorkingLocationId;
             entity.ProjectId = request.ProjectId;
+            entity.GovID = request.GovId;
+            entity.CityID = request.CityId;
             entity.ShiftId = request.ShiftId;
             entity.Priority = request.Priority;
             entity.CompanyId = request.CompanyId;

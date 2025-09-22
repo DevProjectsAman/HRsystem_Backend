@@ -4,13 +4,17 @@ using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Threading;
+
+
 
 namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 {
+     
     public record PunchInCommand(
         int ActivityTypeId,
         string ActivityAction,   // "Attendance" or other
-        int LocationId,
+        //int LocationId,
         double Latitude,
         double Longitude
     ) : IRequest<EmployeeAttendanceDto>;
@@ -18,7 +22,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
     public record PunchOutCommand(
         int ActivityTypeId,
         string ActivityAction,
-        int LocationId,
+        //int LocationId,
         double Latitude,
         double Longitude
     ) : IRequest<EmployeeAttendanceDto>;
@@ -34,14 +38,49 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             _currentUserService = currentUserService;
         }
 
+        private double GetDistanceInMeters(double lat1, double lon1, double lat2, double lon2)
+        {
+            const double R = 6371000; // نصف قطر الأرض بالمتر
+            var latRad1 = lat1 * Math.PI / 180;
+            var latRad2 = lat2 * Math.PI / 180;
+            var deltaLat = (lat2 - lat1) * Math.PI / 180;
+            var deltaLon = (lon2 - lon1) * Math.PI / 180;
+
+            var a = Math.Sin(deltaLat / 2) * Math.Sin(deltaLat / 2) +
+                    Math.Cos(latRad1) * Math.Cos(latRad2) *
+                    Math.Sin(deltaLon / 2) * Math.Sin(deltaLon / 2);
+
+            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            return R * c;
+        }
         public async Task<EmployeeAttendanceDto> Handle(PunchInCommand request, CancellationToken ct)
         {
             var employeeId = _currentUserService.EmployeeID;
             var employee = await _db.TbEmployees.FirstOrDefaultAsync(e => e.EmployeeId == employeeId, ct);
             if (employee == null) throw new Exception("Employee not found");
 
-            var location = await _db.TbWorkLocations.FirstOrDefaultAsync(l => l.WorkLocationId == request.LocationId, ct);
-            if (location == null) throw new Exception("Location not found");
+            var location = await _db.TbEmployeeWorkLocations.Where(l => l.EmployeeId == employee.EmployeeId).ToListAsync(ct);
+            if (location == null) throw new Exception("WorkLocation not found");
+
+            var checkWorkLocation = 0;
+            int? WorkLOC = null;
+
+            foreach (var loc in location)
+            {
+                var WID = await _db.TbWorkLocations.FirstOrDefaultAsync(e => e.WorkLocationId == loc.WorkLocationId, ct);
+
+                var distance = GetDistanceInMeters(request.Latitude, request.Longitude, (double)WID.Latitude, (double)WID.Longitude);
+                if (distance <= WID.AllowedRadiusM)
+                {  checkWorkLocation++;
+                     WorkLOC = WID.WorkLocationId;
+                    break;
+                }  
+
+            }
+            if (checkWorkLocation == 0)
+            {
+                throw new Exception("Not In Allow Radius");
+            }
 
             var today = DateTime.Now.Date;
 
@@ -89,7 +128,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                     AttendanceId = attendance.AttendanceId,
                     PunchTime = DateTime.Now,
                     PunchType ="PunchIn",
-                    LocationId = request.LocationId
+                    LocationId = WorkLOC.Value
                 };
                 _db.TbEmployeeAttendancePunches.Add(punch);
                 await _db.SaveChangesAsync(ct);
@@ -115,14 +154,51 @@ public class PunchOutHandler : IRequestHandler<PunchOutCommand, EmployeeAttendan
         _db = db;
         _currentUserService = currentUserService;
     }
+        private double GetDistanceInMeters(double lat1, double lon1, double lat2, double lon2)
+        {
+            const double R = 6371000; // نصف قطر الأرض بالمتر
+            var latRad1 = lat1 * Math.PI / 180;
+            var latRad2 = lat2 * Math.PI / 180;
+            var deltaLat = (lat2 - lat1) * Math.PI / 180;
+            var deltaLon = (lon2 - lon1) * Math.PI / 180;
+
+            var a = Math.Sin(deltaLat / 2) * Math.Sin(deltaLat / 2) +
+                    Math.Cos(latRad1) * Math.Cos(latRad2) *
+                    Math.Sin(deltaLon / 2) * Math.Sin(deltaLon / 2);
+
+            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            return R * c;
+        }
         public async Task<EmployeeAttendanceDto> Handle(PunchOutCommand request, CancellationToken ct)
         {
             var employeeId = _currentUserService.EmployeeID;
             var employee = await _db.TbEmployees.FirstOrDefaultAsync(e => e.EmployeeId == employeeId, ct);
             if (employee == null) throw new Exception("Employee not found");
 
-            var location = await _db.TbWorkLocations.FirstOrDefaultAsync(l => l.WorkLocationId == request.LocationId, ct);
-            if (location == null) throw new Exception("Location not found");
+            var location = await _db.TbEmployeeWorkLocations.Where(l => l.EmployeeId == employee.EmployeeId).ToListAsync(ct);
+            if (location == null) throw new Exception("WorkLocation not found");
+
+            int? WorkLOC = null;
+            //var checkWorkLocation = 0;
+
+            foreach (var loc in location)
+            {
+                var WID = await _db.TbWorkLocations.FirstOrDefaultAsync(e => e.WorkLocationId == loc.WorkLocationId, ct);
+
+                var distance = GetDistanceInMeters(request.Latitude, request.Longitude, (double)WID.Latitude, (double)WID.Longitude);
+                if (distance <= WID.AllowedRadiusM)
+                {
+                   // checkWorkLocation++;
+                    WorkLOC = WID.WorkLocationId;
+                    break;
+                }
+
+            }
+            if (WorkLOC == null)
+            {
+                throw new Exception("Not In Allow Radius");
+            }
+
 
             var today = DateTime.Now.Date;
             var now = DateTime.Now;
@@ -188,7 +264,7 @@ public class PunchOutHandler : IRequestHandler<PunchOutCommand, EmployeeAttendan
                     AttendanceId = attendance.AttendanceId,
                     PunchTime = now,
                     PunchType = "PunchOut",
-                    LocationId = request.LocationId
+                    LocationId = WorkLOC.Value
                 };
                 _db.TbEmployeeAttendancePunches.Add(punch);
 

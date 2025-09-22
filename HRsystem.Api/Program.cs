@@ -3,12 +3,14 @@ using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Features.ActivityStatus;
 using HRsystem.Api.Features.ActivityType;
+using HRsystem.Api.Features.ActivityTypeStatus;
 using HRsystem.Api.Features.AuditLog;
 using HRsystem.Api.Features.Auth.UserManagement;
 using HRsystem.Api.Features.City;
 using HRsystem.Api.Features.Company;
 using HRsystem.Api.Features.Department;
 using HRsystem.Api.Features.Employee;
+using HRsystem.Api.Features.EmployeeApproval;
 using HRsystem.Api.Features.EmployeeAttendance;
 using HRsystem.Api.Features.EmployeeVacation;
 using HRsystem.Api.Features.Excuse;
@@ -253,6 +255,13 @@ app.MapExcuseEndPoint();
 app.MapEmployeePunchEndpoints(); // from EmployeePunchEndpoints.cs
 app.MapVacationEndpoints();
 app.MapEmployeeEndpoints();
+app.MapEmployeeActivityApprovalEndpoints();
+
+
+
+
+app.MapActivityTypeStatusEndpoints();
+
 
 app.Run();
 
