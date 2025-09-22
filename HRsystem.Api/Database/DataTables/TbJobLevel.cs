@@ -24,4 +24,5 @@ public partial class TbJobLevel
     public DateTime? UpdatedAt { get; set; }
 
     public virtual ICollection<TbJobTitle> TbJobTitles { get; set; } = new List<TbJobTitle>();
+
 }

@@ -51,16 +51,45 @@ namespace HRsystem.Api.Features.JobManagment
         }
     }
 
-    #region Get All
-    public record GetAllJobLevelsQuery : IRequest<ResponseResultDTO<List<TbJobLevel>>>;
-
-    public class GetAllJobLevelsHandler(DBContextHRsystem db) : IRequestHandler<GetAllJobLevelsQuery, ResponseResultDTO<List<TbJobLevel>>>
+    public class JobLevelDto
     {
-        public async Task<ResponseResultDTO<List<TbJobLevel>>> Handle(GetAllJobLevelsQuery request, CancellationToken ct)
-        {
-            var data = await db.TbJobLevels.AsNoTracking().ToListAsync(ct);
+        public int JobLevelId { get; set; }
+        public string? JobLevelDesc { get; set; }
+        public string? JobLevelCode { get; set; }
+        public List<JobTitleDto> JobTitles { get; set; } = new();
+    }
 
-            return new ResponseResultDTO<List<TbJobLevel>>
+    //public class JobTitleDto
+    //{
+    //    public int JobTitleId { get; set; }
+    //    public string? TitleName { get; set; }  // لو عندك LocalizedData، هترجع string أو JSON
+    //    public int DepartmentId { get; set; }
+    //    public int CompanyId { get; set; }
+    //}
+
+    public record GetAllJobLevelsQuery : IRequest<ResponseResultDTO<List<JobLevelDto>>>;
+
+    public class GetAllJobLevelsHandler(DBContextHRsystem db)
+        : IRequestHandler<GetAllJobLevelsQuery, ResponseResultDTO<List<JobLevelDto>>>
+    {
+        public async Task<ResponseResultDTO<List<JobLevelDto>>> Handle(GetAllJobLevelsQuery request, CancellationToken ct)
+        {
+            var data = await db.TbJobLevels
+                .Select(jl => new JobLevelDto
+                {
+                    JobLevelId = jl.JobLevelId,
+                    JobLevelDesc = jl.JobLevelDesc,
+                    JobLevelCode = jl.JobLevelCode,
+                    JobTitles = jl.TbJobTitles.Select(t => new JobTitleDto
+                    {
+                        JobTitleId = t.JobTitleId,
+                        TitleName = t.TitleName.ToString(), // لو LocalizedData رجعها كـ string
+
+                    }).ToList()
+                })
+                .ToListAsync(ct);
+
+            return new ResponseResultDTO<List<JobLevelDto>>
             {
                 Success = true,
                 Message = "Data returned successfully",
@@ -68,7 +97,7 @@ namespace HRsystem.Api.Features.JobManagment
             };
         }
     }
-    #endregion
+
 
     #region Get One
     public record GetJobLevelByIdQuery(int Id) : IRequest<ResponseResultDTO<TbJobLevel?>>;
