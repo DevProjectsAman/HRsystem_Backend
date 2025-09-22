@@ -11,6 +11,7 @@ using HRsystem.Api.Features.Department;
 using HRsystem.Api.Features.Employee;
 using HRsystem.Api.Features.EmployeeAttendance;
 using HRsystem.Api.Features.EmployeeVacation;
+using HRsystem.Api.Features.Excuse;
 using HRsystem.Api.Features.Gov;
 using HRsystem.Api.Features.Groups.Create;
 using HRsystem.Api.Features.Groups.DeleteGroup;
@@ -248,6 +249,7 @@ app.MapDepartmentEndpoints();
 app.MapAuditLogEndpoints();
 app.MapProjectEndpoints();
 app.MapMissionEndPoint();
+app.MapExcuseEndPoint();
 app.MapEmployeePunchEndpoints(); // from EmployeePunchEndpoints.cs
 app.MapVacationEndpoints();
 app.MapEmployeeEndpoints();

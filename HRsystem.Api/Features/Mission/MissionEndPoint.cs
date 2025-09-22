@@ -27,7 +27,7 @@ namespace HRsystem.Api.Features.Mission
                 return Results.Ok(new
                 {
                     Success = true,
-                    Message = "Vacation requested successfully",
+                    Message = "mission requested successfully",
                     Data = result
                 });
             });
