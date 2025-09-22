@@ -2,6 +2,7 @@
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.ShiftRule.CreateShiftRule;
+using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 
 namespace HRsystem.Api.Features.ShiftRule.CreateShiftRule
@@ -14,15 +15,19 @@ namespace HRsystem.Api.Features.ShiftRule.CreateShiftRule
         int? ProjectId,
         int ShiftId,
         int? Priority,
-        int CompanyId,
-        int? CreatedBy
+        int CompanyId
+        
     ) : IRequest<TbShiftRule>;
 
     public class CreateShiftRuleHandler : IRequestHandler<CreateShiftRuleCommand, TbShiftRule>
     {
         private readonly DBContextHRsystem _db;
-        public CreateShiftRuleHandler(DBContextHRsystem db) => _db = db;
-
+        private readonly ICurrentUserService _currentUser;
+        public CreateShiftRuleHandler(DBContextHRsystem db ,ICurrentUserService currentUserService)
+        {
+            _db = db;
+            _currentUser = currentUserService;
+        }
         public async Task<TbShiftRule> Handle(CreateShiftRuleCommand request, CancellationToken ct)
         {
             var entity = new TbShiftRule
@@ -35,8 +40,9 @@ namespace HRsystem.Api.Features.ShiftRule.CreateShiftRule
                 ShiftId = request.ShiftId,
                 Priority = request.Priority,
                 CompanyId = request.CompanyId,
-                CreatedBy = request.CreatedBy,
-                CreatedAt = DateTime.UtcNow
+                CreatedBy = _currentUser.UserId,
+                CreatedAt = DateTime.UtcNow,
+                
             };
 
             _db.TbShiftRules.Add(entity);
