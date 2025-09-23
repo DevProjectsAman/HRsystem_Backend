@@ -14,6 +14,7 @@ using HRsystem.Api.Features.EmployeeApproval;
 using HRsystem.Api.Features.EmployeeAttendance;
 using HRsystem.Api.Features.EmployeeVacation;
 using HRsystem.Api.Features.Excuse;
+using HRsystem.Api.Features.GetPendingActivities;
 using HRsystem.Api.Features.Gov;
 using HRsystem.Api.Features.Groups.Create;
 using HRsystem.Api.Features.Groups.DeleteGroup;
@@ -257,7 +258,9 @@ app.MapVacationEndpoints();
 app.MapEmployeeEndpoints();
 app.MapEmployeeActivityApprovalEndpoints();
 
-
+app.MapVacationEndpoints();
+app.MapActivityEndpoints();
+app.MapActivityEndpoints();
 
 
 app.MapActivityTypeStatusEndpoints();
