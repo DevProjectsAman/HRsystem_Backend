@@ -31,6 +31,17 @@ namespace HRsystem.Api.Features.Employee
                               : Results.BadRequest("Failed to update profile");
             });
 
+            group.MapPut("employeeWorkSchedule/{id:int}", async (int id, EmployeeWorkScheduleDto dto, IMediator mediator) =>
+            {
+                var updatedEmployee = await mediator.Send(
+                    new EmployeeWorkSchedule.EmployeeWorkScheduleCommand(id, dto)
+                );
+
+                if (updatedEmployee == null)
+                    return Results.BadRequest("Failed to update employee work schedule");
+
+                return Results.Ok(updatedEmployee); // ✅ بيرجع الـ object بالكامل كـ JSON
+            });
             group.MapGet("GetEmployee/{id:int}", async (int id, IMediator mediator) =>
             {
                 var employee = await mediator.Send(new GetEmployeeByIdQuery(id));
