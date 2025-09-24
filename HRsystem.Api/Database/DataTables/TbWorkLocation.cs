@@ -1,7 +1,5 @@
 ﻿using HRsystem.Api.Shared.DTO;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,11 +15,13 @@ public partial class TbWorkLocation
 
     [MaxLength(25)]
     public string? WorkLocationCode { get; set; }
+
     //[MaxLength(100)]
     public LocalizedData LocationName { get; set; } = null!;
 
     [Precision(9, 6)]
     public decimal? Latitude { get; set; }
+
     [Precision(9, 6)]
     public decimal? Longitude { get; set; }
 
@@ -41,7 +41,9 @@ public partial class TbWorkLocation
 
     public virtual TbCompany Company { get; set; } = null!;
 
-    public virtual ICollection<TbEmployeeWorkLocation> TbEmployeeWorkLocations { get; set; } = new List<TbEmployeeWorkLocation>();
+    public virtual TbJobTitle? JobTitle { get; set; }
 
-    public virtual ICollection<TbShiftRule> TbShiftRules { get; set; } = new List<TbShiftRule>();
+    public virtual TbProject? Project { get; set; }
+
+    public virtual TbWorkLocation? WorkingLocation { get; set; }
 }
