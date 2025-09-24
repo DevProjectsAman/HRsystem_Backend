@@ -35,7 +35,7 @@
                 .LessThan(DateOnly.FromDateTime(DateTime.Today.AddYears(-18)))
                 .WithMessage("Employee must be at least 18 years old.");
 
-            RuleFor(x => x.JobTitleId).GreaterThan(0);
+           // RuleFor(x => x.JobTitleId).GreaterThan(0);
             RuleFor(x => x.CompanyId).GreaterThan(0);
         }
     }

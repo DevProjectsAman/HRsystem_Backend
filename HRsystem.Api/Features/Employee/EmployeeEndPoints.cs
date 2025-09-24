@@ -22,7 +22,15 @@ namespace HRsystem.Api.Features.Employee
                 return Results.Ok(await mediator.Send(new UpdateEmployeeCommand(dto)));
             });
 
-           
+            group.MapPut("completeEmployeeProfile/{id:int}", async (int id, CompleteEmployeeProfileDto dto, IMediator mediator) =>
+            {
+                // هنا مفيش داعي نتحقق من الـ id في الـ dto لأنه أصلاً مش موجود
+                var result = await mediator.Send(new CompleteEmployeeProfile.CompleteEmployeeProfileCommand(id, dto));
+
+                return result ? Results.Ok("Employee profile updated successfully")
+                              : Results.BadRequest("Failed to update profile");
+            });
+
             group.MapGet("GetEmployee/{id:int}", async (int id, IMediator mediator) =>
             {
                 var employee = await mediator.Send(new GetEmployeeByIdQuery(id));

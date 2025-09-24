@@ -5,7 +5,7 @@ namespace HRsystem.Api.Features.Employee.DTO
 
 
 public record EmployeeCreateDto(
-        string? EmployeeCodeFinance,
+        //string? EmployeeCodeFinance,
         string EmployeeCodeHr,
         string FirstName,
         string? ArabicFirstName,
@@ -18,12 +18,12 @@ public record EmployeeCreateDto(
         string? PassportNumber,
         string? PlaceOfBirth,
         string? BloodGroup,
-        int? JobTitleId,
+       // int? JobTitleId,
         int CompanyId,
-        int? DepartmentId,
-        int? ManagerId,
-        int? ShiftId,
-        int? MaritalStatusId,
+       // int? DepartmentId,
+       // int? ManagerId,
+       // int? ShiftId,
+       // int? MaritalStatusId,
         int? NationalityId,
         string? Email,
         string? PrivateMobile,
@@ -31,8 +31,8 @@ public record EmployeeCreateDto(
         string? SerialMobile,
         DateTime? StartDate,
         DateTime? EndDate,
-        sbyte? IsTopManager,
-        sbyte? IsFullDocument,
+       // sbyte? IsTopManager,
+       // sbyte? IsFullDocument,
         string? Note,
         string? Status
     );
