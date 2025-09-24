@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HRsystem.Api.Database.DataTables
 {
     [Table("Tb_WorkDays_Rules")]
-    public class TbWorkDaysRules
+    public class TbWorkDaysRule
     {
         [Key]
         public int WorkDaysRuleId { get; set; }

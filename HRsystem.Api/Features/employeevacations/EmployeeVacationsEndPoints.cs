@@ -5,7 +5,7 @@ namespace HRsystem.Api.Features.employeevacations
 {
     public static class EmployeeVacationsEndPoints
     {
-        public static void MapVacationEndpoints(this IEndpointRouteBuilder app)
+        public static void MapEmployeeVacationsEndPoints(this IEndpointRouteBuilder app)
         {
             var group = app.MapGroup("/api/vacations").WithTags("Vacations");
 

@@ -67,6 +67,11 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
 
     public virtual DbSet<TbJobLevel> TbJobLevels { get; set; }
 
+    public virtual DbSet<TbRemoteWorkDay> TbRemoteWorkDays { get; set; }
+
+    //public virtual DbSet<TbWorkDaysRule> TbWorkDaysRules { get; set; }
+    
+
     public virtual DbSet<TbJobTitle> TbJobTitles { get; set; }
 
     public virtual DbSet<TbProject> TbProjects { get; set; }
@@ -85,7 +90,7 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
 
     public DbSet<TbActivityTypeStatus> TbActivityTypeStatuses { get; set; }
     public DbSet<TbWorkDays> TbWorkDays { get; set; }
-    public DbSet<TbWorkDaysRules> TbWorkDaysRules { get; set; }
+    public DbSet<TbWorkDaysRule> TbWorkDaysRules { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

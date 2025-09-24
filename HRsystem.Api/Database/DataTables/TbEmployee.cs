@@ -107,6 +107,9 @@ public partial class TbEmployee
 
     public virtual TbDepartment? Department { get; set; }
 
+    public virtual TbWorkDays? TbWorkDays { get; set; }
+    public virtual TbRemoteWorkDays? TbRemoteWorkDays { get; set; }
+
     public virtual ICollection<TbEmployeeActivity> TbEmployeeActivities { get; set; } = new List<TbEmployeeActivity>();
 
     public virtual ICollection<TbEmployeeProject> TbEmployeeProjects { get; set; } = new List<TbEmployeeProject>();
