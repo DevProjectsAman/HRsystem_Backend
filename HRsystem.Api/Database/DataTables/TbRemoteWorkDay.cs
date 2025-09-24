@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HRsystem.Api.Database.DataTables
 {
     [Table("Tb_Remote_Work_Days")]
-    public class TbRemoteWorkDays
+    public class TbRemoteWorkDay
     {
         [Key]
         public int RemoteWorkDaysId { get; set; }
