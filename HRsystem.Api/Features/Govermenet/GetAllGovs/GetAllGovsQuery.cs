@@ -24,7 +24,7 @@ namespace HRsystem.Api.Features.Gov.GetAllGovs
                     {
                         CityId = c.CityId,
                         CityName = c.CityName
-                    }).ToList()
+                    }).ToList() 
                 })
                 .ToListAsync(ct);
         }

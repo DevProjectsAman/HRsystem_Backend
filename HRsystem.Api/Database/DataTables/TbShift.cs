@@ -1,7 +1,5 @@
 ﻿using HRsystem.Api.Shared.DTO;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -30,6 +28,7 @@ public partial class TbShift
 
     [Precision(5, 2)]  // EF Core 6+
     public decimal? RequiredWorkingHours { get; set; }
+
     [MaxLength(255)]
     public string? Notes { get; set; }
 

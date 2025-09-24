@@ -16,40 +16,56 @@ namespace HRsystem.Api.Features.JobManagment
     {
         public static void MapJobTitleEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapGet("/api/ListJobTitles", [Authorize] async (IMediator mediator) =>
-                await mediator.Send(new GetAllJobTitlesQuery()))
-                .WithName("ListJobTitles")
-                .WithTags("Job Management");
-
-            app.MapGet("/api/GetOneJobTitle/{id}", [Authorize] async (IMediator mediator, int id) =>
-                await mediator.Send(new GetJobTitleByIdQuery(id)))
-                .WithName("GetOneJobTitle")
-                .WithTags("Job Management");
-
-            app.MapPost("/api/CreateJobTitle", [Authorize] async (IMediator mediator, CreateJobTitleCommand cmd) =>
-                await mediator.Send(cmd))
-                .WithName("CreateJobTitle")
-                .WithTags("Job Management");
-
-            app.MapPut("/api/UpdateJobTitle/{id}", [Authorize] async (IMediator mediator, int id, UpdateJobTitleCommand cmd) =>
-            {
-                cmd.JobTitleId = id; // make sure ID is set
-                return await mediator.Send(cmd);
-            })
-            .WithName("UpdateJobTitle")
-            .WithTags("Job Management");
-
-            app.MapDelete("/api/DeleteJobTitle/{id}", [Authorize] async (IMediator mediator, int id) =>
-                await mediator.Send(new DeleteJobTitleCommand(id)))
-                .WithName("DeleteJobTitle")
-                .WithTags("Job Management");
-
             var group = app.MapGroup("/api/jobtitles").WithTags("Job Titles");
 
+            // Get All
+            group.MapGet("/ListJobTitles", async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetAllJobTitlesQuery());
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
+            // Get One
+            group.MapGet("/GetOneJobTitle/{id}", async (int id, ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetJobTitleByIdQuery(id));
+                return result == null
+                    ? Results.NotFound(new { Success = false, Message = $"JobTitle {id} not found" })
+                    : Results.Ok(new { Success = true, Data = result });
+            });
+
+            // Create
+            group.MapPost("/CreateJobTitle", async (CreateJobTitleCommand cmd, ISender mediator) =>
+            {
+                var result = await mediator.Send(cmd);
+                return Results.Created($"/api/jobtitles/{result.Data}", new { Success = true, Data = result });
+            });
+
+            // Update
+            group.MapPut("/UpdateJobTitle/{id}", async (int id, UpdateJobTitleCommand cmd, ISender mediator) =>
+            {
+                if (id != cmd.JobTitleId)
+                    return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
+
+                var result = await mediator.Send(cmd);
+                return !result.Success
+                    ? Results.NotFound(new { Success = false, Message = $"JobTitle {id} not found" })
+                    : Results.Ok(new { Success = true, Data = result });
+            });
+
+            // Delete
+            group.MapDelete("/DeleteJobTitle/{id}", async (int id, ISender mediator) =>
+            {
+                var result = await mediator.Send(new DeleteJobTitleCommand(id));
+                return !result.Success
+                    ? Results.NotFound(new { Success = false, Message = $"JobTitle {id} not found" })
+                    : Results.Ok(new { Success = true, Message = $"JobTitle {id} deleted successfully" });
+            });
+
+            // Filter
             group.MapGet("/filter", async (int companyId, int departmentId, int jobLevelId, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetFilteredJobTitlesQuery(companyId, departmentId, jobLevelId));
-
                 if (result == null || !result.Any())
                     return Results.NotFound(new { Success = false, Message = "No job titles found for the given filters" });
 
@@ -59,7 +75,7 @@ namespace HRsystem.Api.Features.JobManagment
     }
 
     #region Get All
-        public record GetAllJobTitlesQuery() : IRequest<List<JobTitleDto>>;
+    public record GetAllJobTitlesQuery() : IRequest<List<JobTitleDto>>;
 
         public class JobTitleDto
         {

@@ -84,6 +84,8 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
 
 
     public DbSet<TbActivityTypeStatus> TbActivityTypeStatuses { get; set; }
+    public DbSet<TbWorkDays> TbWorkDays { get; set; }
+    public DbSet<TbWorkDaysRules> TbWorkDaysRules { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

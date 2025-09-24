@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static HRsystem.Api.Enums.EnumsList;
 
@@ -14,19 +12,23 @@ public partial class TbEmployee
 
     [MaxLength(55)]
     public string? EmployeeCodeFinance { get; set; }
+
     [MaxLength(55)]
     public string? EmployeeCodeHr { get; set; }
 
     public int? JobTitleId { get; set; }
+
     [MaxLength(55)]
     public string FirstName { get; set; } = null!;
+
     [MaxLength(55)]
     public string? ArabicFirstName { get; set; }
+
     [MaxLength(55)]
     public string LastName { get; set; } = null!;
+
     [MaxLength(100)]
     public string? ArabicLastName { get; set; }
-     
 
     public DateOnly? HireDate { get; set; }
 
@@ -39,12 +41,15 @@ public partial class TbEmployee
 
     [MaxLength(25)]
     public string? NationalId { get; set; }
+
     [MaxLength(25)]
     public string? PassportNumber { get; set; }
+
     public int? MaritalStatusId { get; set; }   // FK
 
     [MaxLength(55)]
     public string? PlaceOfBirth { get; set; }
+
     [MaxLength(10)]
     public string? BloodGroup { get; set; }
 
@@ -62,10 +67,13 @@ public partial class TbEmployee
 
     [MaxLength(25)]
     public string? PrivateMobile { get; set; }
+
     [MaxLength(25)]
     public string? BuisnessMobile { get; set; }
+
     [MaxLength(25)]
     public string? Email { get; set; }
+
     [MaxLength(25)]
     public string? SerialMobile { get; set; }
 
@@ -78,6 +86,7 @@ public partial class TbEmployee
     public sbyte? IsFulldocument { get; set; }
 
     public string? Note { get; set; }
+
     [MaxLength(25)]
     public string? Status { get; set; }
 
@@ -85,16 +94,21 @@ public partial class TbEmployee
 
     public int? ShiftId { get; set; }
 
+    public int? WorkDaysId { get; set; }
+    public int? RemoteWorkDaysId { get; set; }
+
     public virtual TbCompany Company { get; set; } = null!;
 
     public virtual ICollection<TbEmployee> InverseManager { get; set; } = new List<TbEmployee>();
 
     public virtual TbJobTitle? JobTitle { get; set; } = null!;
-    
+
     public virtual TbEmployee? Manager { get; set; }
 
     public virtual TbDepartment? Department { get; set; }
 
+    public virtual TbWorkDays? TbWorkDays { get; set; }
+    public virtual TbRemoteWorkDays? TbRemoteWorkDays { get; set; }
 
     public virtual ICollection<TbEmployeeActivity> TbEmployeeActivities { get; set; } = new List<TbEmployeeActivity>();
 
@@ -109,11 +123,9 @@ public partial class TbEmployee
     [ForeignKey(nameof(NationalityId))]
     public virtual TbNationality? Nationality { get; set; }
 
-
     [ForeignKey(nameof(ShiftId))]
     public virtual TbShift? Shifts { get; set; }
 
     [ForeignKey(nameof(MaritalStatusId))]
     public virtual TbMaritalStatus? MaritalStatus { get; set; }
-
 }
