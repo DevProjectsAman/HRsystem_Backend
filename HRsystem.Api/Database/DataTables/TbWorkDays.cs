@@ -1,14 +1,11 @@
-﻿using HRsystem.Api.Shared.DTO;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 
 namespace HRsystem.Api.Database.DataTables
 {
     [Table("Tb_WorkDays")]
     public class TbWorkDays
     {
-     
         [Key]
         public int WorkDaysId { get; set; }
 
@@ -16,8 +13,6 @@ namespace HRsystem.Api.Database.DataTables
         public string WorkDaysDescription { get; set; }
 
         [MaxLength(100)]
-        public List<string> WorkDaysNames {  get; set; } = [];
-
-
+        public List<string> WorkDaysNames { get; set; } = [];
     }
 }

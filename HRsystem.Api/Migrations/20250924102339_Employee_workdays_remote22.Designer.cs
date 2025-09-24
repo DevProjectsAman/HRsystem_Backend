@@ -4,6 +4,7 @@ using HRsystem.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    partial class DBContextHRsystemModelSnapshot : ModelSnapshot
+    [Migration("20250924102339_Employee_workdays_remote22")]
+    partial class Employee_workdays_remote22
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -412,12 +415,6 @@ namespace HRsystem.Api.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
-                    b.Property<int?>("TbRemoteWorkDaysRemoteWorkDaysId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TbWorkDaysWorkDaysId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -442,10 +439,6 @@ namespace HRsystem.Api.Migrations
                     b.HasIndex("NationalityId");
 
                     b.HasIndex("ShiftId");
-
-                    b.HasIndex("TbRemoteWorkDaysRemoteWorkDaysId");
-
-                    b.HasIndex("TbWorkDaysWorkDaysId");
 
                     b.ToTable("Tb_Employee");
                 });
@@ -1092,7 +1085,12 @@ namespace HRsystem.Api.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<int?>("TbEmployeeEmployeeId")
+                        .HasColumnType("int");
+
                     b.HasKey("RemoteWorkDaysId");
+
+                    b.HasIndex("TbEmployeeEmployeeId");
 
                     b.ToTable("Tb_Remote_WorkDays");
                 });
@@ -1306,6 +1304,9 @@ namespace HRsystem.Api.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("WorkDaysId"));
 
+                    b.Property<int?>("TbEmployeeEmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("WorkDaysDescription")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -1317,6 +1318,8 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.HasKey("WorkDaysId");
+
+                    b.HasIndex("TbEmployeeEmployeeId");
 
                     b.ToTable("Tb_WorkDays");
                 });
@@ -1577,7 +1580,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 9, 24, 13, 35, 33, 75, DateTimeKind.Local).AddTicks(4629),
+                            CreatedAt = new DateTime(2025, 9, 24, 13, 23, 39, 242, DateTimeKind.Local).AddTicks(3767),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -1585,7 +1588,7 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2025, 9, 24, 10, 35, 33, 75, DateTimeKind.Utc).AddTicks(7673),
+                            LastPasswordChangedAt = new DateTime(2025, 9, 24, 10, 23, 39, 242, DateTimeKind.Utc).AddTicks(6935),
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
@@ -1594,7 +1597,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("72cb14f5-d9b1-4422-9d74-431bd9d7cb55"),
+                            RowGuid = new Guid("3fac8cb5-586c-4626-8156-aec31a469a5e"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",
@@ -1887,14 +1890,6 @@ namespace HRsystem.Api.Migrations
                         .WithMany()
                         .HasForeignKey("ShiftId");
 
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbRemoteWorkDays", "TbRemoteWorkDays")
-                        .WithMany()
-                        .HasForeignKey("TbRemoteWorkDaysRemoteWorkDaysId");
-
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbWorkDays", "TbWorkDays")
-                        .WithMany()
-                        .HasForeignKey("TbWorkDaysWorkDaysId");
-
                     b.Navigation("Company");
 
                     b.Navigation("Department");
@@ -1908,10 +1903,6 @@ namespace HRsystem.Api.Migrations
                     b.Navigation("Nationality");
 
                     b.Navigation("Shifts");
-
-                    b.Navigation("TbRemoteWorkDays");
-
-                    b.Navigation("TbWorkDays");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeActivity", b =>
@@ -2165,6 +2156,13 @@ namespace HRsystem.Api.Migrations
                     b.Navigation("Company");
                 });
 
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbRemoteWorkDays", b =>
+                {
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbEmployee", null)
+                        .WithMany("TbRemoteWorkDays")
+                        .HasForeignKey("TbEmployeeEmployeeId");
+                });
+
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbShift", b =>
                 {
                     b.HasOne("HRsystem.Api.Database.DataTables.TbCompany", "Company")
@@ -2222,6 +2220,13 @@ namespace HRsystem.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("VacationType");
+                });
+
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkDays", b =>
+                {
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbEmployee", null)
+                        .WithMany("TbWorkDays")
+                        .HasForeignKey("TbEmployeeEmployeeId");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkLocation", b =>
@@ -2379,6 +2384,10 @@ namespace HRsystem.Api.Migrations
                     b.Navigation("TbEmployeeVacationBalances");
 
                     b.Navigation("TbEmployeeWorkLocations");
+
+                    b.Navigation("TbRemoteWorkDays");
+
+                    b.Navigation("TbWorkDays");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeActivity", b =>

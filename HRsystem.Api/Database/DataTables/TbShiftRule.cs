@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRsystem.Api.Database.DataTables;
@@ -8,7 +6,6 @@ namespace HRsystem.Api.Database.DataTables;
 [Table("Tb_Shift_Rule")]
 public partial class TbShiftRule
 {
-
     [Key]
     public int RuleId { get; set; }
 
