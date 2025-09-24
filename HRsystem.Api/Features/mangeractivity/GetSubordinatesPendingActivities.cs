@@ -37,34 +37,32 @@ namespace HRsystem.Api.Features.mangeractivity
             var managerId = _currentUserService.EmployeeID;
             var language = _currentUserService.UserLanguage;
 
-
-            const int PendingStatusId = 7; // غيرها حسب الـ StatusId بتاع الـ Pending
-
+            const int PendingStatusId = 10; // StatusId بتاع الـ Pending
 
             return await _db.TbEmployees
-                .Where(e => e.ManagerId == managerId)
+                .Where(e => e.ManagerId == managerId
+                         && e.TbEmployeeActivities.Any(a => a.StatusId == PendingStatusId)) // ✅ يرجع بس الموظفين اللي عندهم Pending
                 .Select(e => new EmployeeWithActivitiesDto
                 {
                     EmployeeId = e.EmployeeId,
-                    EmployeeName = "{e.ArabicFirstName} + ",
+                    EmployeeName = e.ArabicFirstName + " " + e.ArabicLastName,
                     Activities = e.TbEmployeeActivities
                         .Where(a => a.StatusId == PendingStatusId)
                         .Select(a => new ActivityDto
                         {
-                    
-                         ActivityId = a.ActivityId,
-                        ActivityName = language == "ar"
-                        ?a.ActivityType.ActivityName.ar
-                        : a.ActivityType.ActivityName.en,
-
-                        StatusName =  language == "ar"
-                        ?a.Status.StatusName.ar
-                        : a.Status.StatusName.en,
-                        CreatedAt = a.RequestDate
+                            ActivityId = a.ActivityId,
+                            ActivityName = language == "ar"
+                                ? a.ActivityType.ActivityName.ar
+                                : a.ActivityType.ActivityName.en,
+                            StatusName = language == "ar"
+                                ? a.Status.StatusName.ar
+                                : a.Status.StatusName.en,
+                            CreatedAt = a.RequestDate
                         })
                         .ToList()
                 })
                 .ToListAsync(ct);
+
         }
     }
 }

@@ -15,7 +15,7 @@ namespace HRsystem.Api.Database.DataTables
         [MaxLength(100)]
         public string WorkDaysDescription { get; set; }
 
-        [MaxLength(100)]
+        [Column(TypeName = "json")]
         public List<string> WorkDaysNames {  get; set; } = [];
 
 

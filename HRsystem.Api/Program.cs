@@ -13,6 +13,7 @@ using HRsystem.Api.Features.Employee;
 using HRsystem.Api.Features.EmployeeApproval;
 using HRsystem.Api.Features.EmployeeAttendance;
 using HRsystem.Api.Features.EmployeeVacation;
+using HRsystem.Api.Features.employeevacations;
 using HRsystem.Api.Features.Excuse;
 using HRsystem.Api.Features.GetPendingActivities;
 using HRsystem.Api.Features.Gov;
@@ -22,13 +23,16 @@ using HRsystem.Api.Features.Groups.GetALL;
 using HRsystem.Api.Features.Groups.GetALlGroup;
 using HRsystem.Api.Features.Groups.UpdateGroup;
 using HRsystem.Api.Features.JobManagment;
+using HRsystem.Api.Features.mangeractivity;
 using HRsystem.Api.Features.Mission;
 using HRsystem.Api.Features.Project;
+using HRsystem.Api.Features.RemoteWorkDays;
 using HRsystem.Api.Features.Shift.Endpoints;
 using HRsystem.Api.Features.ShiftEndpoints;
 using HRsystem.Api.Features.ShiftRule;
 using HRsystem.Api.Features.SystemAdmin.RolePermission;
 using HRsystem.Api.Features.VacationRule;
+using HRsystem.Api.Features.WorkDaysRules;
 using HRsystem.Api.Features.WorkLocation;
 using HRsystem.Api.Services;
 using HRsystem.Api.Services.AuditLog;
@@ -258,13 +262,19 @@ app.MapVacationEndpoints();
 app.MapEmployeeEndpoints();
 app.MapEmployeeActivityApprovalEndpoints();
 
-app.MapVacationEndpoints();
-app.MapActivityEndpoints();
-app.MapActivityEndpoints();
+
+app.MapEmployeeVacationsEndPoints();
+app.MapPendingActivitiesEndPoints();
+app.MapPendingStatuesForManager();
+
+app.MapRemoteWorkDaysEndpoints();
 
 
 app.MapActivityTypeStatusEndpoints();
 
+app.MapWorkDaysRuleEndpoints();
+
+app.MapWorkDaysEndpoints();
 
 app.Run();
 
