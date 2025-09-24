@@ -31,7 +31,7 @@ namespace HRsystem.Api.Features.GetPendingActivities
                 var employeeId = _currentUserService.EmployeeID;
                 var language = _currentUserService.UserLanguage;
 
-                const int PendingStatusId = 7; // غيّر الرقم حسب الـ StatusId بتاع الـ Pending عندك
+                const int PendingStatusId = 10; // غيّر الرقم حسب الـ StatusId بتاع الـ Pending عندك
 
                 return await _db.TbEmployeeActivities
                     .Include(a => a.Status)

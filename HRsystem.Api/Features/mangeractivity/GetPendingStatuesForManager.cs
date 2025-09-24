@@ -4,7 +4,7 @@ namespace HRsystem.Api.Features.mangeractivity
 {
     public static class GetPendingStatuesForManager
     {
-        public static void MapActivityEndpoints(this IEndpointRouteBuilder app)
+        public static void MapPendingStatuesForManager(this IEndpointRouteBuilder app)
         {
             var group = app.MapGroup("/api/activities").WithTags("Activities");
 

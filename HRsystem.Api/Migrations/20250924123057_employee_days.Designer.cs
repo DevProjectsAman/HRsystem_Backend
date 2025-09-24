@@ -4,6 +4,7 @@ using HRsystem.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    partial class DBContextHRsystemModelSnapshot : ModelSnapshot
+    [Migration("20250924123057_employee_days")]
+    partial class employee_days
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1067,7 +1070,7 @@ namespace HRsystem.Api.Migrations
                     b.ToTable("Tb_Project");
                 });
 
-            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbRemoteWorkDay", b =>
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbRemoteWorkDays", b =>
                 {
                     b.Property<int>("RemoteWorkDaysId")
                         .ValueGeneratedOnAdd()
@@ -1082,11 +1085,13 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("int");
 
                     b.PrimitiveCollection<string>("RemoteWorkDaysNames")
-                        .HasColumnType("json");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("RemoteWorkDaysId");
 
-                    b.ToTable("Tb_Remote_Work_Days");
+                    b.ToTable("Tb_Remote_WorkDays");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbShift", b =>
@@ -1305,14 +1310,15 @@ namespace HRsystem.Api.Migrations
 
                     b.PrimitiveCollection<string>("WorkDaysNames")
                         .IsRequired()
-                        .HasColumnType("json");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("WorkDaysId");
 
                     b.ToTable("Tb_WorkDays");
                 });
 
-            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkDaysRule", b =>
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkDaysRules", b =>
                 {
                     b.Property<int>("WorkDaysRuleId")
                         .ValueGeneratedOnAdd()
