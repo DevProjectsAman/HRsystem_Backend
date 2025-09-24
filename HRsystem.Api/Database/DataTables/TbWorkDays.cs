@@ -16,7 +16,7 @@ namespace HRsystem.Api.Database.DataTables
         public string WorkDaysDescription { get; set; }
 
         [MaxLength(100)]
-        public List<string> WorkDaysDescriptions {  get; set; } = [];
+        public List<string> WorkDaysNames {  get; set; } = [];
 
 
     }
