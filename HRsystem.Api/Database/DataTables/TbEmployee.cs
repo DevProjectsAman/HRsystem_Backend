@@ -107,9 +107,6 @@ public partial class TbEmployee
 
     public virtual TbDepartment? Department { get; set; }
 
-    public virtual TbWorkDays? TbWorkDays { get; set; }
-    public virtual TbRemoteWorkDays? TbRemoteWorkDays { get; set; }
-
     public virtual ICollection<TbEmployeeActivity> TbEmployeeActivities { get; set; } = new List<TbEmployeeActivity>();
 
     public virtual ICollection<TbEmployeeProject> TbEmployeeProjects { get; set; } = new List<TbEmployeeProject>();
@@ -128,4 +125,10 @@ public partial class TbEmployee
 
     [ForeignKey(nameof(MaritalStatusId))]
     public virtual TbMaritalStatus? MaritalStatus { get; set; }
+
+    [ForeignKey(nameof(WorkDaysId))]
+    public virtual TbWorkDays? TbWorkDays { get; set; }
+
+    [ForeignKey(nameof(RemoteWorkDaysId))]
+    public virtual TbRemoteWorkDays? TbRemoteWorkDays { get; set; }
 }
