@@ -22,6 +22,7 @@ using HRsystem.Api.Features.Groups.DeleteGroup;
 using HRsystem.Api.Features.Groups.GetALL;
 using HRsystem.Api.Features.Groups.GetALlGroup;
 using HRsystem.Api.Features.Groups.UpdateGroup;
+using HRsystem.Api.Features.Holiday;
 using HRsystem.Api.Features.JobManagment;
 using HRsystem.Api.Features.mangeractivity;
 using HRsystem.Api.Features.Mission;
@@ -275,6 +276,8 @@ app.MapActivityTypeStatusEndpoints();
 app.MapWorkDaysRuleEndpoints();
 
 app.MapWorkDaysEndpoints();
+
+app.MapHolidayEndpoints();
 
 app.Run();
 
