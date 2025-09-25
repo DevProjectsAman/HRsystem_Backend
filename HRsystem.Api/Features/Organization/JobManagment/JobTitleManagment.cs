@@ -1,13 +1,11 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Features.JobTitles.GetFilteredJobTitles;
+using HRsystem.Api.Features.Organization.JobManagment.GetJobTitlesByFilter;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Shared.Tools;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.Organization.JobManagment
@@ -16,7 +14,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
     {
         public static void MapJobTitleEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/Lookups/jobtitles").WithTags("Job Titles");
+            var group = app.MapGroup("/api/Organization/JobTitle").WithTags("Job Titles");
 
             // Get All
             group.MapGet("/ListJobTitles", async (ISender mediator) =>

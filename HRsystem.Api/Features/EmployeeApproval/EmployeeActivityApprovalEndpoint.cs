@@ -6,10 +6,10 @@ namespace HRsystem.Api.Features.EmployeeApproval
     {
         public static void MapEmployeeActivityApprovalEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/employee-activities").WithTags("Employee Activities");
+            var group = app.MapGroup("/api/employee-activities/Approval").WithTags("Employee Activities");
 
             // Approve/Reject Activity
-            group.MapPost("/{activityId}/approval", async (
+            group.MapPost("/approval/{activityId}", async (
                 long activityId,
                 ApproveEmployeeActivityCommand command,
                 ISender mediator) =>

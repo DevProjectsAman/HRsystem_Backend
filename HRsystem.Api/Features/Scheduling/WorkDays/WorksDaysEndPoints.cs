@@ -5,7 +5,7 @@ public static class WorkDaysEndpoints
 {
     public static void MapWorkDaysEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/workdays").WithTags("WorkDays");
+        var group = app.MapGroup("/api/Scheduling/workdays").WithTags("WorkDays");
 
         group.MapGet("/GetListOfWorkDays", async (ISender mediator) =>
         {

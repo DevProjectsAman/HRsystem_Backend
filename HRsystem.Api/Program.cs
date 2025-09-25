@@ -13,11 +13,7 @@ using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
 using HRsystem.Api.Features.EmployeeRequest.EmployeeVacation;
 using HRsystem.Api.Features.EmployeeRequest.Execuse;
 using HRsystem.Api.Features.employeevacations;
-using HRsystem.Api.Features.Groups.Create;
-using HRsystem.Api.Features.Groups.DeleteGroup;
-using HRsystem.Api.Features.Groups.GetALL;
-using HRsystem.Api.Features.Groups.GetALlGroup;
-using HRsystem.Api.Features.Groups.UpdateGroup;
+using HRsystem.Api.Features.Groups;
 using HRsystem.Api.Features.Lookups.ActivityStatus;
 using HRsystem.Api.Features.Lookups.ActivityTypeStatus;
 using HRsystem.Api.Features.Mission;
@@ -228,20 +224,14 @@ app.MapUserManagementEndpoints();
  
 //app.MapRoleAssignmentEndpoints();
  
- 
-app.MapGetGroup();
-app.MapGetAllGroup();
-app.MapUpdateGroup();
-app.MapDeleteGroup();
-
 app.MapJobLevelEndpoints();
 app.MapJobTitleEndpoints();
 
 app.MapAspPermissionsEndpoints();
 app.MapAspRolePermissionsEndpoints();
 
+app.MapGroupsEndpoint();
 
-app.MapCreateGroupEndpoint(); // from CreateGroupEndpoint.cs
 app.MapCompanyEndpoints();
 app.MapShiftEndpoints();
 app.MapShiftRuleEndpoints();

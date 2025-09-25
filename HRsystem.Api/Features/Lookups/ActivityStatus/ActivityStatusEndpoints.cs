@@ -1,10 +1,10 @@
-﻿using HRsystem.Api.Features.ActivityStatus.DeleteActivityStatus;
-using HRsystem.Api.Features.ActivityStatus.GetActivityStatusById;
-using HRsystem.Api.Features.ActivityStatus.GetAllActivityStatuses;
-using MediatR;
-using FluentValidation;
+﻿using FluentValidation;
 using HRsystem.Api.Features.Lookups.ActivityStatus.CreateActivityStatus;
+using HRsystem.Api.Features.Lookups.ActivityStatus.DeleteActivityStatus;
+using HRsystem.Api.Features.Lookups.ActivityStatus.GetActivityStatusById;
+using HRsystem.Api.Features.Lookups.ActivityStatus.GetAllActivityStatuses;
 using HRsystem.Api.Features.Lookups.ActivityStatus.UpdateActivityStatus;
+using MediatR;
 
 namespace HRsystem.Api.Features.Lookups.ActivityStatus
 {

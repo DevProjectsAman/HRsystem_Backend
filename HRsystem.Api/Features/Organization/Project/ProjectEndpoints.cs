@@ -11,7 +11,7 @@ namespace HRsystem.Api.Features.Project
     {
         public static void MapProjectEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/projects").WithTags("Projects");
+            var group = app.MapGroup("/api/Organization/Project").WithTags("Projects");
 
             // Get all
             group.MapGet("/ListOfProjects", async (ISender mediator) =>

@@ -14,7 +14,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
     {
         public static void MapUserManagementEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/usermanagement").WithTags("_UserManagement");
+            var group = app.MapGroup("/api/AccessManagement").WithTags("_UserManagement");
 
             // 🔹 Auth & User Management
             group.MapPost("/login", async (LoginCommand command, ISender mediator, IValidator<LoginCommand> validator) =>

@@ -13,7 +13,7 @@ namespace HRsystem.Api.Features.ShiftRule
     {
         public static void MapShiftRuleEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/Lookups/shiftrules").WithTags("ShiftRules");
+            var group = app.MapGroup("/api/Scheduling/shiftrules").WithTags("ShiftRules");
 
             // Get all
             group.MapGet("/ListShiftRules", async (ISender mediator) =>

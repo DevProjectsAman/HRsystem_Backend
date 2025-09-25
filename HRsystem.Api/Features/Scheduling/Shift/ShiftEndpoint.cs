@@ -1,10 +1,10 @@
-﻿using HRsystem.Api.Features.Shift.DeleteShift;
-using HRsystem.Api.Features.Shift.GetAllShifts;
-using HRsystem.Api.Features.Shift.GetShiftById;
-using MediatR;
-using FluentValidation;
+﻿using FluentValidation;
 using HRsystem.Api.Features.Scheduling.Shift.CreateShift;
+using HRsystem.Api.Features.Scheduling.Shift.DeleteShift;
+using HRsystem.Api.Features.Scheduling.Shift.GetAllShifts;
+using HRsystem.Api.Features.Scheduling.Shift.GetShiftById;
 using HRsystem.Api.Features.Scheduling.Shift.UpdateShift;
+using MediatR;
 
 namespace HRsystem.Api.Features.Scheduling.Shift
 {
@@ -12,7 +12,7 @@ namespace HRsystem.Api.Features.Scheduling.Shift
     {
         public static void MapShiftEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/Lookups/shifts").WithTags("Shifts");
+            var group = app.MapGroup("/api/Scheduling/shifts").WithTags("Shifts");
 
             // Get all
             group.MapGet("/ListShifts", async (ISender mediator) =>

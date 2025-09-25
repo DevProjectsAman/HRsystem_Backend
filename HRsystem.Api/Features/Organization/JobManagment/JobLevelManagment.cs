@@ -19,30 +19,32 @@ namespace HRsystem.Api.Features.Organization.JobManagment
     {
         public static void MapJobLevelEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapGet("/api/Lookups/ListJobLevels", [Authorize] async (IMediator mediator) =>
+            var group = app.MapGroup("/api/Organization/JobLevel").WithTags("Organization");
+
+            group.MapGet("/ListJobLevels", [Authorize] async (IMediator mediator) =>
                 await mediator.Send(new GetAllJobLevelsQuery()))
-                .WithName("ListJobLevels")
-                .WithTags("Job Management");
+                .WithName("ListJobLevels");
 
-            app.MapGet("/api/GetOneJobLevel/{id}", [Authorize] async (IMediator mediator, int id) =>
+
+            group.MapGet("/GetOneJobLevel/{id}", [Authorize] async (IMediator mediator, int id) =>
                 await mediator.Send(new GetJobLevelByIdQuery(id)))
-                .WithName("GetOneJobLevel")
-                .WithTags("Job Management");
+                .WithName("GetOneJobLevel");
 
-            app.MapPost("/api/CreateJobLevel", [Authorize] async (IMediator mediator, CreateJobLevelCommand cmd) =>
+
+            group.MapPost("/CreateJobLevel", [Authorize] async (IMediator mediator, CreateJobLevelCommand cmd) =>
                 await mediator.Send(cmd))
-                .WithName("CreateJobLevel")
-                .WithTags("Job Management");
+                .WithName("CreateJobLevel");
 
-            app.MapPut("/api/UpdateJobLevel/{id}", [Authorize] async (IMediator mediator, int id, UpdateJobLevelCommand cmd) =>
+
+            group.MapPut("/UpdateJobLevel/{id}", [Authorize] async (IMediator mediator, int id, UpdateJobLevelCommand cmd) =>
             {
 
                 return await mediator.Send(cmd);
             })
-            .WithName("UpdateJobLevel")
-            .WithTags("Job Management");
+            .WithName("UpdateJobLevel");
+            
 
-            app.MapDelete("/api/DeleteJobLevel/{id}", [Authorize] async (IMediator mediator, int id) =>
+            group.MapDelete("/DeleteJobLevel/{id}", [Authorize] async (IMediator mediator, int id) =>
                 await mediator.Send(new DeleteJobLevelCommand(id)))
                 .WithName("DeleteJobLevel")
                 .WithTags("Job Management");

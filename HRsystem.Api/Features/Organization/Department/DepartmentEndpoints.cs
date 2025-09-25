@@ -1,10 +1,10 @@
-﻿using HRsystem.Api.Features.Department.DeleteDepartment;
-using HRsystem.Api.Features.Department.GetDepartmentById;
-using HRsystem.Api.Features.Department.GetAllDepartments;
-using MediatR;
-using FluentValidation;
+﻿using FluentValidation;
 using HRsystem.Api.Features.Organization.Department.CreateDepartment;
+using HRsystem.Api.Features.Organization.Department.DeleteDepartment;
+using HRsystem.Api.Features.Organization.Department.GetAllDepartments;
+using HRsystem.Api.Features.Organization.Department.GetDepartmentById;
 using HRsystem.Api.Features.Organization.Department.UpdateDepartment;
+using MediatR;
 
 namespace HRsystem.Api.Features.Organization.Department
 {
@@ -12,7 +12,7 @@ namespace HRsystem.Api.Features.Organization.Department
     {
         public static void MapDepartmentEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/organization/departments").WithTags("Departments");
+            var group = app.MapGroup("/api/Organization/departments").WithTags("Departments");
 
             // Get All
             group.MapGet("/listOfDepartments", async (ISender mediator) =>

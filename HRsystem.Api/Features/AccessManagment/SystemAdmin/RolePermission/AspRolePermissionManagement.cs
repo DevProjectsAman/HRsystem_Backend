@@ -13,7 +13,9 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
     {
         public static void MapAspRolePermissionsEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapGet("/api/systemadmin/ListRolePermissions", [Authorize] async (IMediator mediator, int? roleId) =>
+            var group = app.MapGroup("/api/AccessManagement").WithTags("_UserManagement");
+
+            group.MapGet("/ListRolePermissions", [Authorize] async (IMediator mediator, int? roleId) =>
                 await mediator.Send(new ListRolePermissionsQuery(roleId)))
 
               ////  this is an   OR
@@ -28,27 +30,27 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
             //.RequireClaim("permission", "CanManagePermissions"))
 
                 .WithName("ListRolePermissions")
-                .WithTags("User Role Permission Management");
+               ;
 
-            app.MapGet("/api/systemadmin/GetRolePermission/{roleId}/{permissionId}", [Authorize] async (IMediator mediator, int roleId, int permissionId) =>
+            group.MapGet("/GetRolePermission/{roleId}/{permissionId}", [Authorize] async (IMediator mediator, int roleId, int permissionId) =>
                 await mediator.Send(new GetRolePermissionQuery(roleId, permissionId)))
                 .WithName("GetRolePermission")
-                .WithTags("User Role Permission Management");
+                ;
 
-            app.MapPost("/api/systemadmin/CreateRolePermission", [Authorize] async (IMediator mediator, CreateRolePermissionCommand cmd) =>
+            group.MapPost("/CreateRolePermission", [Authorize] async (IMediator mediator, CreateRolePermissionCommand cmd) =>
                 await mediator.Send(cmd))
                 .WithName("CreateRolePermission")
-                .WithTags("User Role Permission Management");
+               ;
 
-            app.MapDelete("/api/systemadmin/DeleteRolePermission/{roleId}/{permissionId}", [Authorize] async (IMediator mediator, int roleId, int permissionId) =>
+            group.MapDelete("/api/systemadmin/DeleteRolePermission/{roleId}/{permissionId}", [Authorize] async (IMediator mediator, int roleId, int permissionId) =>
                 await mediator.Send(new DeleteRolePermissionCommand(roleId, permissionId)))
                 .WithName("DeleteRolePermission")
-                .WithTags("User Role Permission Management");
+               ;
 
-            app.MapPut("/api/systemadmin/UpdateRolePermissions", [Authorize] async (IMediator mediator, UpdateRolePermissionsDto dto) =>
+            group.MapPut("/api/systemadmin/UpdateRolePermissions", [Authorize] async (IMediator mediator, UpdateRolePermissionsDto dto) =>
                 await mediator.Send(new UpdateRolePermissionsCommand(dto)))
                 .WithName("UpdateRolePermissions")
-                .WithTags("User Role Permission Management");
+                ;
         }
     }
 

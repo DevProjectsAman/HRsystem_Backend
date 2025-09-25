@@ -1,13 +1,10 @@
 ﻿using HRsystem.Api.Database;
-using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Features.VacationType.GetAllVacationTypes;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.Design;
 
-namespace HRsystem.Api.Features.Organization.WorkLocation.GetAllWorkLocationsQuery
+namespace HRsystem.Api.Features.Organization.WorkLocation.GetAllWorkLocations
 {
     public record GetAllWorkLocationsQuery() : IRequest<List<WorkLocationDto>>;
 

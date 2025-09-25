@@ -1,5 +1,4 @@
-﻿using HRsystem.Api.Features.GetPendingActivities;
-using MediatR;
+﻿using MediatR;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
 {
@@ -7,7 +6,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
     {
         public static void MapPendingActivitiesEndPoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/activities").WithTags("Activities");
+            var group = app.MapGroup("/api/employee-dashboard").WithTags("Employee Dashboard");
 
             // Get pending activities for current user
             group.MapGet("/pending", async (ISender mediator) =>

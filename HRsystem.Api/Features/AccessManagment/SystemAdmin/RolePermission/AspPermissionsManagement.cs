@@ -13,30 +13,32 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
     {
         public static void MapAspPermissionsEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapGet("/api/systemadmin/ListPermissions", [Authorize] async (IMediator mediator) =>
+            var group = app.MapGroup("/api/AccessManagement").WithTags("_UserManagement");
+
+            group.MapGet("/ListPermissions", [Authorize] async (IMediator mediator) =>
                 await mediator.Send(new GetAllPermissionsQuery()))
                 .WithName("ListPermissions")
-                .WithTags("User Role Permission Management");
+                ;
 
-            app.MapGet("/api/systemadmin/GetOnePermission/{id}", [Authorize] async (IMediator mediator, int id) =>
+            group.MapGet("/GetOnePermission/{id}", [Authorize] async (IMediator mediator, int id) =>
                 await mediator.Send(new GetPermissionByIdQuery(id)))
                 .WithName("GetOnePermission")
-                .WithTags("User Role Permission Management");
-
-            app.MapPost("/api/systemadmin/CreatePermission", [Authorize] async (IMediator mediator, CreatePermissionCommand cmd) =>
+                ;
+            group.MapPost("/CreatePermission", [Authorize] async (IMediator mediator, CreatePermissionCommand cmd) =>
                 await mediator.Send(cmd))
                 .WithName("CreatePermission")
-                .WithTags("User Role Permission Management");
+                ;
 
-            app.MapPut("/api/systemadmin/UpdatePermission", [Authorize] async (IMediator mediator, UpdatePermissionCommand cmd) =>
+            group.MapPut("/UpdatePermission", [Authorize] async (IMediator mediator, UpdatePermissionCommand cmd) =>
              await mediator.Send(cmd))
             .WithName("UpdatePermission")
-            .WithTags("User Role Permission Management");
+            ;
 
-            app.MapDelete("/api/systemadmin/DeletePermission/{id}", [Authorize] async (IMediator mediator, int id) =>
+            group.MapDelete("/api/systemadmin/DeletePermission/{id}", [Authorize] async (IMediator mediator, int id) =>
                 await mediator.Send(new DeletePermissionCommand(id)))
                 .WithName("DeletePermission")
-                .WithTags("User Role Permission Management");
+                ;
+
         }
     }
 

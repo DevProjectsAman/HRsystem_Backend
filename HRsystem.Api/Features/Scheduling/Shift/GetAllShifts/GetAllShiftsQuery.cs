@@ -5,7 +5,8 @@ using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.Scheduling.Shift.GetAllShiftsQuery
+namespace HRsystem.Api.Features.Scheduling.Shift.GetAllShifts
+
 {
 
     public record GetAllShiftsQuery() : IRequest<List<ShiftDto>>;

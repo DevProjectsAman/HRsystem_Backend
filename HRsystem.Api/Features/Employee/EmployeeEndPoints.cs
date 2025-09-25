@@ -11,7 +11,7 @@ namespace HRsystem.Api.Features.Employee
     {
         public static void MapEmployeeEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/ManageEmployees").WithTags("Employee Management");
+            var group = app.MapGroup("/api/Employees").WithTags("Employee Management");
 
             group.MapPost("AddNewEmployee/", async (EmployeeCreateDto dto, IMediator mediator) =>
                 Results.Ok(await mediator.Send(new CreateEmployeeCommand(dto))));

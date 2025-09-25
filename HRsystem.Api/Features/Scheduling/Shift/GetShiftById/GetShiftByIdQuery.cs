@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace HRsystem.Api.Features.Scheduling.Shift.GetShiftByIdQuery
+namespace HRsystem.Api.Features.Scheduling.Shift.GetShiftById
 {
     public record GetShiftByIdQuery(int ShiftId) : IRequest<TbShift?>;
 

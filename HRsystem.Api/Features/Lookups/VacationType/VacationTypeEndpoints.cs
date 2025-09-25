@@ -13,7 +13,7 @@ namespace HRsystem.Api.Features.ShiftEndpoints
     {
         public static void MapVacationTypeEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/vacationtypes").WithTags("VacationTypes");
+            var group = app.MapGroup("/api/Lookups/vacationtypes").WithTags("VacationTypes");
 
             // Get all
             group.MapGet("/ListOfVacation", async (ISender mediator) =>

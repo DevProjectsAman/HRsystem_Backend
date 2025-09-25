@@ -12,7 +12,7 @@ namespace HRsystem.Api.Features.City
     {
         public static void MapCityEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/Location/cities").WithTags("Cities");
+            var group = app.MapGroup("/api/Organization/cities").WithTags("Cities");
 
             // Get All
             group.MapGet("/ListOfCities", async (ISender mediator) =>

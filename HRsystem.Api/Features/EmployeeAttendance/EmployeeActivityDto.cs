@@ -1,15 +1,4 @@
-﻿using HRsystem.Api.Database;
-using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Features.ActivityType.GetAllActivityTypes;
-using HRsystem.Api.Features.Department.GetAllDepartments;
-using HRsystem.Api.Services.CurrentUser;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace HRsystem.Api.Features.EmployeeActivityDt
+﻿namespace HRsystem.Api.Features.EmployeeActivityDt
 {
 
     // EmployeeActivityDto.cs

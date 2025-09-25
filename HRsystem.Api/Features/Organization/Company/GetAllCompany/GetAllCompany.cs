@@ -1,7 +1,5 @@
 ﻿using HRsystem.Api.Database;
-using HRsystem.Api.Features.Company.CreateCompany;
 using MediatR;
-using System;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.Organization.Company.GetAllCompany

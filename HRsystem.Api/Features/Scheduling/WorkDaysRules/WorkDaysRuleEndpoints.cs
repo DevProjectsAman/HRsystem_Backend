@@ -8,7 +8,7 @@ namespace HRsystem.Api.Features.WorkDaysRules
     {
         public static void MapWorkDaysRuleEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/workdaysrules").WithTags("WorkDaysRules");
+            var group = app.MapGroup("/api/Scheduling/workdaysrules").WithTags("WorkDaysRules");
 
             // Get All
             group.MapGet("/GetListOfWorkDaysRule", async (ISender mediator) =>

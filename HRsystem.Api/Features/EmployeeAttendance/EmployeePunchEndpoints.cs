@@ -8,7 +8,8 @@ namespace HRsystem.Api.Features.EmployeeAttendance
     {
         public static void MapEmployeePunchEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/employee/punch").WithTags("Employee Punch");
+           
+            var group = app.MapGroup("/api/employee-activities/Attendance").WithTags("Employee Activities");
 
             // Punch In
             group.MapPost("/in", async (PunchInCommand cmd, ISender mediator) =>

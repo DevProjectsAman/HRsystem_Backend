@@ -1,6 +1,4 @@
 ﻿using HRsystem.Api.Database;
-using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Features.ActivityStatus.GetAllActivityStatuses;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.Tools;
 using MediatR;

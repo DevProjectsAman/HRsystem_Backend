@@ -1,9 +1,9 @@
-﻿using HRsystem.Api.Features.VacationRule.GetAllVacationRules;
-using HRsystem.Api.Features.VacationRule.GetVacationRuleById;
-using HRsystem.Api.Features.VacationRule.DeleteVacationRule;
-using MediatR;
-using HRsystem.Api.Features.Scheduling.VacationRule.CreateVacationRule;
+﻿using HRsystem.Api.Features.Scheduling.VacationRule.CreateVacationRule;
+using HRsystem.Api.Features.Scheduling.VacationRule.DeleteVacationRule;
+using HRsystem.Api.Features.Scheduling.VacationRule.GetAllVacationRules;
+using HRsystem.Api.Features.Scheduling.VacationRule.GetVacationRuleById;
 using HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule;
+using MediatR;
 
 namespace HRsystem.Api.Features.Scheduling.VacationRule
 {
@@ -11,7 +11,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule
     {
         public static void MapVacationRuleEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/vacationrules").WithTags("VacationRules");
+            var group = app.MapGroup("/api/Scheduling/VacationRules").WithTags("VacationRules");
 
             // Get all
             group.MapGet("/Listofvacationrules", async (ISender mediator) =>

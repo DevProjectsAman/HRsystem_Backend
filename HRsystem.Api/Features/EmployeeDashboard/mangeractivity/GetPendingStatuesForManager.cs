@@ -1,5 +1,4 @@
-﻿using HRsystem.Api.Features.mangeractivity;
-using MediatR;
+﻿using MediatR;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
 {
@@ -7,7 +6,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
     {
         public static void MapPendingStatuesForManager(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/activities").WithTags("Activities");
+           // var group = app.MapGroup("/api/activities").WithTags("Activities");
+            var group = app.MapGroup("/api/employee-dashboard").WithTags("Employee Dashboard");
 
             // Get subordinates with pending activities
             group.MapGet("/subordinates/pending", async (ISender mediator) =>

@@ -1,10 +1,10 @@
-﻿using HRsystem.Api.Features.WorkLocation.GetAllWorkLocations;
-using HRsystem.Api.Features.WorkLocation.GetWorkLocationById;
-using HRsystem.Api.Features.WorkLocation.DeleteWorkLocation;
-using MediatR;
-using FluentValidation;
+﻿using FluentValidation;
 using HRsystem.Api.Features.Organization.WorkLocation.CreateWorkLocation;
+using HRsystem.Api.Features.Organization.WorkLocation.DeleteWorkLocation;
+using HRsystem.Api.Features.Organization.WorkLocation.GetAllWorkLocations;
+using HRsystem.Api.Features.Organization.WorkLocation.GetWorkLocationById;
 using HRsystem.Api.Features.Organization.WorkLocation.UpdateWorkLocation;
+using MediatR;
 
 namespace HRsystem.Api.Features.Organization.WorkLocation
 {
@@ -12,7 +12,7 @@ namespace HRsystem.Api.Features.Organization.WorkLocation
     {
         public static void MapWorkLocationEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/work-locations").WithTags("WorkLocations");
+            var group = app.MapGroup("/api/Organization/WorkLocation").WithTags("WorkLocations");
 
             // Get all
             group.MapGet("/List", async (ISender mediator) =>

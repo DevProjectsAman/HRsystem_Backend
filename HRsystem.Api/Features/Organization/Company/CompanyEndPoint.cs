@@ -1,11 +1,10 @@
-﻿using HRsystem.Api.Features.Company.GetAllCompany;
-using HRsystem.Api.Features.Company.GetCompanyById;
-//using HRsystem.Api.Features.Company.DeleteCompany;
-using MediatR;
+﻿//using HRsystem.Api.Features.Company.DeleteCompany;
 using FluentValidation;
-using System.Linq;
 using HRsystem.Api.Features.Organization.Company.CreateCompany;
+using HRsystem.Api.Features.Organization.Company.GetAllCompany;
+using HRsystem.Api.Features.Organization.Company.GetCompanyById;
 using HRsystem.Api.Features.Organization.Company.UpdateCompany;
+using MediatR;
 
 namespace HRsystem.Api.Features.Organization.Company
 {
@@ -13,7 +12,7 @@ namespace HRsystem.Api.Features.Organization.Company
     {
         public static void MapCompanyEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/organization/companies").WithTags("Companies");
+            var group = app.MapGroup("/api/Organization/companies").WithTags("Companies");
 
             // Get All
             group.MapGet("/ListOfCompany", async (ISender mediator) =>

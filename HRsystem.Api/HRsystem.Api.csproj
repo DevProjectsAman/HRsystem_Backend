@@ -8,6 +8,11 @@
 
 	<ItemGroup>
 	  <Compile Remove="Features\AccessManagment\Auth\UserManagement\userRolePermissions.cs" />
+	  <Compile Remove="Features\Organization\Groups\Create\CreateGroupEndpoint.cs" />
+	  <Compile Remove="Features\Organization\Groups\DeleteGroup\DeleteGroupEndPoint.cs" />
+	  <Compile Remove="Features\Organization\Groups\GetALlGroup\GetAllGroupEndPoint.cs" />
+	  <Compile Remove="Features\Organization\Groups\GetGroupById\GetGroupByIdEndPoint.cs" />
+	  <Compile Remove="Features\Organization\Groups\UpdateGroup\UpdateGroupEndpoint.cs" />
 	  <Compile Remove="Services\Auth\CustomAuthorizationPolicyProvider.cs" />
 	  <Compile Remove="Services\Auth\PermissionHandlerService.cs" />
 	  <Compile Remove="Shared\Tools\ValidationExtensions.cs" />

@@ -1,10 +1,10 @@
-﻿using HRsystem.Api.Features.Gov.GetAllGovs;
-using HRsystem.Api.Features.Gov.GetGovById;
-using HRsystem.Api.Features.Gov.DeleteGov;
-using MediatR;
-using FluentValidation;
+﻿using FluentValidation;
 using HRsystem.Api.Features.Organization.Govermenet.CreateGov;
+using HRsystem.Api.Features.Organization.Govermenet.DeleteGov;
+using HRsystem.Api.Features.Organization.Govermenet.GetAllGovs;
+using HRsystem.Api.Features.Organization.Govermenet.GetGovById;
 using HRsystem.Api.Features.Organization.Govermenet.UpdateGov;
+using MediatR;
 
 namespace HRsystem.Api.Features.Organization.Govermenet
 {
@@ -12,7 +12,7 @@ namespace HRsystem.Api.Features.Organization.Govermenet
     {
         public static void MapGovEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/Location/govs").WithTags("Governments");
+            var group = app.MapGroup("/api/Organization/govs").WithTags("Governments");
 
             // Get All
             group.MapGet("/ListOfGovs", async (ISender mediator) =>

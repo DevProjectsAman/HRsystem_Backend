@@ -7,7 +7,8 @@ namespace HRsystem.Api.Features.employeevacations
     {
         public static void MapEmployeeVacationsEndPoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/vacations").WithTags("Vacations");
+            //var group = app.MapGroup("/api/vacations").WithTags("Vacations");
+            var group = app.MapGroup("/api/employee-requests").WithTags("Employee Requests");
 
             group.MapGet("/mybalances", async (ISender mediator) =>
             {
