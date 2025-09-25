@@ -34,6 +34,8 @@ namespace HRsystem.Api.Database.DataTables
         /// </summary>
         public bool IsForChristiansOnly { get; set; } = false;
 
+        public bool IsActive { get; set; }
+
         /// <summary>
         /// Optional company-specific holiday
         /// </summary>
