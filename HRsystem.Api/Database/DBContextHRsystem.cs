@@ -12,18 +12,13 @@ namespace HRsystem.Api.Database;
 
 public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationRole, int>
 {
-
-
     public DBContextHRsystem(DbContextOptions<DBContextHRsystem> options)
         : base(options)
     {
     }
 
-
-
     public virtual DbSet<AspPermission> AspPermissions { get; set; }
     public virtual DbSet<AspRolePermissions> AspRolePermissions { get; set; }
-
 
     public virtual DbSet<TbActivityStatus> TbActivityStatuses { get; set; }
 
@@ -70,7 +65,6 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
     public virtual DbSet<TbRemoteWorkDay> TbRemoteWorkDays { get; set; }
 
     //public virtual DbSet<TbWorkDaysRule> TbWorkDaysRules { get; set; }
-    
 
     public virtual DbSet<TbJobTitle> TbJobTitles { get; set; }
 
@@ -87,11 +81,11 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
     public virtual DbSet<TbWorkLocation> TbWorkLocations { get; set; }
     public virtual DbSet<TbNationality> TbNationalities { get; set; }
 
-
     public DbSet<TbActivityTypeStatus> TbActivityTypeStatuses { get; set; }
     public DbSet<TbWorkDays> TbWorkDays { get; set; }
     public DbSet<TbWorkDaysRule> TbWorkDaysRules { get; set; }
-
+    public DbSet<TbHolidays> TbHolidays { get; set; }
+    public DbSet<TbHolidayType> TbHolidayTypes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -99,11 +93,9 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
 
         base.OnModelCreating(modelBuilder);
 
-
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
-
 
         modelBuilder.Entity<TbActivityStatus>(entity =>
         {
@@ -115,7 +107,6 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
                                 .HasColumnType("json"); // MySQL supports json
         });
 
-
         modelBuilder.Entity<TbActivityType>(entity =>
         {
             entity.Property(e => e.ActivityName)
@@ -125,6 +116,29 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
         )
                                 .HasColumnType("json"); // MySQL supports json
         });
+
+
+        modelBuilder.Entity<TbHolidays>(entity =>
+        {
+            entity.Property(e => e.HolidayName)
+            .HasConversion(
+            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
+        )
+                                .HasColumnType("json"); // MySQL supports json
+        });
+
+        modelBuilder.Entity<TbHolidayType>(entity =>
+        {
+            entity.Property(e => e.HolidayTypeName)
+            .HasConversion(
+            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
+        )
+                                .HasColumnType("json"); // MySQL supports json
+        });
+
+
 
         modelBuilder.Entity<TbProject>(entity =>
         {
@@ -211,9 +225,7 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
             entity.Property(e => e.Religion)
                 .HasConversion<string>() // store enum as string
                 .HasColumnType("ENUM('All','Muslim','Christian')"); // MySQL enum type
-
         });
-
 
         modelBuilder.Entity<AspRolePermissions>()
            .HasKey(rp => new { rp.RoleId, rp.PermissionId });
@@ -228,11 +240,8 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
             .WithMany()
             .HasForeignKey(rp => rp.PermissionId);
 
-
         modelBuilder.Entity<AspPermission>()
        .HasIndex(p => p.PermissionName)
        .IsUnique();
-
     }
-
 }
