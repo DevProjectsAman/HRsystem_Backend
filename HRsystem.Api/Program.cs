@@ -266,6 +266,8 @@ app.MapWorkDaysRuleEndpoints();
 
 app.MapWorkDaysEndpoints();
 
+app.MapHolidayEndpoints();
+
 app.Run();
 
 
