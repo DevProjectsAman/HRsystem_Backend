@@ -1,122 +1,126 @@
-﻿using static HRsystem.Api.Enums.EnumsList;
+﻿using HRsystem.Api.Shared.DTO;
+using static HRsystem.Api.Enums.EnumsList;
 
 namespace HRsystem.Api.Features.Employee.DTO
 {
 
 
 public record EmployeeCreateDto(
-        //string? EmployeeCodeFinance,
+        string EmployeeCodeFinance,
         string EmployeeCodeHr,
         string FirstName,
-        string? ArabicFirstName,
+        string ArabicFirstName,
         string LastName,
-        string? ArabicLastName,
-        DateOnly? Birthdate,
-        DateOnly? HireDate,
+        string ArabicLastName,
+        DateOnly Birthdate,
+        DateOnly HireDate,
         EnumGenderType Gender,
-        string? NationalId,
+        string NationalId,
         string? PassportNumber,
-        string? PlaceOfBirth,
-        string? BloodGroup,
-       // int? JobTitleId,
-        int CompanyId,
-       // int? DepartmentId,
-       // int? ManagerId,
-       // int? ShiftId,
-       // int? MaritalStatusId,
-        int? NationalityId,
-        string? Email,
-        string? PrivateMobile,
-        string? BuisnessMobile,
-        string? SerialMobile,
-        DateTime? StartDate,
-        DateTime? EndDate,
-       // sbyte? IsTopManager,
-       // sbyte? IsFullDocument,
-        string? Note,
-        string? Status
-    );
-
-    
-    public record EmployeeUpdateDto(
-       int EmployeeId,
-       string? EmployeeCodeFinance,
-       string EmployeeCodeHr,
-       string FirstName,
-       string? ArabicFirstName,
-       string LastName,
-       string? ArabicLastName,
-       DateOnly? Birthdate,
-       DateOnly? HireDate,
-       EnumGenderType Gender,
-       string? NationalId,
-       string? PassportNumber,
-       string? PlaceOfBirth,
-       string? BloodGroup,
-       int JobTitleId,
-       int CompanyId,
-       int? DepartmentId,
-       int? ManagerId,
-       int? ShiftId,
-       int? MaritalStatusId,
-       int? NationalityId,
-       string? Email,
-       string? PrivateMobile,
-       string? BuisnessMobile,
-       string? SerialMobile,
-       DateTime? StartDate,
-       DateTime? EndDate,
-       bool? IsTopManager,
-       bool? IsFullDocument,
-       string? Note,
-       string? Status
-   );
-
-
-    public record EmployeeReadDto(
-        int EmployeeId,
-        string? EmployeeCodeFinance,
-        string? EmployeeCodeHr,
+        string PlaceOfBirth,
+        string BloodGroup,
         int JobTitleId,
-        string JobTitleName,
-        string FirstName,
-        string? ArabicFirstName,
-        string LastName,
-        string? ArabicLastName,
-        DateOnly? HireDate,
-        DateOnly? Birthdate,
-        EnumGenderType Gender,
-        string? NationalId,
-        string? PassportNumber,
-        string? PlaceOfBirth,
-        string? BloodGroup,
-        int? ManagerId,
-        string? ManagerName,
         int CompanyId,
-        string CompanyName,
-        int? CreatedBy,
-        DateTime? CreatedAt,
-        int? UpdatedBy,
-        DateTime? UpdatedAt,
-        string? PrivateMobile,
+        int DepartmentId,
+        int ManagerId,
+        int ShiftId,
+        int MaritalStatusId,
+        int NationalityId,
+        string Email,
+        string PrivateMobile,
         string? BuisnessMobile,
-        string? Email,
-        string? SerialMobile,
-        DateTime? StartDate,
+        string SerialMobile,
+        DateTime StartDate,
         DateTime? EndDate,
-        bool? IsTopManager,
-        bool? IsFullDocument,
+        sbyte? IsTopManager,
+        sbyte? IsFullDocument,
         string? Note,
-        string? Status,
-        int? NationalityId,
-        string? NationalityName,
-        int? DepartmentId,
-        string? DepartmentName,
-        int? ShiftId,
-        string? ShiftName,
-        int? MaritalStatusId,
-        string? MaritalStatusName
+        string Status
     );
+
+
+    public class EmployeeUpdateDto
+    {
+        public int EmployeeId { get; set; }
+        public string EmployeeCodeFinance { get; set; }
+        public string EmployeeCodeHr { get; set; }
+        public string FirstName { get; set; }
+        public string ArabicFirstName { get; set; }
+        public string LastName { get; set; }
+        public string ArabicLastName { get; set; }
+        public DateOnly Birthdate { get; set; }
+        public DateOnly HireDate { get; set; }
+        public EnumGenderType Gender { get; set; }
+        public string NationalId { get; set; }
+        public string? PassportNumber { get; set; }
+        public string PlaceOfBirth { get; set; }
+        public string BloodGroup { get; set; }
+        public int JobTitleId { get; set; }
+        public int CompanyId { get; set; }
+        public int DepartmentId { get; set; }
+        public int ManagerId { get; set; }
+        public int ShiftId { get; set; }
+        public int MaritalStatusId { get; set; }
+        public int NationalityId { get; set; }
+        public string Email { get; set; }
+        public string PrivateMobile { get; set; }
+        public string? BuisnessMobile { get; set; }
+        public string SerialMobile { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public bool? IsTopManager { get; set; }
+        public bool? IsFullDocument { get; set; }
+        public string? Note { get; set; }
+        public string Status { get; set; }
+    };
+
+
+    public class EmployeeReadDto
+    {
+        
+        public int EmployeeId { get; set; }
+        public string EmployeeCodeFinance { get; set; }
+    public string EmployeeCodeHr { get; set; }
+    public int JobTitleId { get; set; }
+    public LocalizedData JobTitleName { get; set; }
+    public string FirstName { get; set; }
+    public string ArabicFirstName { get; set; }
+    public string LastName { get; set; }
+    public string ArabicLastName { get; set; }
+    public DateOnly HireDate { get; set; }
+    public DateOnly Birthdate { get; set; }
+    public EnumGenderType Gender { get; set; }
+    public string NationalId { get; set; }
+    public string? PassportNumber { get; set; }
+    public string PlaceOfBirth { get; set; }
+    public string BloodGroup { get; set; }
+    public int ManagerId { get; set; }
+    public string ManagerName { get; set; }
+    public int CompanyId { get; set; }
+    public string CompanyName { get; set; }
+    public int CreatedBy { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public int UpdatedBy { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public string PrivateMobile { get; set; }
+    public string? BuisnessMobile { get; set; }
+    public string Email { get; set; }
+    public string SerialMobile { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public bool? IsTopManager { get; set; }
+    public bool? IsFullDocument { get; set; }
+    public string? Note { get; set; }
+    public string Status { get; set; }
+    public int NationalityId { get; set; }
+    public string NationalityName { get; set; }
+    public int DepartmentId { get; set; }
+    public LocalizedData DepartmentName { get; set; }
+    public int ShiftId { get; set; }
+    public LocalizedData ShiftName { get; set; }
+    public int MaritalStatusId { get; set; }
+    public string MaritalStatusName { get; set; }
+    }
 
     public class NewEmployeeIdDTO
     {
