@@ -17,7 +17,8 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
         int? ProjectId
     ) : IRequest<ResponseResultDTO<List<ShiftRuleDto>>>;
 
-    public record ShiftRuleDto(
+    public record 
+        (
         int RuleId,
         int? GovId,
         int? CityId,
@@ -102,6 +103,8 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
                 r.Priority
             )).ToList();
 
+
+            
             return new ResponseResultDTO<List<ShiftRuleDto>>
             {
                 Success = true,

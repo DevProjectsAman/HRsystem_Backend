@@ -24,6 +24,7 @@ public record EmployeeCreateDto(
         int DepartmentId,
         int ManagerId,
         int ShiftId,
+        int WorkDaysId,
         int MaritalStatusId,
         int NationalityId,
         string Email,
@@ -35,9 +36,27 @@ public record EmployeeCreateDto(
         sbyte? IsTopManager,
         sbyte? IsFullDocument,
         string? Note,
-        string Status
+        string Status,
+        //New Lists
+        List<EmployeeWorkLocationCreateDto> EmployeeWorkLocations,
+        List<EmployeeVacationBalanceCreateDto> EmployeeVacationBalances
     );
 
+    // Work Location DTO
+    public record EmployeeWorkLocationCreateDto(
+        int CityId,
+        int WorkLocationId,
+        int CompanyId
+    );
+
+    // Vacation Balance DTO
+    public record EmployeeVacationBalanceCreateDto(
+        int VacationTypeId,
+        int Year,
+        decimal TotalDays,
+        decimal? UsedDays,
+        decimal? RemainingDays
+    );
 
     public class EmployeeUpdateDto
     {

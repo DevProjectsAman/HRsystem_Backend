@@ -41,6 +41,7 @@ public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, NewE
             DepartmentId = dto.DepartmentId,
             ManagerId = dto.ManagerId,
             ShiftId = dto.ShiftId,
+            WorkDaysId = dto.WorkDaysId,
             MaritalStatusId = dto.MaritalStatusId,
             NationalityId = dto.NationalityId,
             Email = dto.Email,
@@ -53,15 +54,51 @@ public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, NewE
             IsFulldocument = dto.IsFullDocument,
             Note = dto.Note,
             Status = dto.Status ?? "Active", // default if not provided
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = DateTime.Now,
             CreatedBy = (int)HRempolyeeID, // TODO: inject ICurrentUserService if you want the logged-in user ID
             UpdatedBy = (int)HRempolyeeID,
-            UpdatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.Now,
         };
 
         _db.TbEmployees.Add(employee);
         await _db.SaveChangesAsync(cancellationToken);
 
+
+        // 2. Add Work Locations
+        if (dto.EmployeeWorkLocations != null && dto.EmployeeWorkLocations.Any())
+        {
+            var workLocations = dto.EmployeeWorkLocations.Select(loc => new TbEmployeeWorkLocation
+            {
+                EmployeeId = employee.EmployeeId,
+                CityId = loc.CityId,
+                WorkLocationId = loc.WorkLocationId,
+                CompanyId = loc.CompanyId,
+                CreatedAt = DateTime.Now,
+                CreatedBy = (int)HRempolyeeID
+            }).ToList();
+
+            _db.TbEmployeeWorkLocations.AddRange(workLocations);
+        }
+
+        // 3. Add Vacation Balances
+        if (dto.EmployeeVacationBalances != null && dto.EmployeeVacationBalances.Any())
+        {
+            var balances = dto.EmployeeVacationBalances.Select(bal => new TbEmployeeVacationBalance
+            {
+                EmployeeId = employee.EmployeeId,
+                VacationTypeId = bal.VacationTypeId,
+                Year = bal.Year,
+                TotalDays = bal.TotalDays,
+                UsedDays = bal.UsedDays,
+                RemainingDays = bal.RemainingDays
+            }).ToList();
+
+            _db.TbEmployeeVacationBalances.AddRange(balances);
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+
+       
         return new NewEmployeeIdDTO
         {
             EmployeeId = employee.EmployeeId
