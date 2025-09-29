@@ -1,10 +1,13 @@
 ﻿using FluentValidation;
+using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.Organization.Govermenet.CreateGov;
 using HRsystem.Api.Features.Organization.Govermenet.DeleteGov;
 using HRsystem.Api.Features.Organization.Govermenet.GetAllGovs;
 using HRsystem.Api.Features.Organization.Govermenet.GetGovById;
 using HRsystem.Api.Features.Organization.Govermenet.UpdateGov;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
+using static HRsystem.Api.Features.Organization.Govermenet.GetAllGovs.Handler;
 
 namespace HRsystem.Api.Features.Organization.Govermenet
 {
@@ -18,20 +21,54 @@ namespace HRsystem.Api.Features.Organization.Govermenet
             group.MapGet("/ListOfGovs", async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllGovsQuery());
-                return Results.Ok(new { Success = true, Data = result });
+
+
+                // Wrap result inside ResponseResultDTO
+                var response = new ResponseResultDTO<IEnumerable<GovDto>>
+                {
+                    Data = result,   // TotalCount will be auto-set here
+                    Success = true,
+                    Message = "List of governors retrieved successfully"
+                };
+
+                return Results.Ok(response);
+               // return Results.Ok(new { Success = true, Data = result });
             });
 
             // Get by Id
             group.MapGet("/GetOneGov/{id}", async (int id, ISender mediator) =>
             {
                 if (id <= 0)
-                    return Results.BadRequest(new { Success = false, Message = "Invalid GovId" });
+                {
+                    return Results.BadRequest(new ResponseResultDTO
+                    {
+                        Success = false,
+                        Message = "Invalid GovId"
+                    });
+                }
 
                 var result = await mediator.Send(new GetGovByIdQuery(id));
-                return result == null
-                    ? Results.NotFound(new { Success = false, Message = $"Gov {id} not found" })
-                    : Results.Ok(new { Success = true, Data = result });
+
+                if (result == null)
+                {
+                    return Results.NotFound(new ResponseResultDTO
+                    {
+                        Success = false,
+                        Message = $"Gov {id} not found"
+                    });
+                }
+
+                // Success case
+                var response = new ResponseResultDTO<TbGov>
+                {
+                    Data = result, // TotalCount will be auto-set = 1
+                    Success = true,
+                    Message = "Gov retrieved successfully"
+                };
+
+                return Results.Ok(response);
             });
+
 
             // Create
             group.MapPost("/CreateGov", async (CreateGovCommand cmd, ISender mediator, IValidator<CreateGovCommand> validator) =>
