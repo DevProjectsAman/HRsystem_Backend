@@ -5,42 +5,45 @@ namespace HRsystem.Api.Features.Employee.DTO
 {
 
 
-public record EmployeeCreateDto(
-        string EmployeeCodeFinance,
-        string EmployeeCodeHr,
-        string FirstName,
-        string ArabicFirstName,
-        string LastName,
-        string ArabicLastName,
-        DateOnly Birthdate,
-        DateOnly HireDate,
-        EnumGenderType Gender,
-        string NationalId,
-        string? PassportNumber,
-        string PlaceOfBirth,
-        string BloodGroup,
-        int JobTitleId,
-        int CompanyId,
-        int DepartmentId,
-        int ManagerId,
-        int ShiftId,
-        int WorkDaysId,
-        int MaritalStatusId,
-        int NationalityId,
-        string Email,
-        string PrivateMobile,
-        string? BuisnessMobile,
-        string SerialMobile,
-        DateTime StartDate,
-        DateTime? EndDate,
-        sbyte? IsTopManager,
-        sbyte? IsFullDocument,
-        string? Note,
-        string Status,
-        //New Lists
-        List<EmployeeWorkLocationCreateDto> EmployeeWorkLocations,
-        List<EmployeeVacationBalanceCreateDto> EmployeeVacationBalances
-    );
+    public class EmployeeCreateDto
+    {
+        public string EmployeeCodeFinance { get; set; }
+        public string EmployeeCodeHr { get; set; }
+        public string FirstName { get; set; }
+        public string ArabicFirstName { get; set; }
+        public string LastName { get; set; }
+        public string ArabicLastName { get; set; }
+        public DateOnly Birthdate { get; set; }
+        public DateOnly HireDate { get; set; }
+        public EnumGenderType Gender { get; set; }
+        public string NationalId { get; set; }
+        public string? PassportNumber { get; set; }
+        public string PlaceOfBirth { get; set; }
+        public string BloodGroup { get; set; }
+        public int JobTitleId { get; set; }
+        public int CompanyId { get; set; }
+        public int DepartmentId { get; set; }
+        public int ManagerId { get; set; }
+        public int ShiftId { get; set; }
+        public int WorkDaysId { get; set; }
+        public int MaritalStatusId { get; set; }
+        public int NationalityId { get; set; }
+        public string Email { get; set; }
+        public string PrivateMobile { get; set; }
+        public string? BuisnessMobile { get; set; }
+        public string SerialMobile { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public sbyte? IsTopManager { get; set; }
+        public sbyte? IsFullDocument { get; set; }
+        public string? Note { get; set; }
+        public string Status { get; set; }
+
+        // ✅ القوائم هتظهر دلوقتي في Swagger
+        public List<EmployeeWorkLocationCreateDto> EmployeeWorkLocations { get; set; } = new();
+        public List<EmployeeVacationBalanceCreateDto> EmployeeVacationBalances { get; set; } = new();
+    }
+
 
     // Work Location DTO
     public record EmployeeWorkLocationCreateDto(
