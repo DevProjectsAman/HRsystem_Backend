@@ -17,8 +17,7 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
         int? ProjectId
     ) : IRequest<ResponseResultDTO<List<ShiftRuleDto>>>;
 
-    public record 
-        (
+      public record ShiftRuleDto(
         int RuleId,
         int? GovId,
         int? CityId,
@@ -28,6 +27,7 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
         int ShiftId,
         int? Priority
     );
+    
 
     public class GetMatchingShiftRulesHandler
         : IRequestHandler<GetMatchingShiftRulesQuery, ResponseResultDTO<List<ShiftRuleDto>>>
