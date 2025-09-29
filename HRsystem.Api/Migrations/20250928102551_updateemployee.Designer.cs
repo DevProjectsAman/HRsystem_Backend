@@ -4,6 +4,7 @@ using HRsystem.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    partial class DBContextHRsystemModelSnapshot : ModelSnapshot
+    [Migration("20250928102551_updateemployee")]
+    partial class updateemployee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -295,20 +298,17 @@ namespace HRsystem.Api.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("EmployeeId"));
 
                     b.Property<string>("ArabicFirstName")
-                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
 
                     b.Property<string>("ArabicLastName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<DateOnly>("Birthdate")
+                    b.Property<DateOnly?>("Birthdate")
                         .HasColumnType("date");
 
                     b.Property<string>("BloodGroup")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
 
@@ -319,27 +319,24 @@ namespace HRsystem.Api.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("CreatedBy")
+                    b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int>("DepartmentId")
+                    b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
                     b.Property<string>("EmployeeCodeFinance")
-                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
 
                     b.Property<string>("EmployeeCodeHr")
-                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
 
@@ -356,7 +353,7 @@ namespace HRsystem.Api.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("ENUM('Male','Female')");
 
-                    b.Property<DateOnly>("HireDate")
+                    b.Property<DateOnly?>("HireDate")
                         .HasColumnType("date");
 
                     b.Property<sbyte?>("IsFulldocument")
@@ -365,7 +362,7 @@ namespace HRsystem.Api.Migrations
                     b.Property<sbyte?>("IsTopmanager")
                         .HasColumnType("tinyint");
 
-                    b.Property<int>("JobTitleId")
+                    b.Property<int?>("JobTitleId")
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")
@@ -373,18 +370,17 @@ namespace HRsystem.Api.Migrations
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
 
-                    b.Property<int>("ManagerId")
+                    b.Property<int?>("ManagerId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaritalStatusId")
+                    b.Property<int?>("MaritalStatusId")
                         .HasColumnType("int");
 
                     b.Property<string>("NationalId")
-                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
-                    b.Property<int>("NationalityId")
+                    b.Property<int?>("NationalityId")
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
@@ -395,12 +391,10 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("varchar(25)");
 
                     b.Property<string>("PlaceOfBirth")
-                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
 
                     b.Property<string>("PrivateMobile")
-                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
@@ -408,28 +402,26 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SerialMobile")
-                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
-                    b.Property<int>("ShiftId")
+                    b.Property<int?>("ShiftId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("UpdatedBy")
+                    b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int>("WorkDaysId")
+                    b.Property<int?>("WorkDaysId")
                         .HasColumnType("int");
 
                     b.HasKey("EmployeeId");
@@ -1648,7 +1640,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 9, 28, 13, 46, 39, 881, DateTimeKind.Local).AddTicks(6188),
+                            CreatedAt = new DateTime(2025, 9, 28, 13, 25, 42, 385, DateTimeKind.Local).AddTicks(8822),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -1656,7 +1648,7 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2025, 9, 28, 10, 46, 39, 881, DateTimeKind.Utc).AddTicks(9580),
+                            LastPasswordChangedAt = new DateTime(2025, 9, 28, 10, 25, 42, 386, DateTimeKind.Utc).AddTicks(2647),
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
@@ -1665,7 +1657,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("9ef4f009-053c-4f26-92ef-057fcc88e0ea"),
+                            RowGuid = new Guid("f621b35b-f973-46c1-95e2-caeefbeae7da"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",
@@ -1936,33 +1928,23 @@ namespace HRsystem.Api.Migrations
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbDepartment", "Department")
                         .WithMany("TbEmployees")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DepartmentId");
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbJobTitle", "JobTitle")
                         .WithMany("TbEmployees")
-                        .HasForeignKey("JobTitleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("JobTitleId");
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbEmployee", "Manager")
                         .WithMany("InverseManager")
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ManagerId");
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbMaritalStatus", "MaritalStatus")
                         .WithMany()
-                        .HasForeignKey("MaritalStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MaritalStatusId");
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbNationality", "Nationality")
                         .WithMany()
-                        .HasForeignKey("NationalityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("NationalityId");
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbRemoteWorkDay", "TbRemoteWorkDays")
                         .WithMany()
@@ -1970,15 +1952,11 @@ namespace HRsystem.Api.Migrations
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbShift", "Shifts")
                         .WithMany()
-                        .HasForeignKey("ShiftId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ShiftId");
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbWorkDays", "TbWorkDays")
                         .WithMany()
-                        .HasForeignKey("WorkDaysId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("WorkDaysId");
 
                     b.Navigation("Company");
 

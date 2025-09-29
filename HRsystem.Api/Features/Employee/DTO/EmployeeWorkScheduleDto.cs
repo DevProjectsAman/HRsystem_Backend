@@ -2,10 +2,10 @@
 {
    
    public record EmployeeWorkScheduleDto(
-       string? EmployeeCodeFinance,
-       int? ShiftId,
+       string EmployeeCodeFinance,
+       int ShiftId,
        int? RemoteWorkDaysId,
-       int? WorkDaysId
+       int WorkDaysId
       
    );
     
