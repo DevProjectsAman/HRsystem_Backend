@@ -249,7 +249,7 @@ app.MapProjectEndpoints();
 app.MapMissionEndPoint();
 app.MapExcuseEndPoint();
 app.MapEmployeePunchEndpoints(); // from EmployeePunchEndpoints.cs
-app.MapVacationEndpoints();
+//app.MapEmployeeVacationsEndPoints();
 app.MapEmployeeEndpoints();
 app.MapEmployeeActivityApprovalEndpoints();
 
