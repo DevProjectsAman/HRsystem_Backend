@@ -3,6 +3,8 @@ using HRsystem.Api.Features.Scheduling.VacationRule.DeleteVacationRule;
 using HRsystem.Api.Features.Scheduling.VacationRule.GetAllVacationRules;
 using HRsystem.Api.Features.Scheduling.VacationRule.GetVacationRuleById;
 using HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule;
+using HRsystem.Api.Features.Scheduling.WorkDays;
+using HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters;
 using MediatR;
 
 namespace HRsystem.Api.Features.Scheduling.VacationRule
@@ -12,6 +14,21 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule
         public static void MapVacationRuleEndpoints(this IEndpointRouteBuilder app)
         {
             var group = app.MapGroup("/api/Scheduling/VacationRules").WithTags("VacationRules");
+
+            group.MapPost("/GetVacationByMatchingRules", async (GetVacationByMatchingRulesQueury query, ISender mediator) =>
+            {
+                var result = await mediator.Send(query);
+
+                if (result == null || !result.Any())
+                    return Results.NotFound(new { success = false, message = "No matching Vacations rules found" });
+
+                return Results.Ok(new
+                {
+                    success = true,
+                    message = "Vacations rules retrieved successfully",
+                    data = result
+                });
+            });
 
             // Get all
             group.MapGet("/Listofvacationrules", async (ISender mediator) =>

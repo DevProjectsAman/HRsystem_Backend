@@ -1,5 +1,6 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -35,34 +36,38 @@ namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
         public async Task<List<EmployeeWithActivitiesDto>> Handle(GetSubordinatesPendingActivitiesQuery request, CancellationToken ct)
         {
             var managerId = _currentUserService.EmployeeID;
-            var language = _currentUserService.UserLanguage;
+            var language = _currentUserService.UserLanguage ?? "en";
 
-            const int PendingStatusId = 10; // StatusId بتاع الـ Pending
+            const int PendingStatusId = 10;
 
-            return await _db.TbEmployees
+            // Step 1: get raw employees + activities from DB
+            var employees = await _db.TbEmployees
                 .Where(e => e.ManagerId == managerId
-                         && e.TbEmployeeActivities.Any(a => a.StatusId == PendingStatusId)) // ✅ يرجع بس الموظفين اللي عندهم Pending
-                .Select(e => new EmployeeWithActivitiesDto
-                {
-                    EmployeeId = e.EmployeeId,
-                    EmployeeName = e.ArabicFirstName + " " + e.ArabicLastName,
-                    Activities = e.TbEmployeeActivities
-                        .Where(a => a.StatusId == PendingStatusId)
-                        .Select(a => new ActivityDto
-                        {
-                            ActivityId = a.ActivityId,
-                            ActivityName = language == "ar"
-                                ? a.ActivityType.ActivityName.ar
-                                : a.ActivityType.ActivityName.en,
-                            StatusName = language == "ar"
-                                ? a.Status.StatusName.ar
-                                : a.Status.StatusName.en,
-                            CreatedAt = a.RequestDate
-                        })
-                        .ToList()
-                })
+                         && e.TbEmployeeActivities.Any(a => a.StatusId == PendingStatusId))
+                .Include(e => e.TbEmployeeActivities)
+                    .ThenInclude(a => a.ActivityType)
+                .Include(e => e.TbEmployeeActivities)
+                    .ThenInclude(a => a.Status)
                 .ToListAsync(ct);
 
+            // Step 2: map + apply translation in memory
+            return employees.Select(e => new EmployeeWithActivitiesDto
+            {
+                EmployeeId = e.EmployeeId,
+                EmployeeName = e.ArabicFirstName + " " + e.ArabicLastName,
+                Activities = e.TbEmployeeActivities
+                    .Where(a => a.StatusId == PendingStatusId)
+                    .Select(a => new ActivityDto
+                    {
+                        ActivityId = a.ActivityId,
+                        ActivityName = a.ActivityType.ActivityName.GetTranslation(language), // ✅ now translated
+                        StatusName = a.Status.StatusName.GetTranslation(language),           // ✅ now translated
+                        CreatedAt = a.RequestDate
+                    })
+                    .ToList()
+            }).ToList();
         }
+
+
     }
 }

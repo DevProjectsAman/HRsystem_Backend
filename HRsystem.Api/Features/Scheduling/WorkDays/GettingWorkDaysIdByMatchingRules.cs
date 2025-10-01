@@ -1,6 +1,5 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
-
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,40 +8,27 @@ namespace HRsystem.Api.Features.Scheduling.WorkDays
 {
     public record GettingWorkDaysIdByMatchingRules
     (
-    //int WorkDaysRuleId ,
-     int? GovID,
-     int? CityID,
-     int? JobTitleId,
-     int? WorkingLocationId,
-     int? ProjectId,
-     int WorkDaysId,
-     //int? Priority ,
-     int CompanyId
+         int? GovID,
+         int? CityID,
+         int? JobTitleId,
+         int? WorkingLocationId,
+         int? ProjectId,
+         int WorkDaysId,
+         int CompanyId
     ) : IRequest<List<WorkDaysRuleDto>>;
 
     public record WorkDaysRuleDto
     (
-         int WorkDaysRuleId ,
-           int? GovID ,
-           int? CityID ,
-            int? JobTitleId ,
-            int? WorkingLocationId ,
-            int? ProjectId ,
-            int WorkDaysId ,
-            int? Priority ,
-            int CompanyId
+         int WorkDaysRuleId,
+         int? GovID,
+         int? CityID,
+         int? JobTitleId,
+         int? WorkingLocationId,
+         int? ProjectId,
+         int WorkDaysId,
+         int? Priority,
+         int CompanyId
     );
-
-    //public record GettingWorkDaysIdByMatchingRules
-    //(
-    //     int? GovID,
-    //     int? CityID,
-    //     int? JobTitleId,
-    //     int? WorkingLocationId,
-    //     int? ProjectId,
-    //     int WorkDaysId,
-    //     int CompanyId
-    //) : IRequest<List<WorkDaysRuleDto>>;  // ✅ بس داتا
 
     public class GettingWorkDaysIdByMatchingRulesHandler
         : IRequestHandler<GettingWorkDaysIdByMatchingRules, List<WorkDaysRuleDto>>
@@ -56,41 +42,28 @@ namespace HRsystem.Api.Features.Scheduling.WorkDays
 
         public async Task<List<WorkDaysRuleDto>> Handle(GettingWorkDaysIdByMatchingRules request, CancellationToken cancellationToken)
         {
-            var baseQuery = _db.TbWorkDaysRules
-                .Where(r => r.CompanyId == request.CompanyId);
+            var query = _db.TbWorkDaysRules.Where(r =>
+                r.CompanyId == request.CompanyId &&
 
-            var attempts = new List<Func<IQueryable<TbWorkDaysRule>, IQueryable<TbWorkDaysRule>>>
-        {
-            q => q.Where(r => r.GovID == request.GovID
-                           && r.CityID == request.CityID
-                           && r.JobTitleId == request.JobTitleId
-                           && r.WorkingLocationId == request.WorkingLocationId
-                           && r.ProjectId == request.ProjectId),
-            q => q.Where(r => r.GovID == request.GovID
-                           && r.CityID == request.CityID
-                           && r.JobTitleId == request.JobTitleId
-                           && r.WorkingLocationId == request.WorkingLocationId),
-            q => q.Where(r => r.GovID == request.GovID
-                           && r.CityID == request.CityID
-                           && r.JobTitleId == request.JobTitleId),
-            q => q.Where(r => r.GovID == request.GovID
-                           && r.CityID == request.CityID),
-            q => q.Where(r => r.GovID == request.GovID)
-        };
+                // ✅ المحافظة (لو null يبقى وايلد كارد)
+                (r.GovID == null || r.GovID == request.GovID) &&
 
-            List<TbWorkDaysRule>? rules = null;
+                // ✅ المدينة
+                (r.CityID == null || r.CityID == request.CityID) &&
 
-            foreach (var filter in attempts)
-            {
-                rules = await filter(baseQuery)
-                    .OrderBy(r => r.Priority)
-                    .ToListAsync(cancellationToken);
+                // ✅ المسمى الوظيفي
+                (r.JobTitleId == null || r.JobTitleId == request.JobTitleId) &&
 
-                if (rules.Any())
-                    break;
-            }
+                // ✅ مكان العمل
+                (r.WorkingLocationId == null || r.WorkingLocationId == request.WorkingLocationId) &&
 
-            return rules?.Select(r => new WorkDaysRuleDto(
+                // ✅ المشروع
+                (r.ProjectId == null || r.ProjectId == request.ProjectId)
+            );
+
+            var rules = await query.OrderBy(r => r.Priority).ToListAsync(cancellationToken);
+
+            return rules.Select(r => new WorkDaysRuleDto(
                 r.WorkDaysRuleId,
                 r.GovID,
                 r.CityID,
@@ -100,13 +73,10 @@ namespace HRsystem.Api.Features.Scheduling.WorkDays
                 r.WorkDaysId,
                 r.Priority,
                 r.CompanyId
-            )).ToList() ?? new List<WorkDaysRuleDto>();
+            )).ToList();
         }
     }
-
 }
-
-
 
 
 
