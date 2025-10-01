@@ -19,7 +19,7 @@ namespace HRsystem.Api.Features.Employee.DTO
         public string NationalId { get; set; }
         public string? PassportNumber { get; set; }
         public string PlaceOfBirth { get; set; }
-        public string BloodGroup { get; set; }
+        public string? BloodGroup { get; set; }
         public int JobTitleId { get; set; }
         public int CompanyId { get; set; }
         public int DepartmentId { get; set; }
@@ -39,7 +39,6 @@ namespace HRsystem.Api.Features.Employee.DTO
         public string? Note { get; set; }
         public string Status { get; set; }
 
-        // ✅ القوائم هتظهر دلوقتي في Swagger
         public List<EmployeeWorkLocationCreateDto> EmployeeWorkLocations { get; set; } = new();
         public List<EmployeeVacationBalanceCreateDto> EmployeeVacationBalances { get; set; } = new();
     }
