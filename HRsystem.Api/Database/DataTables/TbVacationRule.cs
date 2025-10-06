@@ -35,5 +35,6 @@ public partial class TbVacationRule
 
     public bool? Prorate { get; set; }
 
+    public int? Priority { get; set; }
     public virtual TbVacationType VacationType { get; set; } = null!;
 }

@@ -39,5 +39,20 @@ public static class WorkDaysEndpoints
             var deleted = await mediator.Send(new DeleteWorkDaysCommand(id));
             return deleted ? Results.Ok(new { Success = true }) : Results.NotFound();
         });
+
+        group.MapPost("/GettingWorkDaysIdByMatchingRules", async (GettingWorkDaysIdByMatchingRules query, ISender mediator) =>
+        {
+            var result = await mediator.Send(query);
+
+            if (result == null || !result.Any())
+                return Results.NotFound(new { success = false, message = "No matching work days rules found" });
+
+            return Results.Ok(new
+            {
+                success = true,
+                message = "Matching work days rules retrieved successfully",
+                data = result
+            });
+        });
     }
 }

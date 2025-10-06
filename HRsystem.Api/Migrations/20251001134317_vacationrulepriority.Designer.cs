@@ -4,6 +4,7 @@ using HRsystem.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    partial class DBContextHRsystemModelSnapshot : ModelSnapshot
+    [Migration("20251001134317_vacationrulepriority")]
+    partial class vacationrulepriority
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -294,19 +297,21 @@ namespace HRsystem.Api.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("EmployeeId"));
 
-                    b.Property<string>("Address")
-                        .HasMaxLength(250)
-                        .HasColumnType("varchar(250)");
-
-                    b.Property<string>("ArabicFullName")
+                    b.Property<string>("ArabicFirstName")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasMaxLength(55)
+                        .HasColumnType("varchar(55)");
+
+                    b.Property<string>("ArabicLastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<DateOnly>("Birthdate")
                         .HasColumnType("date");
 
                     b.Property<string>("BloodGroup")
+                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
 
@@ -315,9 +320,6 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("varchar(25)");
 
                     b.Property<int>("CompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ContractTypeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -344,17 +346,13 @@ namespace HRsystem.Api.Migrations
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
 
-                    b.Property<string>("EmployeePhotoPath")
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("EnglishFullName")
+                    b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasMaxLength(55)
+                        .HasColumnType("varchar(55)");
 
                     b.Property<string>("Gender")
                         .IsRequired()
@@ -372,6 +370,11 @@ namespace HRsystem.Api.Migrations
 
                     b.Property<int>("JobTitleId")
                         .HasColumnType("int");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(55)
+                        .HasColumnType("varchar(55)");
 
                     b.Property<int>("ManagerId")
                         .HasColumnType("int");

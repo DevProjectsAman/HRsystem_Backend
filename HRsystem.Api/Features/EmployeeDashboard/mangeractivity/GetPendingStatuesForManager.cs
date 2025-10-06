@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using HRsystem.Api.Features.EmployeeDashboard.ManagerActivity;
+using MediatR;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
 {
@@ -18,6 +19,26 @@ namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
 
                 return Results.Ok(new { Success = true, Data = result });
             });
+
+            group.MapGet("/subordinates/Numberofpending", async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetNumberOfPendingReqForManager());
+                if (result == null)
+                    return Results.NotFound(new { Success = false, Message = "No subordinates or pending activities found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
+
+            group.MapGet("/subordinates/IsManager", async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new CheckManagerQuery());
+                if (result == null)
+                    return Results.NotFound(new { Success = false, Message = "Employee Isn't A Manager" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
         }
     }
 }
