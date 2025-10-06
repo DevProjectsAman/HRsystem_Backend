@@ -67,7 +67,7 @@ namespace HRsystem.Api.Features.Mission.CreateMission
             {
                 EmployeeId = employeeId,
                 ActivityTypeId = activityType.ActivityTypeId,
-                StatusId = request.StatusId,
+                StatusId = 10, //asign automate to pending status when just created
                 RequestBy = employeeId,
               //  ApprovedBy = request.ApprovedBy,
                 RequestDate = request.RequestDate,
@@ -112,13 +112,13 @@ namespace HRsystem.Api.Features.Mission.CreateMission
             // Activity validation
             //RuleFor(x => x.EmployeeId).GreaterThan(0);
             //RuleFor(x => x.ActivityTypeId).GreaterThan(0);
-            RuleFor(x => x.StatusId).GreaterThan(0);
+            //RuleFor(x => x.StatusId).GreaterThan(0);
          //   RuleFor(x => x.RequestBy).GreaterThan(0);
             //RuleFor(x => x.ApprovedBy).GreaterThan(0);
            // RuleFor(x => x.CompanyId).GreaterThan(0);
 
             RuleFor(x => x.RequestDate)
-             .LessThanOrEqualTo(DateTime.UtcNow)
+             .LessThanOrEqualTo(DateTime.Now)
              .WithMessage("RequestDate cannot be in the future");
 
             // Mission validation

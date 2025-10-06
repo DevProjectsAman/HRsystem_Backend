@@ -13,7 +13,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
     public class PendingActivityDto
     {
         public long ActivityId { get; set; }
-        public string ActivityName { get; set; } = string.Empty;
+        public string ActivityName { get; set; } 
         public string StatusName { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
     }
@@ -35,6 +35,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
 
             return await _db.TbEmployeeActivities
                 .Include(a => a.Status)
+                .Include(a=> a.ActivityType)
                 .Where(a => a.EmployeeId == employeeId && a.StatusId == PendingStatusId)
                 .Select(a => new PendingActivityDto
                 {

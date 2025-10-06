@@ -62,7 +62,7 @@ namespace HRsystem.Api.Features.Employee
                     string jobTitleName = e.JobTitle?.TitleName?.GetTranslation(_currentUser.UserLanguage ?? "en") ?? string.Empty;
                     string companyName = e.Company?.CompanyName ?? string.Empty;
                     string deptName = e.Department?.DepartmentName?.GetTranslation(_currentUser.UserLanguage ?? "en");
-                    string managerName = e.Manager != null ? $"{e.Manager.FirstName} {e.Manager.LastName}" : null;
+                    string managerName = e.Manager != null ? $"{e.Manager.EnglishFullName}" : null;
                     string nationalityName = e.Nationality?.NameEn.ToString();
                     string shiftName = e.Shifts?.ShiftName.GetTranslation(_currentUser.UserName); // if shift has no localization, use as-is
                     string maritalName = e.MaritalStatus?.NameAr;
@@ -71,10 +71,8 @@ namespace HRsystem.Api.Features.Employee
                 {
                     EmployeeCodeFinance = e.EmployeeCodeFinance,
                     EmployeeCodeHr = e.EmployeeCodeHr,
-                    FirstName = e.FirstName,
-                    ArabicFirstName = e.ArabicFirstName,
-                    LastName = e.LastName,
-                    ArabicLastName = e.ArabicLastName,
+                    //EnglishFullName = e.EnglishFullName;
+                    //ArabicFullName = e.ArabicFullName;
                     Birthdate = e.Birthdate,
                     HireDate = e.HireDate,
                     Gender = e.Gender,

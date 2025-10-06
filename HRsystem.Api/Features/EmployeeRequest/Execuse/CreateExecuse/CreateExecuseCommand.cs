@@ -57,9 +57,9 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
             {
                 EmployeeId = employeeId,
                 ActivityTypeId = activityType.ActivityTypeId,
-                StatusId = request.StatusId,
+                StatusId = 10,// when create status automate to pending status
                 RequestBy = employeeId,
-                RequestDate = DateTime.UtcNow,
+                RequestDate = DateTime.Now,
                 CompanyId = companyId
             };
 
@@ -103,9 +103,9 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
     {
         public CreateExcuseValidator()
         {
-            RuleFor(x => x.StatusId)
-                .GreaterThan(0)
-                .WithMessage("StatusId must be greater than 0");
+            //RuleFor(x => x.StatusId)
+            //    .GreaterThan(0)
+            //    .WithMessage("StatusId must be greater than 0");
 
             RuleFor(x => x.ExcuseDate)
                     .GreaterThanOrEqualTo(DateTime.UtcNow.Date)

@@ -18,17 +18,17 @@ public partial class TbEmployee
 
     public int JobTitleId { get; set; }
 
-    [MaxLength(55)]
-    public string FirstName { get; set; } = null!;
+    //[MaxLength(55)]
+    //public string? FirstName { get; set; } = null!;
 
-    [MaxLength(55)]
-    public string ArabicFirstName { get; set; }
+    //[MaxLength(55)]
+    //public string? ArabicFirstName { get; set; }
 
-    [MaxLength(55)]
-    public string LastName { get; set; } = null!;
+    //[MaxLength(55)]
+    //public string? LastName { get; set; } = null!;
 
-    [MaxLength(100)]
-    public string ArabicLastName { get; set; }
+    //[MaxLength(100)]
+    //public string? ArabicLastName { get; set; }
 
     public DateOnly HireDate { get; set; }
 
@@ -51,7 +51,7 @@ public partial class TbEmployee
     public string PlaceOfBirth { get; set; }
 
     [MaxLength(10)]
-    public string BloodGroup { get; set; }
+    public string? BloodGroup { get; set; }
 
     public int ManagerId { get; set; }
 
@@ -133,4 +133,20 @@ public partial class TbEmployee
 
     [ForeignKey(nameof(RemoteWorkDaysId))]
     public virtual TbRemoteWorkDay? TbRemoteWorkDays { get; set; }
+
+    [MaxLength(200)]
+    public string EnglishFullName { get; set; }   // الاسم بالإنجليزي
+
+    [MaxLength(200)]
+    public string ArabicFullName { get; set; }    // الاسم بالعربي
+
+    [MaxLength(250)]
+    public string? Address { get; set; }          // العنوان
+
+    [MaxLength(500)]
+    public string? EmployeePhotoPath { get; set; } // صورة الموظف (path أو url)
+
+    public int ContractTypeId { get; set; }
+
+
 }

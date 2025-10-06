@@ -11,97 +11,118 @@ public record CreateEmployeeCommand(EmployeeCreateDto Employee) : IRequest<NewEm
 public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, NewEmployeeIdDTO>
 {
     private readonly DBContextHRsystem _db;
-
     private readonly ICurrentUserService _currentUserService;
 
-    public CreateEmployeeHandler(DBContextHRsystem db, ICurrentUserService currentUserService) { _db = db; _currentUserService = currentUserService; }
+    public CreateEmployeeHandler(DBContextHRsystem db, ICurrentUserService currentUserService)
+    {
+        _db = db;
+        _currentUserService = currentUserService;
+    }
 
     public async Task<NewEmployeeIdDTO> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
     {
         var dto = request.Employee;
-        var HRempolyeeID = _currentUserService.EmployeeID;
+        var currentEmployeeId = _currentUserService.EmployeeID;
 
-        var employee = new TbEmployee
+        using var transaction = await _db.Database.BeginTransactionAsync(cancellationToken);
+        try
         {
-           EmployeeCodeFinance = dto.EmployeeCodeFinance,
-            EmployeeCodeHr = dto.EmployeeCodeHr,
-            FirstName = dto.FirstName,
-            ArabicFirstName = dto.ArabicFirstName,
-            LastName = dto.LastName,
-            ArabicLastName = dto.ArabicLastName,
-            Birthdate = dto.Birthdate,
-            HireDate = dto.HireDate,
-            Gender = dto.Gender,
-            NationalId = dto.NationalId,
-            PassportNumber = dto.PassportNumber,
-            PlaceOfBirth = dto.PlaceOfBirth,
-            BloodGroup = dto.BloodGroup,
-            JobTitleId = dto.JobTitleId,
-            CompanyId = dto.CompanyId,
-            DepartmentId = dto.DepartmentId,
-            ManagerId = dto.ManagerId,
-            ShiftId = dto.ShiftId,
-            WorkDaysId = dto.WorkDaysId,
-            MaritalStatusId = dto.MaritalStatusId,
-            NationalityId = dto.NationalityId,
-            Email = dto.Email,
-            PrivateMobile = dto.PrivateMobile,
-            BuisnessMobile = dto.BuisnessMobile,
-            SerialMobile = dto.SerialMobile,
-            StartDate = dto.StartDate,
-            EndDate = dto.EndDate,
-            IsTopmanager = dto.IsTopManager,
-            IsFulldocument = dto.IsFullDocument,
-            Note = dto.Note,
-            Status = dto.Status ?? "Active", // default if not provided
-            CreatedAt = DateTime.Now,
-            CreatedBy = (int)HRempolyeeID, // TODO: inject ICurrentUserService if you want the logged-in user ID
-            UpdatedBy = (int)HRempolyeeID,
-            UpdatedAt = DateTime.Now,
-        };
-
-        _db.TbEmployees.Add(employee);
-        await _db.SaveChangesAsync(cancellationToken);
-
-
-        // 2. Add Work Locations
-        if (dto.EmployeeWorkLocations != null && dto.EmployeeWorkLocations.Any())
-        {
-            var workLocations = dto.EmployeeWorkLocations.Select(loc => new TbEmployeeWorkLocation
+            // 1. create Employee 
+            var employee = new TbEmployee
             {
-                EmployeeId = employee.EmployeeId,
-                CityId = loc.CityId,
-                WorkLocationId = loc.WorkLocationId,
-                CompanyId = loc.CompanyId,
+                // ✅ Basic Data
+                EnglishFullName = dto.EmployeeBasicData.EnglishFullName,
+                ArabicFullName = dto.EmployeeBasicData.ArabicFullName,
+                NationalId = dto.EmployeeBasicData.NationalId,
+                Birthdate = dto.EmployeeBasicData.Birthdate,
+                PlaceOfBirth = dto.EmployeeBasicData.PlaceOfBirth,
+                Gender = dto.EmployeeBasicData.Gender,
+                PassportNumber = dto.EmployeeBasicData.PassportNumber,
+                MaritalStatusId = dto.EmployeeBasicData.MaritalStatusId,
+                NationalityId = dto.EmployeeBasicData.NationalityId,
+                Email = dto.EmployeeBasicData.Email,
+                PrivateMobile = dto.EmployeeBasicData.PrivateMobile,
+                BuisnessMobile = dto.EmployeeBasicData.BuisnessMobile,
+                Address = dto.EmployeeBasicData.Address,
+                EmployeePhotoPath = dto.EmployeeBasicData.EmployeePhotoPath,
+                Note = dto.EmployeeBasicData.Note,
+
+                // ✅ Organization Data
+                CompanyId = dto.EmployeeOrganization.CompanyId,
+                DepartmentId = dto.EmployeeOrganization.DepartmentId,
+                JobTitleId = dto.EmployeeOrganization.JobTitleId,
+                ManagerId = dto.EmployeeOrganization.ManagerId,
+                ContractTypeId = dto.EmployeeOrganization.ContractTypeId,
+                SerialMobile = dto.EmployeeOrganization.SerialMobile,
+                Status = dto.EmployeeOrganization.Status,
+                EmployeeCodeFinance = dto.EmployeeOrganization.EmployeeCodeFinance,
+                EmployeeCodeHr = dto.EmployeeOrganization.EmployeeCodeHr,
+                HireDate = dto.EmployeeOrganization.HireDate,
+                StartDate = dto.EmployeeOrganization.StartDate,
+                EndDate = dto.EmployeeOrganization.EndDate,
+
+                // ✅ Work Conditions
+                ShiftId = dto.EmployeeWorkConditions.ShiftId,
+                WorkDaysId = dto.EmployeeWorkConditions.WorkDaysId,
+
+                // ✅ Meta
                 CreatedAt = DateTime.Now,
-                CreatedBy = (int)HRempolyeeID
-            }).ToList();
+                CreatedBy = (int)currentEmployeeId,
+                UpdatedBy = (int)currentEmployeeId,
+                UpdatedAt = DateTime.Now,
+            };
 
-            _db.TbEmployeeWorkLocations.AddRange(workLocations);
-        }
+            _db.TbEmployees.Add(employee);
+            await _db.SaveChangesAsync(cancellationToken);
 
-        // 3. Add Vacation Balances
-        if (dto.EmployeeVacationBalances != null && dto.EmployeeVacationBalances.Any())
-        {
-            var balances = dto.EmployeeVacationBalances.Select(bal => new TbEmployeeVacationBalance
+            // 2. Work Locations
+            if (dto.EmployeeWorkConditions.EmployeeWorkLocations != null && dto.EmployeeWorkConditions.EmployeeWorkLocations.Any())
             {
-                EmployeeId = employee.EmployeeId,
-                VacationTypeId = bal.VacationTypeId,
-                Year = bal.Year,
-                TotalDays = bal.TotalDays,
-                UsedDays = bal.UsedDays,
-                RemainingDays = bal.RemainingDays
-            }).ToList();
+                var workLocations = dto.EmployeeWorkConditions.EmployeeWorkLocations.Select(loc => new TbEmployeeWorkLocation
+                {
+                    EmployeeId = employee.EmployeeId,
+                    CityId = loc.CityId,
+                    WorkLocationId = loc.WorkLocationId,
+                    CompanyId = loc.CompanyId,
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = (int)currentEmployeeId
+                }).ToList();
 
-            _db.TbEmployeeVacationBalances.AddRange(balances);
+                _db.TbEmployeeWorkLocations.AddRange(workLocations);
+            }
+
+            // 3. Vacation Balances
+            if (dto.EmployeeVacationBalances != null && dto.EmployeeVacationBalances.Any())
+            {
+                var balances = dto.EmployeeVacationBalances.Select(bal => new TbEmployeeVacationBalance
+                {
+                    EmployeeId = employee.EmployeeId,
+                    VacationTypeId = bal.VacationTypeId,
+                    Year = bal.Year,
+                    TotalDays = bal.TotalDays,
+                    UsedDays = bal.UsedDays,
+                    RemainingDays = bal.RemainingDays
+                }).ToList();
+
+                _db.TbEmployeeVacationBalances.AddRange(balances);
+            }
+
+            await _db.SaveChangesAsync(cancellationToken);
+
+            // ✅ Commit transaction
+            await transaction.CommitAsync(cancellationToken);
+
+            return new NewEmployeeIdDTO
+            {
+                EmployeeId = employee.EmployeeId
+            };
         }
-
-        await _db.SaveChangesAsync(cancellationToken);
-
-       
-        return new NewEmployeeIdDTO
+        catch (Exception)
         {
-            EmployeeId = employee.EmployeeId
-        };
+            // ❌ Rollback transaction لو حصل أي error
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 }
+
