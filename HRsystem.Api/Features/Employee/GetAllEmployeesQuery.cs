@@ -35,10 +35,6 @@ namespace HRsystem.Api.Features.Employee
 
                     EmployeeCodeFinance = e.EmployeeCodeFinance,
                     EmployeeCodeHr = e.EmployeeCodeHr,
-                    FirstName = e.FirstName,
-                    ArabicFirstName = e.ArabicFirstName,
-                    LastName = e.LastName,
-                    ArabicLastName = e.ArabicLastName,
                     Birthdate = e.Birthdate,
                     HireDate = e.HireDate,
                     Gender = e.Gender,

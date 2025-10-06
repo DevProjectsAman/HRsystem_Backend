@@ -45,7 +45,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
                 .Select(e => new EmployeeWithActivitiesDto
                 {
                     EmployeeId = e.EmployeeId,
-                    EmployeeName = e.ArabicFirstName + " " + e.ArabicLastName,
+                    EmployeeName = e.ArabicFullName,
                     Activities = e.TbEmployeeActivities
                         .Where(a => a.StatusId == PendingStatusId)
                         .Select(a => new ActivityDto

@@ -42,10 +42,9 @@ namespace HRsystem.Api.Features.Employee.UpdateEmployee
             var dto = request.Dto;
             entity.EmployeeCodeFinance = dto.EmployeeCodeFinance;
             entity.EmployeeCodeHr = dto.EmployeeCodeHr;
-            entity.FirstName = dto.FirstName;
-            entity.ArabicFirstName = dto.ArabicFirstName;
-            entity.LastName = dto.LastName;
-            entity.ArabicLastName = dto.ArabicLastName;
+            //entity.EnglishFullName = dto.EnglishFullName;
+            //entity.ArabicFullName = dto.ArabicFullName;
+            
             entity.Birthdate = dto.Birthdate;
             entity.HireDate = dto.HireDate;
             entity.Gender = dto.Gender;
@@ -84,10 +83,8 @@ namespace HRsystem.Api.Features.Employee.UpdateEmployee
                 EmployeeCodeHr = entity.EmployeeCodeHr,
                 JobTitleId = entity.JobTitleId,
                 JobTitleName = entity.JobTitle.TitleName,
-                FirstName = entity.FirstName,
-                ArabicFirstName = entity.ArabicFirstName,
-                LastName = entity.LastName,
-                ArabicLastName = entity.ArabicLastName,
+                //EnglishFullName = entity.EnglishFullName,
+                //ArabicFullName = entity.ArabicFullName,
                 HireDate = entity.HireDate,
                 Birthdate = entity.Birthdate,
                 Gender = entity.Gender,
@@ -96,7 +93,7 @@ namespace HRsystem.Api.Features.Employee.UpdateEmployee
                 PlaceOfBirth = entity.PlaceOfBirth,
                 BloodGroup = entity.BloodGroup,
                 ManagerId = entity.ManagerId,
-                ManagerName = entity.Manager != null ? $"{entity.Manager.FirstName} {entity.Manager.LastName}" : null,
+                ManagerName = entity.Manager != null ? $"{entity.Manager.EnglishFullName}" : null,
                 CompanyId = entity.CompanyId,
                 CompanyName = entity.Company?.CompanyName,
                 CreatedBy = entity.CreatedBy,
