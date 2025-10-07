@@ -1,50 +1,59 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Services.CurrentUser;
-using HRsystem.Api.Shared.Tools;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
+namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
 {
-    public record  GetNumberOfPendingReqForManager():IRequest<int>;
+    public record GetNumberOfPendingReqForManager() : IRequest<RequestStatusesOfManagerDto>;
 
-    public class GetNumberOfPendingReqForManagerHandler : IRequestHandler<GetNumberOfPendingReqForManager, int>
+    public class RequestStatusesOfManagerDto
+    {
+        public int RejectedCount { get; set; }
+        public int PendingCount { get; set; }
+        public int ApprovedCount { get; set; }
+    }
+
+    public class GetNumberOfPendingReqForManagerHandler
+        : IRequestHandler<GetNumberOfPendingReqForManager, RequestStatusesOfManagerDto>
     {
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUserService;
+
         public GetNumberOfPendingReqForManagerHandler(DBContextHRsystem db, ICurrentUserService currentUserService)
         {
             _db = db;
             _currentUserService = currentUserService;
         }
-        public async Task<int> Handle(GetNumberOfPendingReqForManager request, CancellationToken ct)
+
+        public async Task<RequestStatusesOfManagerDto> Handle(GetNumberOfPendingReqForManager request, CancellationToken ct)
         {
             var managerId = _currentUserService.EmployeeID;
-            var language = _currentUserService.UserLanguage ?? "en";
 
-            int count = 0;
+            // Define status IDs
             const int PendingStatusId = 10;
+            const int ApprovedStatusId = 7;
+            const int RejectedStatusId = 8;
 
-            // Step 1: get raw employees + activities from DB
-            var employees = await _db.TbEmployees
-                .Where(e => e.ManagerId == managerId
-                         && e.TbEmployeeActivities.Any(a => a.StatusId == PendingStatusId))
-                .Include(e => e.TbEmployeeActivities)
-                    .ThenInclude(a => a.ActivityType)
-                .Include(e => e.TbEmployeeActivities)
-                    .ThenInclude(a => a.Status)
+            // Get all activities for employees managed by this manager
+            var activities = await _db.TbEmployeeActivities
+                .Where(a => a.Employee.ManagerId == managerId)
+                .Select(a => a.StatusId)
                 .ToListAsync(ct);
 
-            foreach (var employee in employees)
+            // Count per status
+            var result = new RequestStatusesOfManagerDto
             {
-                count++;
-            }
+                ApprovedCount = activities.Count(a => a == ApprovedStatusId),
+                RejectedCount = activities.Count(a => a == RejectedStatusId),
+                PendingCount = activities.Count(a => a == PendingStatusId)
+            };
 
-            return count;
+            return result;
         }
     }
 }
+
 /*
  * using HRsystem.Api.Database;
 using HRsystem.Api.Services.CurrentUser;

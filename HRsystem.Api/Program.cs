@@ -8,6 +8,7 @@ using HRsystem.Api.Features.City;
 using HRsystem.Api.Features.Employee;
 using HRsystem.Api.Features.EmployeeApproval;
 using HRsystem.Api.Features.EmployeeAttendance;
+using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
 using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
 using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
 using HRsystem.Api.Features.EmployeeRequest.EmployeeVacation;
@@ -268,6 +269,8 @@ app.MapWorkDaysRuleEndpoints();
 app.MapWorkDaysEndpoints();
 
 app.MapHolidayEndpoints();
+
+app.MapEmployeeAppEndPoints();
 
 app.Run();
 

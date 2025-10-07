@@ -5,32 +5,47 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
 {
+    public record GetActivitiesStatusCountQuery() : IRequest<ActivitiesStatusCountDto>;
 
-    public record GetNumberOfPendingActivitiesQuery() : IRequest<int>;
+    public class ActivitiesStatusCountDto
+    {
+        public int ApprovedCount { get; set; }
+        public int RejectedCount { get; set; }
+        public int PendingCount { get; set; }
+    }
 
-    public class GetNumberOfPendingActivitiesQueryHandler : IRequestHandler<GetNumberOfPendingActivitiesQuery, int>
+    public class GetActivitiesStatusCountQueryHandler
+        : IRequestHandler<GetActivitiesStatusCountQuery, ActivitiesStatusCountDto>
     {
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUserService;
 
-        public GetNumberOfPendingActivitiesQueryHandler(DBContextHRsystem db, ICurrentUserService currentUserService)
+        public GetActivitiesStatusCountQueryHandler(DBContextHRsystem db, ICurrentUserService currentUserService)
         {
             _db = db;
             _currentUserService = currentUserService;
         }
 
-        public async Task<int> Handle(GetNumberOfPendingActivitiesQuery request, CancellationToken ct)
+        public async Task<ActivitiesStatusCountDto> Handle(GetActivitiesStatusCountQuery request, CancellationToken ct)
         {
             var employeeId = _currentUserService.EmployeeID;
 
-            const int PendingStatusId = 10; // عدّلها حسب ID الـ Pending الفعلي عندك
+            // تأكد من IDs الصحيحة للحالات في قاعدة البيانات
+            const int ApprovedStatusId = 7;
+            const int RejectedStatusId = 8;
+            const int PendingStatusId = 10;
 
-            // يرجع عدد الطلبات فقط
-            var pendingCount = await _db.TbEmployeeActivities
-                .Where(a => a.EmployeeId == employeeId && a.StatusId == PendingStatusId)
-                .CountAsync(ct);
+            var activities = await _db.TbEmployeeActivities
+                .Where(a => a.EmployeeId == employeeId)
+                .Select(a => a.StatusId)
+                .ToListAsync(ct);
 
-            return pendingCount;
+            return new ActivitiesStatusCountDto
+            {
+                ApprovedCount = activities.Count(a => a == ApprovedStatusId),
+                RejectedCount = activities.Count(a => a == RejectedStatusId),
+                PendingCount = activities.Count(a => a == PendingStatusId)
+            };
         }
     }
 }
