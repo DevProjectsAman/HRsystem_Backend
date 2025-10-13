@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites;
+using HRsystem.Api.Features.EmployeeDashboard.GetRejectedActivities;
+using MediatR;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
 {
@@ -26,6 +28,26 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
 
                 return Results.Ok(new { Success = true, Data = result });
             });
+
+            group.MapGet("/Approved", async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetApprovedActivitiesQueury());
+                if (result == null || !result.Any())
+                    return Results.NotFound(new { Success = false, Message = "No Approved activities found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
+            group.MapGet("/R", async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetRejectedActivitiesQueury());
+                if (result == null || !result.Any())
+                    return Results.NotFound(new { Success = false, Message = "No Rejected activities found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
+
         }
     }
 }

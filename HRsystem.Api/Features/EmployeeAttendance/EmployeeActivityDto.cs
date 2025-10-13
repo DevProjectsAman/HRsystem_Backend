@@ -1,4 +1,6 @@
-﻿namespace HRsystem.Api.Features.EmployeeActivityDt
+﻿using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
+
+namespace HRsystem.Api.Features.EmployeeActivityDt
 {
 
     // EmployeeActivityDto.cs
@@ -23,6 +25,7 @@
         public DateTime? LastPunchOut { get; set; }
         public decimal? TotalHours { get; set; }
 
+        public statues Statues { get; set; }
         public decimal? ActualWorkingHours { get; set; }
 
     }

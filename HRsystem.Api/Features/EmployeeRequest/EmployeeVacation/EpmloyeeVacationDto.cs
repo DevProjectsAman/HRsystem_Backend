@@ -23,6 +23,15 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
         public int? DaysCount { get; set; }
     }
 
+    public class RequestVacationDto
+    {
+        public int VacationTypeId { get; set; }
+        public DateOnly StartDate { get; set; }
+        public DateOnly EndDate { get; set; }
+        public int DaysCount { get; set; }
+
+        public string  ? Notes { get; set; }
+    }
     public class EmployeeVacationBalanceDto
     {
 
