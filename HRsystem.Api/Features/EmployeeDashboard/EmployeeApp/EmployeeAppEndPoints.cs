@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 {
@@ -35,6 +36,18 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 
                 return Results.Ok(new { Success = true, Data = result });
             });
+
+            //  Get Employee Days History by Date Filter
+            group.MapPost("/EmployeeDaysHistory", async (ISender mediator, [FromBody] GetEmployeeDaysHistoryByFilterQueury query) =>
+            {
+                var result = await mediator.Send(query);
+
+                if (result == null || !result.Any())
+                    return Results.NotFound(new { Success = false, Message = "No records found for this date range." });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
         }
     }
 }

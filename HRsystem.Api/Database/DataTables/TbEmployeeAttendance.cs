@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,6 +19,7 @@ public partial class TbEmployeeAttendance
 
     public DateTime? FirstPuchin { get; set; }
 
+    public statues AttStatues { get; set; } // for know if ontime or late
     public DateTime? LastPuchout { get; set; }
     [Precision(5, 2)]
     public decimal? TotalHours { get; set; }
