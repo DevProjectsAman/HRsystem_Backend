@@ -9,8 +9,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
 {
-    public record RequestVacationCommand(int VacationTypeId, DateOnly StartDate, DateOnly EndDate, int DaysCount) : IRequest<EpmloyeeVacationDto>;
-
+    public record RequestVacationCommand(RequestVacationDto VacationRequest)
+    : IRequest<EpmloyeeVacationDto>;
     public class RequestVacationHandler : IRequestHandler<RequestVacationCommand, EpmloyeeVacationDto>
     {
         private readonly DBContextHRsystem _db;
@@ -24,58 +24,57 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
 
         public async Task<EpmloyeeVacationDto> Handle(RequestVacationCommand request, CancellationToken ct)
         {
+            var dto = request.VacationRequest;
+
             var employeeId = _currentUser.EmployeeID;
             var employee = await _db.TbEmployees.FirstOrDefaultAsync(e => e.EmployeeId == employeeId, ct);
             if (employee == null)
                 throw new NotFoundException("Employee Not Found", employeeId);
 
             var balance = await _db.TbEmployeeVacationBalances
-                .FirstOrDefaultAsync(b => b.EmployeeId == employee.EmployeeId && b.VacationTypeId == request.VacationTypeId, ct);
+                .FirstOrDefaultAsync(b => b.EmployeeId == employee.EmployeeId && b.VacationTypeId == dto.VacationTypeId, ct);
 
             if (balance == null)
-                throw new NotFoundException("VacationTypeId not found", request.VacationTypeId);
+                throw new NotFoundException("VacationTypeId not found", dto.VacationTypeId);
 
-            if (balance.RemainingDays < request.DaysCount)
-                throw new NotFoundException("Balance not enough", request.DaysCount);
+            if (balance.RemainingDays < dto.DaysCount)
+                throw new NotFoundException("Balance not enough", dto.DaysCount);
 
             await using var transaction = await _db.Database.BeginTransactionAsync(ct);
             try
             {
-                // ✅ Step 1: Create Activity
                 var activity = new TbEmployeeActivity
                 {
                     EmployeeId = employee.EmployeeId,
-                    ActivityTypeId = request.VacationTypeId,
+                    ActivityTypeId = dto.VacationTypeId,
                     StatusId = 7, // Pending
                     RequestBy = employee.EmployeeId,
                     RequestDate = DateTime.Now,
                     CompanyId = employee.CompanyId
                 };
                 _db.TbEmployeeActivities.Add(activity);
-                await _db.SaveChangesAsync(ct); // ✅ دلوقتي ActivityId اتسجل في DB
+                await _db.SaveChangesAsync(ct);
 
-                // ✅ Step 2: Create Vacation مرتبط بالـ Activity
                 var vacation = new TbEmployeeVacation
                 {
-                    ActivityId = activity.ActivityId, // لازم يكون موجود من DB
-                    VacationTypeId = request.VacationTypeId,
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
-                    DaysCount = request.DaysCount,
+                    ActivityId = activity.ActivityId,
+                    VacationTypeId = dto.VacationTypeId,
+                    StartDate = dto.StartDate,
+                    EndDate = dto.EndDate,
+                    DaysCount = dto.DaysCount,
+                    Notes=dto.Notes,
                 };
                 _db.TbEmployeeVacations.Add(vacation);
 
-                var check = await _db.TbVacationTypes.FirstOrDefaultAsync(e => e.VacationTypeId == request.VacationTypeId, ct);
+                var check = await _db.TbVacationTypes.FirstOrDefaultAsync(e => e.VacationTypeId == dto.VacationTypeId, ct);
 
-                if (check.IsDeductable == true)
+                if (check?.IsDeductable == true)
                 {
-                    // ✅ Step 3: Update Balance
-                    balance.UsedDays += request.DaysCount;
-                    balance.RemainingDays -= request.DaysCount;
+                    balance.UsedDays += dto.DaysCount;
+                    balance.RemainingDays -= dto.DaysCount;
                 }
                 await _db.SaveChangesAsync(ct);
 
-                // ✅ Step 4: Commit
                 await transaction.CommitAsync(ct);
 
                 return new EpmloyeeVacationDto
@@ -85,17 +84,18 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
                     StartDate = vacation.StartDate,
                     EndDate = vacation.EndDate,
                     VacationTypeId = vacation.VacationTypeId,
-                    DaysCount = vacation.DaysCount
+                    DaysCount = vacation.DaysCount,
+                    Notes = vacation.Notes,
                 };
             }
-            catch (Exception)
+            catch
             {
                 await transaction.RollbackAsync(ct);
                 throw;
             }
         }
-
     }
+
 
 
     public record GetVacationBalanceCommand(int VacationTypeId) : IRequest<EmployeeVacationBalanceDto>;
