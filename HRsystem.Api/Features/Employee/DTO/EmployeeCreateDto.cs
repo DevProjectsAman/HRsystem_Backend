@@ -144,39 +144,113 @@ namespace HRsystem.Api.Features.Employee.DTO
 
     public class EmployeeUpdateDto
     {
+        [Required]
         public int EmployeeId { get; set; }
-        public string EmployeeCodeFinance { get; set; }
-        public string EmployeeCodeHr { get; set; }
-        public string FirstName { get; set; }
-        public string ArabicFirstName { get; set; }
-        public string LastName { get; set; }
-        public string ArabicLastName { get; set; }
-        public DateOnly Birthdate { get; set; }
-        public DateOnly HireDate { get; set; }
-        public EnumGenderType Gender { get; set; }
-        public string NationalId { get; set; }
-        public string? PassportNumber { get; set; }
-        public string PlaceOfBirth { get; set; }
-        public string BloodGroup { get; set; }
-        public int JobTitleId { get; set; }
-        public int CompanyId { get; set; }
-        public int DepartmentId { get; set; }
-        public int ManagerId { get; set; }
-        public int ShiftId { get; set; }
-        public int MaritalStatusId { get; set; }
-        public int NationalityId { get; set; }
-        public string Email { get; set; }
-        public string PrivateMobile { get; set; }
-        public string? BuisnessMobile { get; set; }
-        public string SerialMobile { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
-        public bool? IsTopManager { get; set; }
-        public bool? IsFullDocument { get; set; }
-        public string? Note { get; set; }
-        public string Status { get; set; }
-    };
 
+        public EmployeeBasicDataUpdateDto? EmployeeBasicData { get; set; }
+
+        public EmployeeOrganizationUpdateDto? EmployeeOrganization { get; set; }
+
+        public EmployeeWorkConditionsUpdateDto? EmployeeWorkConditions { get; set; }
+
+        public List<EmployeeVacationBalanceUpdateDto>? EmployeeVacationBalances { get; set; }
+    }
+
+    // ✅ Basic data update
+    public class EmployeeBasicDataUpdateDto
+    {
+        [MaxLength(100)]
+        public string? EnglishFullName { get; set; }
+
+        [MaxLength(100)]
+        public string? ArabicFullName { get; set; }
+
+        [MaxLength(14)]
+        public string? NationalId { get; set; }
+
+        public DateOnly? Birthdate { get; set; }
+
+        public string? PlaceOfBirth { get; set; }
+
+        public EnumGenderType? Gender { get; set; }
+
+        public string? PassportNumber { get; set; }
+
+        public int? MaritalStatusId { get; set; }
+
+        public int? NationalityId { get; set; }
+
+        [EmailAddress]
+        public string? Email { get; set; }
+
+        [Phone]
+        public string? PrivateMobile { get; set; }
+
+        public string? BuisnessMobile { get; set; }
+
+        public string? Address { get; set; }
+
+        public string? EmployeePhotoPath { get; set; }
+
+        public string? Note { get; set; }
+    }
+
+    // ✅ Organization update
+    public class EmployeeOrganizationUpdateDto
+    {
+        public int? CompanyId { get; set; }
+        public int? DepartmentId { get; set; }
+        public int? JobTitleId { get; set; }
+        public int? ManagerId { get; set; }
+        public int? ContractTypeId { get; set; }
+
+        [MaxLength(25)]
+        public string? SerialMobile { get; set; }
+
+        public string? EmployeeCodeFinance { get; set; }
+        public string? EmployeeCodeHr { get; set; }
+
+        public DateOnly? HireDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+
+        [MaxLength(25)]
+        public string? Status { get; set; }
+    }
+
+    // ✅ Work conditions update
+    public class EmployeeWorkConditionsUpdateDto
+    {
+        public int? ShiftId { get; set; }
+        public int? WorkDaysId { get; set; }
+        public List<EmployeeWorkLocationUpdateDto>? EmployeeWorkLocations { get; set; }
+    }
+
+    // ✅ Work location update
+    public class EmployeeWorkLocationUpdateDto
+    {
+        public int? CityId { get; set; }
+        public int? WorkLocationId { get; set; }
+        public int? CompanyId { get; set; }
+    }
+
+    // ✅ Vacation balance update
+    public class EmployeeVacationBalanceUpdateDto
+    {
+        [Required]
+        public int VacationTypeId { get; set; } // key field
+
+        public int? Year { get; set; }
+
+        [Range(0, 365)]
+        public decimal? TotalDays { get; set; }
+
+        [Range(0, 365)]
+        public decimal? UsedDays { get; set; }
+
+        [Range(0, 365)]
+        public decimal? RemainingDays { get; set; }
+    }
 
     public class EmployeeReadDto
     {

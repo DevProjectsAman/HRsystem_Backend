@@ -1,131 +1,149 @@
-﻿
-using HRsystem.Api.Features.Employee.DTO;
-using HRsystem.Api.Database;
-using HRsystem.Api.Shared.DTO;
+﻿// File: Features/Employee/Commands/UpdateEmployeeCommand.cs
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using HRsystem.Api.Database;
+using HRsystem.Api.Database.DataTables;
+using HRsystem.Api.Features.Employee.DTO;
 using HRsystem.Api.Services.CurrentUser;
 
-namespace HRsystem.Api.Features.Employee.UpdateEmployee
+namespace HRsystem.Api.Features.Employee.Commands
 {
     // Command
-    public record UpdateEmployeeCommand(int Id, EmployeeUpdateDto Dto)
-        : IRequest<ResponseResultDTO<EmployeeReadDto?>>;
+    public record UpdateEmployeeCommand(EmployeeUpdateDto Employee) : IRequest<Unit>;
 
     // Handler
-    public class UpdateEmployeeHandler
-        : IRequestHandler<UpdateEmployeeCommand, ResponseResultDTO<EmployeeReadDto?>>
+    public class UpdateEmployeeHandler : IRequestHandler<UpdateEmployeeCommand, Unit>
     {
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUserService;
-        public UpdateEmployeeHandler(DBContextHRsystem db , ICurrentUserService currentUserService)
+
+        public UpdateEmployeeHandler(DBContextHRsystem db, ICurrentUserService currentUserService)
         {
             _db = db;
             _currentUserService = currentUserService;
         }
 
-        public async Task<ResponseResultDTO<EmployeeReadDto?>> Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
         {
-            var HREmployeeID = _currentUserService.EmployeeID;
-            var language = _currentUserService.UserLanguage;
-            var entity = await _db.TbEmployees
-                .FirstOrDefaultAsync(e => e.EmployeeId == request.Id, cancellationToken);
+            var dto = request.Employee ?? throw new ArgumentNullException(nameof(request.Employee));
+            var currentEmployeeId = _currentUserService.EmployeeID;
 
-            if (entity == null)
-                return new ResponseResultDTO<EmployeeReadDto?>
+            var employee = await _db.TbEmployees
+                .Include(e => e.TbEmployeeWorkLocations)
+                .Include(e => e.TbEmployeeVacationBalances)
+                .FirstOrDefaultAsync(e => e.EmployeeId == dto.EmployeeId, cancellationToken);
+
+            if (employee == null)
+                throw new Exception($"Employee with id {dto.EmployeeId} not found.");
+
+            using var transaction = await _db.Database.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                // Basic data (partial update: only apply non-null fields from DTO)
+                if (dto.EmployeeBasicData != null)
                 {
-                    Success = false,
-                    Message = "Employee not found"
-                };
+                    var b = dto.EmployeeBasicData;
+                    if (b.EnglishFullName != null) employee.EnglishFullName = b.EnglishFullName;
+                    if (b.ArabicFullName != null) employee.ArabicFullName = b.ArabicFullName;
+                    if (b.NationalId != null) employee.NationalId = b.NationalId;
+                    if (b.Birthdate.HasValue) employee.Birthdate = b.Birthdate.Value;
+                    if (b.PlaceOfBirth != null) employee.PlaceOfBirth = b.PlaceOfBirth;
+                    if (b.Gender.HasValue) employee.Gender = b.Gender.Value;
+                    if (b.PassportNumber != null) employee.PassportNumber = b.PassportNumber;
+                    if (b.MaritalStatusId.HasValue) employee.MaritalStatusId = b.MaritalStatusId.Value;
+                    if (b.NationalityId.HasValue) employee.NationalityId = b.NationalityId.Value;
+                    if (b.Email != null) employee.Email = b.Email;
+                    if (b.PrivateMobile != null) employee.PrivateMobile = b.PrivateMobile;
+                    if (b.BuisnessMobile != null) employee.BuisnessMobile = b.BuisnessMobile;
+                    if (b.Address != null) employee.Address = b.Address;
+                    if (b.EmployeePhotoPath != null) employee.EmployeePhotoPath = b.EmployeePhotoPath;
+                    if (b.Note != null) employee.Note = b.Note;
+                }
 
-            // ✅ Update fields from DTO
-            var dto = request.Dto;
-            entity.EmployeeCodeFinance = dto.EmployeeCodeFinance;
-            entity.EmployeeCodeHr = dto.EmployeeCodeHr;
-            //entity.EnglishFullName = dto.EnglishFullName;
-            //entity.ArabicFullName = dto.ArabicFullName;
-            
-            entity.Birthdate = dto.Birthdate;
-            entity.HireDate = dto.HireDate;
-            entity.Gender = dto.Gender;
-            entity.NationalId = dto.NationalId;
-            entity.PassportNumber = dto.PassportNumber;
-            entity.PlaceOfBirth = dto.PlaceOfBirth;
-            entity.BloodGroup = dto.BloodGroup;
-            entity.JobTitleId = dto.JobTitleId;
-            entity.CompanyId = dto.CompanyId;
-            entity.DepartmentId = dto.DepartmentId;
-            entity.ManagerId = dto.ManagerId;
-            entity.ShiftId = dto.ShiftId;
-            entity.MaritalStatusId = dto.MaritalStatusId;
-            entity.NationalityId = dto.NationalityId;
-            entity.Email = dto.Email;
-            entity.PrivateMobile = dto.PrivateMobile;
-            entity.BuisnessMobile = dto.BuisnessMobile;
-            entity.SerialMobile = dto.SerialMobile;
-            entity.StartDate = dto.StartDate;
-            entity.EndDate = dto.EndDate;
-            entity.IsTopmanager = dto.IsTopManager.HasValue ? (sbyte?)(dto.IsTopManager.Value ? 1 : 0) : null;
-            entity.IsFulldocument = dto.IsFullDocument.HasValue ? (sbyte?)(dto.IsFullDocument.Value ? 1 : 0) : null;
-            entity.Note = dto.Note;
-            entity.Status = dto.Status;
-            entity.UpdatedAt = DateTime.Now;
-            entity.UpdatedBy = (int)HREmployeeID;
+                // Organization
+                if (dto.EmployeeOrganization != null)
+                {
+                    var o = dto.EmployeeOrganization;
+                    if (o.CompanyId.HasValue) employee.CompanyId = o.CompanyId.Value;
+                    if (o.DepartmentId.HasValue) employee.DepartmentId = o.DepartmentId.Value;
+                    if (o.JobTitleId.HasValue) employee.JobTitleId = o.JobTitleId.Value;
+                    if (o.ManagerId.HasValue) employee.ManagerId = o.ManagerId.Value;
+                    if (o.ContractTypeId.HasValue) employee.ContractTypeId = o.ContractTypeId.Value;
+                    if (o.SerialMobile != null) employee.SerialMobile = o.SerialMobile;
+                    if (o.EmployeeCodeFinance != null) employee.EmployeeCodeFinance = o.EmployeeCodeFinance;
+                    if (o.EmployeeCodeHr != null) employee.EmployeeCodeHr = o.EmployeeCodeHr;
+                    if (o.HireDate.HasValue) employee.HireDate = o.HireDate.Value;
+                    if (o.StartDate.HasValue) employee.StartDate = o.StartDate.Value;
+                    if (o.EndDate.HasValue) employee.EndDate = o.EndDate;
+                    if (o.Status != null) employee.Status = o.Status;
+                }
 
-            _db.TbEmployees.Update(entity);
-            await _db.SaveChangesAsync(cancellationToken);
+                // Work conditions
+                if (dto.EmployeeWorkConditions != null)
+                {
+                    var w = dto.EmployeeWorkConditions;
+                    if (w.ShiftId.HasValue) employee.ShiftId = w.ShiftId.Value;
+                    if (w.WorkDaysId.HasValue) employee.WorkDaysId = w.WorkDaysId.Value;
 
-            // ✅ Convert updated entity to ReadDto (you already have mapping logic)
-            var updatedDto = new EmployeeReadDto
+                    // Replace work locations only if provided
+                    if (w.EmployeeWorkLocations != null)
+                    {
+                        _db.TbEmployeeWorkLocations.RemoveRange(employee.   TbEmployeeWorkLocations ?? Enumerable.Empty<TbEmployeeWorkLocation>());
+
+                        var newLocations = w.EmployeeWorkLocations
+                            .Select(loc => new TbEmployeeWorkLocation
+                            {
+                                EmployeeId = employee.EmployeeId,
+                                CityId = loc.CityId ?? 0,
+                                WorkLocationId = loc.WorkLocationId ?? 0,
+                                CompanyId = loc.CompanyId ?? 0,
+                                CreatedAt = DateTime.Now,
+                                CreatedBy = (int)currentEmployeeId
+                            }).ToList();
+
+                        if (newLocations.Any())
+                            _db.TbEmployeeWorkLocations.AddRange(newLocations);
+                    }
+                }
+
+                // Vacation balances (replace only if provided)
+                if (dto.EmployeeVacationBalances != null)
+                {
+                    _db.TbEmployeeVacationBalances.RemoveRange(employee.TbEmployeeVacationBalances ?? Enumerable.Empty<TbEmployeeVacationBalance>());
+
+                    var newBalances = dto.EmployeeVacationBalances.Select(bal => new TbEmployeeVacationBalance
+                    {
+                        EmployeeId = employee.EmployeeId,
+                        VacationTypeId = bal.VacationTypeId,
+                        Year = bal.Year ?? DateTime.Now.Year,
+                        TotalDays = bal.TotalDays ?? 0,
+                        UsedDays = bal.UsedDays ?? 0,
+                        RemainingDays = bal.RemainingDays ?? 0
+                    }).ToList();
+
+                    if (newBalances.Any())
+                        _db.TbEmployeeVacationBalances.AddRange(newBalances);
+                }
+
+                // Meta
+                employee.UpdatedAt = DateTime.Now;
+                employee.UpdatedBy = (int)currentEmployeeId;
+
+                await _db.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+
+                return Unit.Value;
+            }
+            catch
             {
-                EmployeeId = entity.EmployeeId,
-                EmployeeCodeFinance = entity.EmployeeCodeFinance,
-                EmployeeCodeHr = entity.EmployeeCodeHr,
-                JobTitleId = entity.JobTitleId,
-                JobTitleName = entity.JobTitle.TitleName,
-                //EnglishFullName = entity.EnglishFullName,
-                //ArabicFullName = entity.ArabicFullName,
-                HireDate = entity.HireDate,
-                Birthdate = entity.Birthdate,
-                Gender = entity.Gender,
-                NationalId = entity.NationalId,
-                PassportNumber = entity.PassportNumber,
-                PlaceOfBirth = entity.PlaceOfBirth,
-                BloodGroup = entity.BloodGroup,
-                ManagerId = entity.ManagerId,
-                ManagerName = entity.Manager != null ? $"{entity.Manager.EnglishFullName}" : null,
-                CompanyId = entity.CompanyId,
-                CompanyName = entity.Company?.CompanyName,
-                CreatedBy = entity.CreatedBy,
-                CreatedAt = entity.CreatedAt,
-                UpdatedBy = entity.UpdatedBy,
-                UpdatedAt = entity.UpdatedAt,
-                PrivateMobile = entity.PrivateMobile,
-                BuisnessMobile = entity.BuisnessMobile,
-                Email = entity.Email,
-                SerialMobile = entity.SerialMobile,
-                StartDate = entity.StartDate,
-                EndDate = entity.EndDate,
-                IsTopManager = dto.IsTopManager,
-                IsFullDocument = dto.IsFullDocument,
-                Note = dto.Note,
-                Status = dto.Status,
-                NationalityId = entity.NationalityId,
-                NationalityName = entity.Nationality?.NameEn,
-                DepartmentId = entity.DepartmentId,
-                DepartmentName = entity.Department.DepartmentName,
-                ShiftId = entity.ShiftId,
-                ShiftName = entity.Shifts.ShiftName,
-                MaritalStatusId = entity.MaritalStatusId,
-                MaritalStatusName = entity.MaritalStatus?.NameAr
-            };
-
-            return new ResponseResultDTO<EmployeeReadDto?>
-            {
-                Success = true,
-                Data = updatedDto,
-                Message = "Employee updated successfully"
-            };
+                await transaction.RollbackAsync(cancellationToken);
+                throw;
+            }
         }
     }
 }
+

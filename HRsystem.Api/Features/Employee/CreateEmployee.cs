@@ -119,7 +119,7 @@ public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, NewE
         }
         catch (Exception)
         {
-            // ❌ Rollback transaction لو حصل أي error
+           
             await transaction.RollbackAsync(cancellationToken);
             throw;
         }

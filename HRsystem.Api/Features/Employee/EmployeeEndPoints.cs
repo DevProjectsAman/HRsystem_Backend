@@ -55,8 +55,10 @@
 //}
 
 
+using HRsystem.Api.Features.Employee.Commands;
 using HRsystem.Api.Features.Employee.DTO;
-using HRsystem.Api.Features.Employee.UpdateEmployee;
+//using HRsystem.Api.Features.Employee.UpdateEmployee;
+using HRsystem.Api.Features.Employee.Commands;
 using MediatR;
 
 namespace HRsystem.Api.Features.Employee
@@ -91,17 +93,30 @@ namespace HRsystem.Api.Features.Employee
             });
 
             // ✅ Update
+            //group.MapPut("/UpdateEmployee/{id}", async (int id, EmployeeUpdateDto dto, ISender mediator) =>
+            //{
+            //    if (id != dto.EmployeeId)
+            //        return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
+
+            //    var cmd = new UpdateEmployeeCommand(id, dto); // لازم id + dto
+            //    var result = await mediator.Send(cmd);
+
+            //    return result == null
+            //        ? Results.NotFound(new { Success = false, Message = "Employee not found" })
+            //        : Results.Ok(new { Success = true, Data = result });
+            //});
+
             group.MapPut("/UpdateEmployee/{id}", async (int id, EmployeeUpdateDto dto, ISender mediator) =>
             {
                 if (id != dto.EmployeeId)
                     return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
 
-                var cmd = new UpdateEmployeeCommand(id, dto); // لازم id + dto
+                var cmd = new UpdateEmployeeCommand(dto); // ✅ كده تمام لأنه بياخد dto بس
                 var result = await mediator.Send(cmd);
 
                 return result == null
-                    ? Results.NotFound(new { Success = false, Message = "Employee not found" })
-                    : Results.Ok(new { Success = true, Data = result });
+                   ? Results.NotFound(new { Success = false, Message = "Employee not found" })
+                   : Results.Ok(new { Success = true, Data = result });
             });
 
 

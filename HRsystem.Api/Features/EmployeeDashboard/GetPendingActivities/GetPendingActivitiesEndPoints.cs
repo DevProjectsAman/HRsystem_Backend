@@ -20,7 +20,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
 
             group.MapGet("/NubmerOfpending", async (ISender mediator) =>
             {
-                var result = await mediator.Send(new GetNumberOfPendingActivitiesQuery());
+                var result = await mediator.Send(new GetActivitiesStatusCountQuery());
                 if (result == null )
                     return Results.NotFound(new { Success = false, Message = "No pending activities found" });
 
