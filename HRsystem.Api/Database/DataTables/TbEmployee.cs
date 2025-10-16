@@ -18,17 +18,7 @@ public partial class TbEmployee
 
     public int JobTitleId { get; set; }
 
-    //[MaxLength(55)]
-    //public string? FirstName { get; set; } = null!;
-
-    //[MaxLength(55)]
-    //public string? ArabicFirstName { get; set; }
-
-    //[MaxLength(55)]
-    //public string? LastName { get; set; } = null!;
-
-    //[MaxLength(100)]
-    //public string? ArabicLastName { get; set; }
+    
 
     public DateOnly HireDate { get; set; }
 
