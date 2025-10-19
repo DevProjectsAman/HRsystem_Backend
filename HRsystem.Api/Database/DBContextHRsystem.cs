@@ -34,6 +34,8 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
 
     public virtual DbSet<TbEmployee> TbEmployees { get; set; }
 
+    public virtual DbSet<TbEmployeeMonthlyReport> TbEmployeeMonthlyReports { get; set; }
+
     public virtual DbSet<TbEmployeeActivity> TbEmployeeActivities { get; set; }
 
     public virtual DbSet<TbEmployeeActivityApproval> TbEmployeeActivityApprovals { get; set; }
