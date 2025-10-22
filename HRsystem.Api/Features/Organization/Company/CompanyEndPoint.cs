@@ -1,9 +1,9 @@
-﻿//using HRsystem.Api.Features.Company.DeleteCompany;
-using FluentValidation;
+﻿using FluentValidation;
 using HRsystem.Api.Features.Organization.Company.CreateCompany;
 using HRsystem.Api.Features.Organization.Company.GetAllCompany;
 using HRsystem.Api.Features.Organization.Company.GetCompanyById;
 using HRsystem.Api.Features.Organization.Company.UpdateCompany;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 
 namespace HRsystem.Api.Features.Organization.Company
@@ -14,65 +14,140 @@ namespace HRsystem.Api.Features.Organization.Company
         {
             var group = app.MapGroup("/api/Organization/companies").WithTags("Companies");
 
-            // Get All
+            // ✅ Get All
             group.MapGet("/ListOfCompany", async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllCompanyCommand());
-                return Results.Ok(new { Success = true, Data = result });
+                return Results.Ok(new ResponseResultDTO<object>
+                {
+                    Data = result,
+                    Message = "Companies retrieved successfully",
+                    Success = true
+                });
             });
 
-            // Get One
+            // ✅ Get One
             group.MapGet("/GetOneCompany/{id}", async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetCompanyByIdCommand(id));
-                return result == null
-                    ? Results.NotFound(new { Success = false, Message = $"Company {id} not found" })
-                    : Results.Ok(new { Success = true, Data = result });
+
+                if (result == null)
+                {
+                    return Results.NotFound(new ResponseResultDTO
+                    {
+                        Success = false,
+                        Message = $"Company {id} not found"
+                    });
+                }
+
+                return Results.Ok(new ResponseResultDTO<object>
+                {
+                    Success = true,
+                    Data = result,
+                    Message = "Company retrieved successfully"
+                });
             });
 
-            // Create
+            // ✅ Create
             group.MapPost("/CreateCompany", async (CreateCompanyCommand cmd, ISender mediator, IValidator<CreateCompanyCommand> validator) =>
             {
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
-                    return Results.BadRequest(new
+                {
+                    var errors = validationResult.Errors
+                        .Select(e => new ResponseErrorDTO
+                        {
+                            Property = e.PropertyName,
+                            Error = e.ErrorMessage
+                        })
+                        .ToList();
+
+                    return Results.BadRequest(new ResponseResultDTO
                     {
                         Success = false,
-                        Errors = validationResult.Errors.Select(e => e.ErrorMessage)
+                        Message = "Validation failed",
+                        Errors = errors
                     });
+                }
 
                 var result = await mediator.Send(cmd);
-                return Results.Created($"/api/companies/{result.CompanyId}", new { Success = true, Data = result });
+                return Results.Created($"/api/Organization/companies/{result.CompanyId}", new ResponseResultDTO<object>
+                {
+                    Success = true,
+                    Data = result,
+                    Message = "Company created successfully"
+                });
             });
 
-            // Update
+            // ✅ Update
             group.MapPut("/UpdateCompany/{id}", async (int id, UpdateCompanyCommand cmd, ISender mediator, IValidator<UpdateCompanyCommand> validator) =>
             {
                 if (id != cmd.CompanyId)
-                    return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
+                {
+                    return Results.BadRequest(new ResponseResultDTO
+                    {
+                        Success = false,
+                        Message = "Id mismatch"
+                    });
+                }
 
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
-                    return Results.BadRequest(new
+                {
+                    var errors = validationResult.Errors
+                        .Select(e => new ResponseErrorDTO
+                        {
+                            Property = e.PropertyName,
+                            Error = e.ErrorMessage
+                        })
+                        .ToList();
+
+                    return Results.BadRequest(new ResponseResultDTO
                     {
                         Success = false,
-                        Errors = validationResult.Errors.Select(e => e.ErrorMessage)
+                        Message = "Validation failed",
+                        Errors = errors
                     });
+                }
 
                 var result = await mediator.Send(cmd);
-                return result == null
-                    ? Results.NotFound(new { Success = false, Message = $"Company {id} not found" })
-                    : Results.Ok(new { Success = true, Data = result });
+
+                if (result == null)
+                {
+                    return Results.NotFound(new ResponseResultDTO
+                    {
+                        Success = false,
+                        Message = $"Company {id} not found"
+                    });
+                }
+
+                return Results.Ok(new ResponseResultDTO<object>
+                {
+                    Success = true,
+                    Data = result,
+                    Message = "Company updated successfully"
+                });
             });
 
-            // Delete
-            //group.MapDelete("/{id}", async (int id, ISender mediator) =>
-            //{
-            //    var result = await mediator.Send(new DeleteCompanyCommand(id));
-            //    return !result
-            //        ? Results.NotFound(new { Success = false, Message = $"Company {id} not found" })
-            //        : Results.Ok(new { Success = true, Message = $"Company {id} deleted successfully" });
-            //});
+            // ✅ Optional: Delete (if you re-enable later)
+            // group.MapDelete("/{id}", async (int id, ISender mediator) =>
+            // {
+            //     var result = await mediator.Send(new DeleteCompanyCommand(id));
+            //     if (!result)
+            //     {
+            //         return Results.NotFound(new ResponseResultDTO
+            //         {
+            //             Success = false,
+            //             Message = $"Company {id} not found"
+            //         });
+            //     }
+
+            //     return Results.Ok(new ResponseResultDTO
+            //     {
+            //         Success = true,
+            //         Message = $"Company {id} deleted successfully"
+            //     });
+            // });
         }
     }
 }
