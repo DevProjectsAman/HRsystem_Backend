@@ -18,6 +18,7 @@ namespace HRsystem.Api.Features.Organization.Department.GetAllDepartments
         public int DepartmentId { get; set; }
         public string DepartmentCode { get; set; }
         public string DepartmentName { get; set; }
+        
         public int? CompanyId { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
