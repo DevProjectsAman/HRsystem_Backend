@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRsystem.Api.Database.DataTables;
 
-[Table("TbEmployee_Monthly_Report")]
+[Table("Tb_Employee_Monthly_Report")]
 
 
 public partial class TbEmployeeMonthlyReport
@@ -88,7 +88,7 @@ public partial class TbEmployeeMonthlyReport
     public string TodayStatues { get; set; } = "Attendance";
     
     [Column(TypeName = "json")]
-    public object Details { get; set; } = new { };
+    public string Details { get; set; } = "{}";
 
 }
 

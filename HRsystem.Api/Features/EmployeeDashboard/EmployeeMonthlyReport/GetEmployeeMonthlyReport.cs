@@ -427,16 +427,16 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
             bool Flagcheck= false;
             var employees = await _db.TbEmployees
                 .Include(e => e.JobTitle).ThenInclude(j => j.JobLevel)
-                .Include(e => e.RemoteWorkDayS)
-                .Include(e => e.WorkDays)
+                .Include(e => e.TbRemoteWorkDays)
+                .Include(e => e.TbWorkDays)
                 .ToListAsync(ct);
 
 
 
             foreach (var employee in employees)
             {
-                var workDays = employee.WorkDays?.WorkDaysNames ?? new List<string>();
-                var remoteDays = employee.RemoteWorkDayS?.RemoteWorkDaysNames ?? new List<string>();
+                var workDays = employee.TbWorkDays?.WorkDaysNames ?? new List<string>();
+                var remoteDays = employee.TbRemoteWorkDays?.RemoteWorkDaysNames ?? new List<string>();
 
                 var isHoliday = await _db.TbHolidays
                         .AnyAsync(h =>
@@ -513,16 +513,16 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                                     existingDayReport.ActualWorkingHours = attendance.ActualWorkingHours;
                                     existingDayReport.AttStatues = attendance.AttStatues;
                                     Flagcheck = true;
-                                    existingDayReport.Details = new
-                                    {
-                                        Type = "Attendance",
-                                        attendance.AttendanceDate,
-                                        attendance.FirstPuchin,
-                                        attendance.LastPuchout,
-                                        attendance.TotalHours,
-                                        attendance.ActualWorkingHours,
-                                        attendance.AttStatues
-                                    };
+                                existingDayReport.Details = JsonSerializer.Serialize(new
+                                {
+                                    Type = "Attendance",
+                                    attendance.AttendanceDate,
+                                    attendance.FirstPuchin,
+                                    attendance.LastPuchout,
+                                    attendance.TotalHours,
+                                    attendance.ActualWorkingHours,
+                                    attendance.AttStatues
+                                });
 
 
                             }
@@ -549,14 +549,14 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                                         IsRemoteday = isRemoteDay,
                                         IsHoliday = isHoliday,
                                         TodayStatues = "Vacation",
-                                        Details = new
+                                        Details = JsonSerializer.Serialize(new
                                         {
                                             Type = "Vacation",
                                             vacation.VacationTypeId,
                                             vacation.StartDate,
                                             vacation.EndDate,
                                             vacation.DaysCount,
-                                        }
+                                        })
                                     };
                                         _db.TbEmployeeMonthlyReports.Add(newReport);
                                     }
@@ -570,14 +570,14 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                                 {
                                     existingDayReport.TodayStatues += " Mission";
                                 // existingDayReport.Details = new { Type = "Mission", mission.StartDate, mission.EndDate };
-                                    existingDayReport.Details = new
+                                    existingDayReport.Details = JsonSerializer.Serialize(new
                                     {
                                         Type = "Mission",
                                         mission.StartDatetime,
                                         mission.EndDatetime,
                                         mission.MissionLocation,
                                         mission.MissionReason, 
-                                    };
+                                    });
                                 Flagcheck = true;
                                 }
                                 break;
@@ -589,7 +589,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                                 {
                                     existingDayReport.TodayStatues += " Excuse";
                                 //existingDayReport.Details = new { Type = "Excuse", excuse.StartDate, excuse.EndDate };
-                                    existingDayReport.Details = new
+                                    existingDayReport.Details = JsonSerializer.Serialize(new
                                     {
                                         Type = "Excuse",
                                         excuse.StartTime,
@@ -597,7 +597,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                                         excuse.ExcuseReason,
                                         excuse.ExcuseDate,
                   
-                                    };
+                                    });
                                 }
                                 break;
 
