@@ -55,7 +55,7 @@
 
 //        public int ActivityTypeId { get; set; }
 
-//        public int StatusId { get; set; }
+//        public int EmployeeTodayStatuesId { get; set; }
 
 //        public long RequestBy { get; set; }
 
@@ -121,7 +121,7 @@
 //                                            {
 //                                                a.ActivityId,
 //                                                a.RequestDate,
-//                                                a.StatusId,
+//                                                a.EmployeeTodayStatuesId,
 //                                                a.EmployeeId,
 //                                                a.CompanyId,
 //                                                a.ActivityTypeId,
@@ -215,7 +215,7 @@
 //                                        RemoteWorkDaysId = employeeDetails.RemoteWorkDaysId,
 //                                        ActivityId = activity.ActivityId,
 //                                        ActivityTypeId = activity.ActivityTypeId,
-//                                        StatusId = activity.StatusId,
+//                                        EmployeeTodayStatuesId = activity.EmployeeTodayStatuesId,
 //                                        ApprovedBy = activity.ApprovedBy,
 //                                        RequestDate = activity.RequestDate,
 //                                        ApprovedDate = activity.ApprovedDate,
@@ -239,7 +239,7 @@
 //                                    DayId = dayReport.DayId,
 //                                    ActivityId = activity.ActivityId,
 //                                    ActivityTypeId = activity.ActivityTypeId,
-//                                    StatusId = activity.StatusId,
+//                                    EmployeeTodayStatuesId = activity.EmployeeTodayStatuesId,
 //                                    ApprovedBy = activity.ApprovedBy,
 //                                    RequestDate = activity.RequestDate,
 //                                    ApprovedDate = activity.ApprovedDate,
@@ -280,7 +280,7 @@
 //                                    ShiftId = employeeDetails.ShiftId,
 //                                    WorkDaysId = employeeDetails.WorkDaysId,
 //                                    RemoteWorkDaysId = employeeDetails.RemoteWorkDaysId,
-//                                    StatusId= activity.StatusId,
+//                                    EmployeeTodayStatuesId= activity.EmployeeTodayStatuesId,
 
 //                                };
 //                                count++;
@@ -311,7 +311,7 @@
 //                                    ShiftId = employeeDetails.ShiftId,
 //                                    WorkDaysId = employeeDetails.WorkDaysId,
 //                                    RemoteWorkDaysId = employeeDetails.RemoteWorkDaysId,
-//                                    StatusId = activity.StatusId,
+//                                    EmployeeTodayStatuesId = activity.EmployeeTodayStatuesId,
 
 //                                };
 
@@ -324,7 +324,7 @@
 //                                var DayMonthReport = new GetEmployeeMonthlyReportDto
 //                                {
 //                                    DayId = dayReport.DayId,
-//                                    StatusId = activity.StatusId,
+//                                    EmployeeTodayStatuesId = activity.EmployeeTodayStatuesId,
 //                                };
 //                                _db.TbEmployeeMonthlyReports.Add(DayMonthReport);
 //                                await _db.SaveChangesAsync(ct);
@@ -356,7 +356,7 @@
 //                                    ShiftId = employeeDetails.ShiftId,
 //                                    WorkDaysId = employeeDetails.WorkDaysId,
 //                                    RemoteWorkDaysId = employeeDetails.RemoteWorkDaysId,
-//                                    StatusId = activity.StatusId,
+//                                    EmployeeTodayStatuesId = activity.EmployeeTodayStatuesId,
 
 //                                };
 
@@ -369,7 +369,7 @@
 //                                var DayMonthReport = new GetEmployeeMonthlyReportDto
 //                                {
 //                                    DayId = dayReport.DayId,
-//                                    StatusId = activity.StatusId,
+//                                    EmployeeTodayStatuesId = activity.EmployeeTodayStatuesId,
 //                                };
 //                                _db.TbEmployeeMonthlyReports.Add(DayMonthReport);
 //                                await _db.SaveChangesAsync(ct);
@@ -393,12 +393,16 @@
 
 //    }
 //}
+
+// as an api
+
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Migrations;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Text.Json;
@@ -470,7 +474,14 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                         RemoteWorkDaysId = employee.RemoteWorkDaysId,
                         IsWorkday = isWorkday,
                         IsRemoteday = isRemoteDay,
-                        IsHoliday = isHoliday
+                        IsHoliday = isHoliday,
+                        EnglishFullName = employee.EnglishFullName,
+                        ArabicFullName = employee.ArabicFullName,
+                        ContractTypeId = employee.ContractTypeId,
+                        EmployeeCodeFinance = employee.EmployeeCodeFinance,        
+                        EmployeeCodeHr = employee.EmployeeCodeHr,
+                        JobTitleId = employee.JobTitleId,
+                        
                     };
                     _db.TbEmployeeMonthlyReports.Add(existingDayReport);
                     await _db.SaveChangesAsync(ct);
@@ -478,20 +489,20 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
 
                     if (isHoliday)// kda tmam
                     {
-                        existingDayReport.StatusId =  1; //  anything represent statues of day
+                        existingDayReport.EmployeeTodayStatuesId =  1; //  anything represent statues of day
                         existingDayReport.TodayStatues = " Hoilday";
                        // existingDayReport.Details = new { Type = "Hoilday", Hoilday.StartDate, Hoilday.EndDate };
                     }
-                    else if (isRemoteDay)// also tmam must be check here
+                    else if (isRemoteDay)// also tmam but must be check here on start time of his shift
                     {
-                        existingDayReport.StatusId = 2; //  anything represent statues of day
+                        existingDayReport.EmployeeTodayStatuesId = 2; //  anything represent statues of day
                         existingDayReport.TodayStatues = " RemoteDay";
                         //existingDayReport.Details = new { Type = "RemoteDay", RemoteDay.StartDate, RemoteDay.EndDate };
 
                     }
                     else if (isWorkday)// kda absent
                     {
-                       existingDayReport.StatusId = 3; // anything represent statues of day
+                       existingDayReport.EmployeeTodayStatuesId = 3; // anything represent statues of day
                        existingDayReport.TodayStatues = " Workday";
                        //existingDayReport.Details = new { Type = "Workday", Workday.StartDate, Workday.EndDate };
                     }
@@ -500,6 +511,13 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                     // update in report
                     foreach (var activity in activities)
                     {
+
+                    existingDayReport.ActivityId = activity.ActivityId;
+                    existingDayReport.ActivityTypeId = activity.ActivityTypeId;
+                    existingDayReport.RequestBy = activity.RequestBy;
+                    existingDayReport.ApprovedBy = activity.ApprovedBy;
+                    existingDayReport.RequestDate = activity.RequestDate;
+                    existingDayReport.ApprovedDate = activity.ApprovedDate; 
                         switch (activity.ActivityTypeId)
                         {
                             case 1: // Attendance
@@ -507,12 +525,15 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                                     .FirstOrDefaultAsync(a => a.ActivityId == activity.ActivityId, ct);
                                 if (attendance != null)
                                 {
+                                    existingDayReport.AttendanceId = attendance.ActivityId;
+                                    existingDayReport.AttendanceDate= attendance.AttendanceDate;
                                     existingDayReport.FirstPuchin = attendance.FirstPuchin;
                                     existingDayReport.LastPuchout = attendance.LastPuchout;
                                     existingDayReport.TotalHours = attendance.TotalHours;
                                     existingDayReport.ActualWorkingHours = attendance.ActualWorkingHours;
                                     existingDayReport.AttStatues = attendance.AttStatues;
-                                    Flagcheck = true;
+                                    existingDayReport.EmployeeTodayStatuesId = 1; // not absent
+                                Flagcheck = true;
                                 existingDayReport.Details = JsonSerializer.Serialize(new
                                 {
                                     Type = "Attendance",
@@ -549,6 +570,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                                         IsRemoteday = isRemoteDay,
                                         IsHoliday = isHoliday,
                                         TodayStatues = "Vacation",
+                                        EmployeeTodayStatuesId = 2, // not absent but in rest
                                         Details = JsonSerializer.Serialize(new
                                         {
                                             Type = "Vacation",
@@ -556,6 +578,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                                             vacation.StartDate,
                                             vacation.EndDate,
                                             vacation.DaysCount,
+                                            vacation.Notes,
                                         })
                                     };
                                         _db.TbEmployeeMonthlyReports.Add(newReport);
@@ -569,14 +592,16 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                                 if (mission != null)
                                 {
                                     existingDayReport.TodayStatues += " Mission";
-                                // existingDayReport.Details = new { Type = "Mission", mission.StartDate, mission.EndDate };
-                                    existingDayReport.Details = JsonSerializer.Serialize(new
+                                    existingDayReport.EmployeeTodayStatuesId = 1; // not absent
+                                    // existingDayReport.Details = new { Type = "Mission", mission.StartDate, mission.EndDate };
+                                existingDayReport.Details = JsonSerializer.Serialize(new
                                     {
                                         Type = "Mission",
                                         mission.StartDatetime,
                                         mission.EndDatetime,
                                         mission.MissionLocation,
                                         mission.MissionReason, 
+
                                     });
                                 Flagcheck = true;
                                 }
@@ -588,7 +613,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                                 if (excuse != null)
                                 {
                                     existingDayReport.TodayStatues += " Excuse";
-                                //existingDayReport.Details = new { Type = "Excuse", excuse.StartDate, excuse.EndDate };
+                                    existingDayReport.EmployeeTodayStatuesId = 1; // not absent
+                                    //existingDayReport.Details = new { Type = "Excuse", excuse.StartDate, excuse.EndDate };
                                     existingDayReport.Details = JsonSerializer.Serialize(new
                                     {
                                         Type = "Excuse",
@@ -611,3 +637,170 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
         }
     }
 }
+
+
+// as a service
+/* 
+using HRsystem.Api.Database;
+using HRsystem.Api.Database.DataTables;
+using HRsystem.Api.Services.CurrentUser;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Text.Json;
+using static HRsystem.Api.Enums.EnumsList;
+
+namespace HRsystem.Api.Services.Reports
+{
+    public class EmployeeMonthlyReportService : IEmployeeMonthlyReportService
+    {
+        private readonly DBContextHRsystem _db;
+        private readonly ICurrentUserService _currentUser;
+
+        public EmployeeMonthlyReportService(DBContextHRsystem db, ICurrentUserService currentUser)
+        {
+            _db = db;
+            _currentUser = currentUser;
+        }
+
+        public async Task<string> GenerateMonthlyReportAsync(CancellationToken ct)
+        {
+            var Today = DateTime.Now.Date;
+            string todayName = DateTime.Now.ToString("dddd", new CultureInfo("en-US"));
+
+            var employees = await _db.TbEmployees
+                .Include(e => e.JobTitle).ThenInclude(j => j.JobLevel)
+                .Include(e => e.TbRemoteWorkDays)
+                .Include(e => e.TbWorkDays)
+                .ToListAsync(ct);
+
+            foreach (var employee in employees)
+            {
+                var workDays = employee.TbWorkDays?.WorkDaysNames ?? new List<string>();
+                var remoteDays = employee.TbRemoteWorkDays?.RemoteWorkDaysNames ?? new List<string>();
+
+                var isHoliday = await _db.TbHolidays
+                    .AnyAsync(h =>
+                        h.IsActive &&
+                        Today >= h.StartDate.Date &&
+                        Today <= h.EndDate.Date &&
+                        (!h.IsForChristiansOnly || employee.Religion == EnumReligionType.Christian),
+                        ct);
+
+                bool isWorkday = workDays.Any(d => d.Equals(todayName, StringComparison.OrdinalIgnoreCase));
+                bool isRemoteDay = remoteDays.Any(d => d.Equals(todayName, StringComparison.OrdinalIgnoreCase));
+
+                var activities = await _db.TbEmployeeActivities
+                    .Where(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == Today)
+                    .ToListAsync(ct);
+
+                var existingDayReport = await _db.TbEmployeeMonthlyReports
+                    .FirstOrDefaultAsync(r => r.EmployeeId == employee.EmployeeId && r.Date == Today, ct);
+
+                if (existingDayReport == null)
+                {
+                    existingDayReport = new TbEmployeeMonthlyReport
+                    {
+                        EmployeeId = employee.EmployeeId,
+                        Date = Today,
+                        CompanyId = employee.CompanyId,
+                        DepartmentId = employee.DepartmentId,
+                        ShiftId = employee.ShiftId,
+                        WorkDaysId = employee.WorkDaysId,
+                        RemoteWorkDaysId = employee.RemoteWorkDaysId,
+                        IsWorkday = isWorkday,
+                        IsRemoteday = isRemoteDay,
+                        IsHoliday = isHoliday
+                    };
+                    _db.TbEmployeeMonthlyReports.Add(existingDayReport);
+                    await _db.SaveChangesAsync(ct);
+                }
+
+                // ✅ Handle day type
+                if (isHoliday)
+                    existingDayReport.TodayStatues = "Holiday";
+                else if (isRemoteDay)
+                    existingDayReport.TodayStatues = "RemoteDay";
+                else if (isWorkday)
+                    existingDayReport.TodayStatues = "Workday";
+
+                // ✅ Handle activities
+                foreach (var activity in activities)
+                {
+                    switch (activity.ActivityTypeId)
+                    {
+                        case 1:
+                            var att = await _db.TbEmployeeAttendances
+                                .FirstOrDefaultAsync(a => a.ActivityId == activity.ActivityId, ct);
+                            if (att != null)
+                            {
+                                existingDayReport.Details = JsonSerializer.Serialize(new
+                                {
+                                    Type = "Attendance",
+                                    att.AttendanceDate,
+                                    att.FirstPuchin,
+                                    att.LastPuchout,
+                                    att.TotalHours,
+                                    att.ActualWorkingHours,
+                                    att.AttStatues
+                                });
+                            }
+                            break;
+
+                        case 5:
+                            var vac = await _db.TbEmployeeVacations
+                                .FirstOrDefaultAsync(v => v.ActivityId == activity.ActivityId, ct);
+                            if (vac != null)
+                            {
+                                existingDayReport.Details = JsonSerializer.Serialize(new
+                                {
+                                    Type = "Vacation",
+                                    vac.VacationTypeId,
+                                    vac.StartDate,
+                                    vac.EndDate,
+                                    vac.DaysCount
+                                });
+                            }
+                            break;
+
+                        case 4:
+                            var mission = await _db.TbEmployeeMissions
+                                .FirstOrDefaultAsync(m => m.ActivityId == activity.ActivityId, ct);
+                            if (mission != null)
+                            {
+                                existingDayReport.Details = JsonSerializer.Serialize(new
+                                {
+                                    Type = "Mission",
+                                    mission.StartDatetime,
+                                    mission.EndDatetime,
+                                    mission.MissionLocation,
+                                    mission.MissionReason
+                                });
+                            }
+                            break;
+
+                        case 6:
+                            var excuse = await _db.TbEmployeeExcuses
+                                .FirstOrDefaultAsync(e => e.ActivityId == activity.ActivityId, ct);
+                            if (excuse != null)
+                            {
+                                existingDayReport.Details = JsonSerializer.Serialize(new
+                                {
+                                    Type = "Excuse",
+                                    excuse.ExcuseReason,
+                                    excuse.ExcuseDate,
+                                    excuse.StartTime,
+                                    excuse.EndTime
+                                });
+                            }
+                            break;
+                    }
+                }
+
+                await _db.SaveChangesAsync(ct);
+            }
+
+            return "Monthly report generated successfully";
+        }
+    }
+}
+*/

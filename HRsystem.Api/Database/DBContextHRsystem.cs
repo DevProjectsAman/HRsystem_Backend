@@ -1,6 +1,5 @@
 ﻿using HRsystem.Api.Database.DataSeeder;
 using HRsystem.Api.Database.DataTables;
-
 //using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Shared.DTO;

@@ -34,10 +34,10 @@ public partial class TbEmployeeMonthlyReport
     [MaxLength(55)]
     public string EmployeeCodeHr { get; set; }
 
-    public int JobTitleId { get; set; }
+    public int? JobTitleId { get; set; }
 
     public int JobLevelId { get; set; }
-    public int ManagerId { get; set; }
+    public int? ManagerId { get; set; }
 
     public int CompanyId { get; set; }
 
@@ -48,26 +48,26 @@ public partial class TbEmployeeMonthlyReport
     public int WorkDaysId { get; set; }
     public int? RemoteWorkDaysId { get; set; }
 
-    public long ActivityId { get; set; }
+    public long? ActivityId { get; set; }
 
 
-    public int ActivityTypeId { get; set; }
+    public int ?ActivityTypeId { get; set; }
 
     /*for all*/
-    public int StatusId { get; set; }
+    public int EmployeeTodayStatuesId { get; set; }
 
-    public long RequestBy { get; set; }
+    public long? RequestBy { get; set; }
 
     public long? ApprovedBy { get; set; }
 
-    public DateTime RequestDate { get; set; }
+    public DateTime? RequestDate { get; set; }
 
     public DateTime? ApprovedDate { get; set; }
 
-    public long AttendanceId { get; set; }
+    public long? AttendanceId { get; set; }
 
 
-    public DateTime AttendanceDate { get; set; }
+    public DateTime? AttendanceDate { get; set; }
 
     public DateTime? FirstPuchin { get; set; }
 
@@ -88,7 +88,7 @@ public partial class TbEmployeeMonthlyReport
     public string TodayStatues { get; set; } = "Attendance";
     
     [Column(TypeName = "json")]
-    public string Details { get; set; } = "{}";
+    public string? Details { get; set; } = "{}";
 
 }
 
