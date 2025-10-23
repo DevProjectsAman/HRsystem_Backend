@@ -8,6 +8,7 @@ using System;
 using HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Features.Organization.Department.CreateDepartment;
 using Microsoft.EntityFrameworkCore;
+using HRsystem.Api.Services.CurrentUser;
 
 namespace HRsystem.Api.Features.Organization.Department.UpdateDepartment
 {
@@ -15,15 +16,19 @@ namespace HRsystem.Api.Features.Organization.Department.UpdateDepartment
         int DepartmentId,
         string? DepartmentCode,
         LocalizedData DepartmentName,
-        int? CompanyId,
-        int? UpdatedBy
+        int? CompanyId 
     ) : IRequest<TbDepartment>;
 
     public class Handler : IRequestHandler<UpdateDepartmentCommand, TbDepartment>
     {
         private readonly DBContextHRsystem _db;
-        public Handler(DBContextHRsystem db) => _db = db;
+        private readonly ICurrentUserService _currentUserService;
 
+        public Handler(DBContextHRsystem db, ICurrentUserService currentUserService)
+        {
+            _db = db;
+            _currentUserService = currentUserService;
+        }
         public async Task<TbDepartment> Handle(UpdateDepartmentCommand request, CancellationToken ct)
         {
             var entity = await _db.TbDepartments.FindAsync(request.DepartmentId);
@@ -36,7 +41,7 @@ namespace HRsystem.Api.Features.Organization.Department.UpdateDepartment
             entity.DepartmentCode = request.DepartmentCode;
             entity.CompanyId = request.CompanyId;
             entity.UpdatedAt = DateTime.UtcNow;
-            entity.UpdatedBy = request.UpdatedBy;
+            entity.UpdatedBy = _currentUserService.UserId;
 
             await _db.SaveChangesAsync(ct);
             return entity;
