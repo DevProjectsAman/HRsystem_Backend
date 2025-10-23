@@ -18,34 +18,34 @@ public partial class TbEmployeeMonthlyReport
     public int DayId { get; set; }
 
     public DateTime Date { get; set; }
-    public int EmployeeId { get; set; }
+    public int? EmployeeId { get; set; }
 
     [MaxLength(200)]
-    public string EnglishFullName { get; set; }   // الاسم بالإنجليزي
+    public string? EnglishFullName { get; set; }   // الاسم بالإنجليزي
 
     [MaxLength(200)]
-    public string ArabicFullName { get; set; }    // الاسم بالعربي
+    public string? ArabicFullName { get; set; }    // الاسم بالعربي
 
-    public int ContractTypeId { get; set; }
-
-    [MaxLength(55)]
-    public string EmployeeCodeFinance { get; set; }
+    public int? ContractTypeId { get; set; }
 
     [MaxLength(55)]
-    public string EmployeeCodeHr { get; set; }
+    public string? EmployeeCodeFinance { get; set; }
+
+    [MaxLength(55)]
+    public string? EmployeeCodeHr { get; set; }
 
     public int? JobTitleId { get; set; }
 
-    public int JobLevelId { get; set; }
+    public int? JobLevelId { get; set; }
     public int? ManagerId { get; set; }
 
-    public int CompanyId { get; set; }
+    public int? CompanyId { get; set; }
 
-    public int DepartmentId { get; set; }
+    public int? DepartmentId { get; set; }
 
-    public int ShiftId { get; set; }
+    public int? ShiftId { get; set; }
 
-    public int WorkDaysId { get; set; }
+    public int? WorkDaysId { get; set; }
     public int? RemoteWorkDaysId { get; set; }
 
     public long? ActivityId { get; set; }

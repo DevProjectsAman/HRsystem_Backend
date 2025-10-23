@@ -37,7 +37,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             var employeeId = _currentUserService.EmployeeID;
             var language = _currentUserService.UserLanguage;
 
-            var EmployeeInfo = await _db.TbEmployees
+            var EmployeeInfo = await _db.TbEmployees 
                      .Include(a => a.Department)
                     .FirstOrDefaultAsync(b => b.EmployeeId == employeeId , ct);
 

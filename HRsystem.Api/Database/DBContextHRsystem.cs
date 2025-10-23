@@ -5,6 +5,7 @@ using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Shared.DTO;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Text.Json;
 
 namespace HRsystem.Api.Database;
@@ -89,148 +90,131 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
     public DbSet<TbHolidayType> TbHolidayTypes { get; set; }
     public DbSet<TbActivityStatusWorkflow> TbActivityStatusWorkflow { get; set; }
 
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //  modelBuilder.ApplyConfiguration(new RoleConfiguration());
-
         base.OnModelCreating(modelBuilder);
 
+        // Apply Identity configurations
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
 
+        // 🔹 Global case-insensitive JSON options
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            WriteIndented = false
+        };
+
+        // 🔹 Helper for localized data conversion
+        ValueConverter<LocalizedData, string> LocalizedConverter =
+            new ValueConverter<LocalizedData, string>(
+                v => JsonSerializer.Serialize(v, jsonOptions),
+                v => JsonSerializer.Deserialize<LocalizedData>(v, jsonOptions)!
+            );
+
+        // 🔹 Apply unified conversion for all entities with LocalizedData fields
         modelBuilder.Entity<TbActivityStatus>(entity =>
         {
             entity.Property(e => e.StatusName)
-            .HasConversion(
-            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
-        )
-                                .HasColumnType("json"); // MySQL supports json
+                  .HasConversion(LocalizedConverter)
+                  .HasColumnType("json");
         });
 
         modelBuilder.Entity<TbActivityType>(entity =>
         {
             entity.Property(e => e.ActivityName)
-            .HasConversion(
-            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
-        )
-                                .HasColumnType("json"); // MySQL supports json
+                  .HasConversion(LocalizedConverter)
+                  .HasColumnType("json");
         });
-
 
         modelBuilder.Entity<TbHolidays>(entity =>
         {
             entity.Property(e => e.HolidayName)
-            .HasConversion(
-            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
-        )
-                                .HasColumnType("json"); // MySQL supports json
+                  .HasConversion(LocalizedConverter)
+                  .HasColumnType("json");
         });
 
         modelBuilder.Entity<TbHolidayType>(entity =>
         {
             entity.Property(e => e.HolidayTypeName)
-            .HasConversion(
-            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
-        )
-                                .HasColumnType("json"); // MySQL supports json
+                  .HasConversion(LocalizedConverter)
+                  .HasColumnType("json");
         });
-
-
 
         modelBuilder.Entity<TbProject>(entity =>
         {
             entity.Property(e => e.ProjectName)
-             .HasConversion(
-            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
-        )
-                                .HasColumnType("json"); // MySQL supports json
+                  .HasConversion(LocalizedConverter)
+                  .HasColumnType("json");
         });
 
         modelBuilder.Entity<TbDepartment>(entity =>
         {
             entity.Property(e => e.DepartmentName)
-             .HasConversion(
-            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
-        )
-                                .HasColumnType("json"); // MySQL supports json
+                  .HasConversion(LocalizedConverter)
+                  .HasColumnType("json");
         });
 
         modelBuilder.Entity<TbVacationType>(entity =>
         {
             entity.Property(e => e.VacationName)
-            .HasConversion(
-            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
-        )
-                                .HasColumnType("json"); // MySQL supports json
+                  .HasConversion(LocalizedConverter)
+                  .HasColumnType("json");
         });
 
         modelBuilder.Entity<TbWorkLocation>(entity =>
         {
             entity.Property(e => e.LocationName)
-             .HasConversion(
-            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
-        )
-                                .HasColumnType("json"); // MySQL supports json
+                  .HasConversion(LocalizedConverter)
+                  .HasColumnType("json");
         });
 
         modelBuilder.Entity<TbShift>(entity =>
         {
             entity.Property(e => e.ShiftName)
-            .HasConversion(
-            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
-        )
-                                .HasColumnType("json"); // MySQL supports json
+                  .HasConversion(LocalizedConverter)
+                  .HasColumnType("json");
         });
 
         modelBuilder.Entity<TbJobTitle>(entity =>
         {
             entity.Property(e => e.TitleName)
-            .HasConversion(
-            v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => System.Text.Json.JsonSerializer.Deserialize<LocalizedData>(v, (JsonSerializerOptions?)null)!
-        )
-                                .HasColumnType("json"); // MySQL supports json
+                  .HasConversion(LocalizedConverter)
+                  .HasColumnType("json");
         });
 
+        // 🔹 JSON-only fields (no conversion needed)
         modelBuilder.Entity<TbAuditLog>(entity =>
         {
-            entity.Property(e => e.OldData)
-                  .HasColumnType("json");   // 🔑 Force MySQL JSON
-
-            entity.Property(e => e.NewData)
-                  .HasColumnType("json");   // 🔑 Force MySQL JSON
+            entity.Property(e => e.OldData).HasColumnType("json");
+            entity.Property(e => e.NewData).HasColumnType("json");
         });
 
+        // 🔹 Enums stored as strings (MySQL-friendly)
         modelBuilder.Entity<TbEmployee>(entity =>
         {
             entity.Property(e => e.Gender)
-                  .HasConversion<string>() // store enum as string
-                  .HasColumnType("ENUM('Male','Female')"); // MySQL enum type
+                  .HasConversion<string>()
+                  .HasColumnType("ENUM('Male','Female')");
         });
 
         modelBuilder.Entity<TbVacationRule>(entity =>
         {
             entity.Property(e => e.Gender)
-                  .HasConversion<string>() // store enum as string
-                  .HasColumnType("ENUM('Male','Female','All')"); // MySQL enum type
+                  .HasConversion<string>()
+                  .HasColumnType("ENUM('Male','Female','All')");
 
             entity.Property(e => e.Religion)
-                .HasConversion<string>() // store enum as string
-                .HasColumnType("ENUM('All','Muslim','Christian')"); // MySQL enum type
+                  .HasConversion<string>()
+                  .HasColumnType("ENUM('All','Muslim','Christian')");
         });
 
+        // 🔹 Composite key for Role-Permission
         modelBuilder.Entity<AspRolePermissions>()
-           .HasKey(rp => new { rp.RoleId, rp.PermissionId });
+            .HasKey(rp => new { rp.RoleId, rp.PermissionId });
 
         modelBuilder.Entity<AspRolePermissions>()
             .HasOne(rp => rp.Role)
@@ -242,8 +226,12 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
             .WithMany()
             .HasForeignKey(rp => rp.PermissionId);
 
+        // 🔹 Unique index on permission names
         modelBuilder.Entity<AspPermission>()
-       .HasIndex(p => p.PermissionName)
-       .IsUnique();
+            .HasIndex(p => p.PermissionName)
+            .IsUnique();
     }
+
+
+
 }

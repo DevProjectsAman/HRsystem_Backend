@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Features.Organization.Department.CreateDepartment;
 using HRsystem.Api.Features.Organization.Department.DeleteDepartment;
+using HRsystem.Api.Features.Organization.Department.GetAllDeparmentsLocalized;
 using HRsystem.Api.Features.Organization.Department.GetAllDepartments;
 using HRsystem.Api.Features.Organization.Department.GetDepartmentById;
 using HRsystem.Api.Features.Organization.Department.UpdateDepartment;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 
 namespace HRsystem.Api.Features.Organization.Department
@@ -12,66 +14,151 @@ namespace HRsystem.Api.Features.Organization.Department
     {
         public static void MapDepartmentEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/Organization/departments").WithTags("Departments");
+            var group = app.MapGroup("/api/Organization/departments")
+                           .WithTags("Departments");
 
-            // Get All
-            group.MapGet("/listOfDepartments", async (ISender mediator) =>
+            // ✅ Get All (localized)
+            group.MapGet("/listOfDepartmentsLocalized", async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllDepartmentsQuery());
-                return Results.Ok(new { Success = true, Data = result });
+                return Results.Ok(new ResponseResultDTO<object>
+                {
+                    Success = true,
+                    Message = "Departments retrieved successfully",
+                    Data = result
+                });
             });
 
-            // Get One
+            // ✅ Get All (non-localized)
+            group.MapGet("/listOfDepartments/{CompanyId}", async (int CompanyId, ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetAllDepartmentsLocalized(CompanyId));
+                return Results.Ok(new ResponseResultDTO<object>
+                {
+                    Success = true,
+                    Message = "Departments retrieved successfully",
+                    Data = result
+                });
+            });
+
+            // ✅ Get One
             group.MapGet("/GetOneDepartment/{id}", async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetDepartmentByIdQuery(id));
-                return result == null
-                    ? Results.NotFound(new { Success = false, Message = $"Department {id} not found" })
-                    : Results.Ok(new { Success = true, Data = result });
-            });
 
-            // Create
-            group.MapPost("/CreateDepartment", async (CreateDepartmentCommand cmd, ISender mediator, IValidator<CreateDepartmentCommand> validator) =>
-            {
-                var validationResult = await validator.ValidateAsync(cmd);
-                if (!validationResult.IsValid)
-                    return Results.BadRequest(new
+                if (result == null)
+                {
+                    return Results.NotFound(new ResponseResultDTO
                     {
                         Success = false,
-                        Errors = validationResult.Errors.Select(e => e.ErrorMessage)
+                        Message = $"Department {id} not found"
                     });
+                }
 
-                var result = await mediator.Send(cmd);
-                return Results.Created($"/api/departments/{result.DepartmentId}", new { Success = true, Data = result });
+                return Results.Ok(new ResponseResultDTO<object>
+                {
+                    Success = true,
+                    Message = "Department retrieved successfully",
+                    Data = result
+                });
             });
 
-            // Update
-            group.MapPut("/UpdateDepartment/{id}", async (int id, UpdateDepartmentCommand cmd, ISender mediator, IValidator<UpdateDepartmentCommand> validator) =>
+            // ✅ Create
+            group.MapPost("/CreateDepartment", async (
+                CreateDepartmentCommand cmd,
+                ISender mediator,
+                IValidator<CreateDepartmentCommand> validator) =>
             {
-                if (id != cmd.DepartmentId)
-                    return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
-
                 var validationResult = await validator.ValidateAsync(cmd);
+
                 if (!validationResult.IsValid)
-                    return Results.BadRequest(new
+                {
+                    return Results.BadRequest(new ResponseResultDTO
                     {
                         Success = false,
-                        Errors = validationResult.Errors.Select(e => e.ErrorMessage)
+                        Message = "Validation failed",
+                        Errors = validationResult.Errors.Select(e => new ResponseErrorDTO
+                        {
+                            Property = e.PropertyName,
+                            Error = e.ErrorMessage
+                        }).ToList()
                     });
+                }
 
                 var result = await mediator.Send(cmd);
-                return result == null
-                    ? Results.NotFound(new { Success = false, Message = $"Department {id} not found" })
-                    : Results.Ok(new { Success = true, Data = result });
+
+                return Results.Created(
+                    $"/api/Organization/departments/{result.DepartmentId}",
+                    new ResponseResultDTO<object>
+                    {
+                        Success = true,
+                        Message = "Department created successfully",
+                        Data = result
+                    });
             });
 
-            // Delete
+            // ✅ Update
+            group.MapPut("/UpdateDepartment", async (
+                
+                UpdateDepartmentCommand cmd,
+                ISender mediator,
+                IValidator<UpdateDepartmentCommand> validator) =>
+            {
+                
+                var validationResult = await validator.ValidateAsync(cmd);
+
+                if (!validationResult.IsValid)
+                {
+                    return Results.BadRequest(new ResponseResultDTO
+                    {
+                        Success = false,
+                        Message = "Validation failed",
+                        Errors = validationResult.Errors.Select(e => new ResponseErrorDTO
+                        {
+                            Property = e.PropertyName,
+                            Error = e.ErrorMessage
+                        }).ToList()
+                    });
+                }
+
+                var result = await mediator.Send(cmd);
+
+                if (result == null)
+                {
+                    return Results.NotFound(new ResponseResultDTO
+                    {
+                        Success = false,
+                        Message = $"Department {cmd.DepartmentId} not found"
+                    });
+                }
+
+                return Results.Ok(new ResponseResultDTO<object>
+                {
+                    Success = true,
+                    Message = "Department updated successfully",
+                    Data = result
+                });
+            });
+
+            // ✅ Delete
             group.MapDelete("/DeleteDepartment/{id}", async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteDepartmentCommand(id));
-                return !result
-                    ? Results.NotFound(new { Success = false, Message = $"Department {id} not found" })
-                    : Results.Ok(new { Success = true, Message = $"Department {id} deleted successfully" });
+
+                if (!result)
+                {
+                    return Results.NotFound(new ResponseResultDTO
+                    {
+                        Success = false,
+                        Message = $"Department {id} not found"
+                    });
+                }
+
+                return Results.Ok(new ResponseResultDTO
+                {
+                    Success = true,
+                    Message = $"Department {id} deleted successfully"
+                });
             });
         }
     }

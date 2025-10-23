@@ -398,16 +398,12 @@
 
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Migrations;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Text.Json;
 using static HRsystem.Api.Enums.EnumsList;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
 {
@@ -426,47 +422,49 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
 
         public async Task<string> Handle(GetEmployeeMonthlyReport request, CancellationToken ct)
         {
-            var Today = DateTime.Now.Date;
+            var today = DateTime.Now.Date;
             string todayName = DateTime.Now.ToString("dddd", new CultureInfo("en-US"));
-            bool Flagcheck= false;
+
             var employees = await _db.TbEmployees
                 .Include(e => e.JobTitle).ThenInclude(j => j.JobLevel)
                 .Include(e => e.TbRemoteWorkDays)
                 .Include(e => e.TbWorkDays)
                 .ToListAsync(ct);
 
-
+            if (employees == null || !employees.Any())
+                throw new Exception("No employees found.");
 
             foreach (var employee in employees)
             {
+                Console.WriteLine($"Processing EmployeeId = {employee.EmployeeId}");
+
                 var workDays = employee.TbWorkDays?.WorkDaysNames ?? new List<string>();
                 var remoteDays = employee.TbRemoteWorkDays?.RemoteWorkDaysNames ?? new List<string>();
 
-                var isHoliday = await _db.TbHolidays
-                        .AnyAsync(h =>
-                            h.IsActive &&
-                            Today >= h.StartDate.Date &&
-                            Today <= h.EndDate.Date &&
-                            (!h.IsForChristiansOnly || employee.Religion == EnumReligionType.Christian),
-                            ct);
+                bool isHoliday = await _db.TbHolidays.AnyAsync(h =>
+                    h.IsActive &&
+                    today >= h.StartDate.Date &&
+                    today <= h.EndDate.Date &&
+                    (!h.IsForChristiansOnly || employee.Religion == EnumReligionType.Christian),
+                    ct);
 
                 bool isWorkday = workDays.Any(d => d.Equals(todayName, StringComparison.OrdinalIgnoreCase));
                 bool isRemoteDay = remoteDays.Any(d => d.Equals(todayName, StringComparison.OrdinalIgnoreCase));
 
                 var activities = await _db.TbEmployeeActivities
-                    .Where(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == Today)
+                    .Where(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today)
                     .ToListAsync(ct);
 
                 var existingDayReport = await _db.TbEmployeeMonthlyReports
-                    .FirstOrDefaultAsync(r => r.EmployeeId == employee.EmployeeId && r.Date == Today, ct);
+                    .FirstOrDefaultAsync(r => r.EmployeeId == employee.EmployeeId && r.Date == today, ct);
 
-                // Create base report if not exists
+                // ✅ إنشاء تقرير جديد لو مش موجود
                 if (existingDayReport == null)
                 {
                     existingDayReport = new TbEmployeeMonthlyReport
                     {
                         EmployeeId = employee.EmployeeId,
-                        Date = Today,
+                        Date = today,
                         CompanyId = employee.CompanyId,
                         DepartmentId = employee.DepartmentId,
                         ShiftId = employee.ShiftId,
@@ -478,62 +476,61 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                         EnglishFullName = employee.EnglishFullName,
                         ArabicFullName = employee.ArabicFullName,
                         ContractTypeId = employee.ContractTypeId,
-                        EmployeeCodeFinance = employee.EmployeeCodeFinance,        
+                        EmployeeCodeFinance = employee.EmployeeCodeFinance,
                         EmployeeCodeHr = employee.EmployeeCodeHr,
                         JobTitleId = employee.JobTitleId,
-                        
+                        JobLevelId = employee.JobTitle?.JobLevelId ?? 0,
+                        ManagerId = employee.ManagerId,
+                        TodayStatues = "Attendance"
                     };
+
                     _db.TbEmployeeMonthlyReports.Add(existingDayReport);
-                    await _db.SaveChangesAsync(ct);
                 }
 
-                    if (isHoliday)// kda tmam
-                    {
-                        existingDayReport.EmployeeTodayStatuesId =  1; //  anything represent statues of day
-                        existingDayReport.TodayStatues = " Hoilday";
-                       // existingDayReport.Details = new { Type = "Hoilday", Hoilday.StartDate, Hoilday.EndDate };
-                    }
-                    else if (isRemoteDay)// also tmam but must be check here on start time of his shift
-                    {
-                        existingDayReport.EmployeeTodayStatuesId = 2; //  anything represent statues of day
-                        existingDayReport.TodayStatues = " RemoteDay";
-                        //existingDayReport.Details = new { Type = "RemoteDay", RemoteDay.StartDate, RemoteDay.EndDate };
+                // ✅ تحديد الحالة الأساسية لليوم
+                if (isHoliday)
+                {
+                    existingDayReport.EmployeeTodayStatuesId = 1;
+                    existingDayReport.TodayStatues = "Holiday";
+                }
+                else if (isRemoteDay)
+                {
+                    existingDayReport.EmployeeTodayStatuesId = 2;
+                    existingDayReport.TodayStatues = "RemoteDay";
+                }
+                else if (isWorkday)
+                {
+                    existingDayReport.EmployeeTodayStatuesId = 3;
+                    existingDayReport.TodayStatues = "Workday";
+                }
 
-                    }
-                    else if (isWorkday)// kda absent
-                    {
-                       existingDayReport.EmployeeTodayStatuesId = 3; // anything represent statues of day
-                       existingDayReport.TodayStatues = " Workday";
-                       //existingDayReport.Details = new { Type = "Workday", Workday.StartDate, Workday.EndDate };
-                    }
-
-                
-                    // update in report
-                    foreach (var activity in activities)
-                    {
-
+                // ✅ تحديث بيانات النشاطات اليومية
+                foreach (var activity in activities)
+                {
                     existingDayReport.ActivityId = activity.ActivityId;
                     existingDayReport.ActivityTypeId = activity.ActivityTypeId;
                     existingDayReport.RequestBy = activity.RequestBy;
                     existingDayReport.ApprovedBy = activity.ApprovedBy;
                     existingDayReport.RequestDate = activity.RequestDate;
-                    existingDayReport.ApprovedDate = activity.ApprovedDate; 
-                        switch (activity.ActivityTypeId)
-                        {
-                            case 1: // Attendance
-                                var attendance = await _db.TbEmployeeAttendances
-                                    .FirstOrDefaultAsync(a => a.ActivityId == activity.ActivityId, ct);
-                                if (attendance != null)
-                                {
-                                    existingDayReport.AttendanceId = attendance.ActivityId;
-                                    existingDayReport.AttendanceDate= attendance.AttendanceDate;
-                                    existingDayReport.FirstPuchin = attendance.FirstPuchin;
-                                    existingDayReport.LastPuchout = attendance.LastPuchout;
-                                    existingDayReport.TotalHours = attendance.TotalHours;
-                                    existingDayReport.ActualWorkingHours = attendance.ActualWorkingHours;
-                                    existingDayReport.AttStatues = attendance.AttStatues;
-                                    existingDayReport.EmployeeTodayStatuesId = 1; // not absent
-                                Flagcheck = true;
+                    existingDayReport.ApprovedDate = activity.ApprovedDate;
+
+                    switch (activity.ActivityTypeId)
+                    {
+                        case 1: // Attendance
+                            var attendance = await _db.TbEmployeeAttendances
+                                .FirstOrDefaultAsync(a => a.ActivityId == activity.ActivityId, ct);
+                            if (attendance != null)
+                            {
+                                existingDayReport.AttendanceId = attendance.ActivityId;
+                                existingDayReport.AttendanceDate = attendance.AttendanceDate;
+                                existingDayReport.FirstPuchin = attendance.FirstPuchin;
+                                existingDayReport.LastPuchout = attendance.LastPuchout;
+                                existingDayReport.TotalHours = attendance.TotalHours;
+                                existingDayReport.ActualWorkingHours = attendance.ActualWorkingHours;
+                                existingDayReport.AttStatues = attendance.AttStatues;
+                                existingDayReport.EmployeeTodayStatuesId = 1;
+                                existingDayReport.TodayStatues += " Attendance";
+
                                 existingDayReport.Details = JsonSerializer.Serialize(new
                                 {
                                     Type = "Attendance",
@@ -544,99 +541,98 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                                     attendance.ActualWorkingHours,
                                     attendance.AttStatues
                                 });
-
-
                             }
                             break;
 
-                            case 5: // Vacation
-                                var vacation = await _db.TbEmployeeVacations
-                                    .FirstOrDefaultAsync(v => v.ActivityId == activity.ActivityId, ct);
-                                if (vacation != null)
+                        case 5: // Vacation
+                            var vacation = await _db.TbEmployeeVacations
+                                .FirstOrDefaultAsync(v => v.ActivityId == activity.ActivityId, ct);
+                            if (vacation != null)
+                            {
+                                for (int i = 0; i < vacation.DaysCount; i++)
                                 {
-                                    for (int i = 0; i < vacation.DaysCount; i++)
+                                    var day = vacation.StartDate.AddDays(i);
+
+                                    bool alreadyExists = await _db.TbEmployeeMonthlyReports
+                                        .AnyAsync(r => r.EmployeeId == employee.EmployeeId && r.Date == today, ct);
+
+                                    if (!alreadyExists)
                                     {
-                                        var day = vacation.StartDate.AddDays(i);
-                                    var newReport = new TbEmployeeMonthlyReport
-                                    {
-                                        EmployeeId = employee.EmployeeId,
-                                        Date = Today,
-                                        CompanyId = employee.CompanyId,
-                                        DepartmentId = employee.DepartmentId,
-                                        ShiftId = employee.ShiftId,
-                                        WorkDaysId = employee.WorkDaysId,
-                                        RemoteWorkDaysId = employee.RemoteWorkDaysId,
-                                        IsWorkday = isWorkday,
-                                        IsRemoteday = isRemoteDay,
-                                        IsHoliday = isHoliday,
-                                        TodayStatues = "Vacation",
-                                        EmployeeTodayStatuesId = 2, // not absent but in rest
-                                        Details = JsonSerializer.Serialize(new
+                                        var newReport = new TbEmployeeMonthlyReport
                                         {
-                                            Type = "Vacation",
-                                            vacation.VacationTypeId,
-                                            vacation.StartDate,
-                                            vacation.EndDate,
-                                            vacation.DaysCount,
-                                            vacation.Notes,
-                                        })
-                                    };
+                                            EmployeeId = employee.EmployeeId,
+                                            Date = today,
+                                            CompanyId = employee.CompanyId,
+                                            DepartmentId = employee.DepartmentId,
+                                            ShiftId = employee.ShiftId,
+                                            WorkDaysId = employee.WorkDaysId,
+                                            RemoteWorkDaysId = employee.RemoteWorkDaysId,
+                                            IsWorkday = isWorkday,
+                                            IsRemoteday = isRemoteDay,
+                                            IsHoliday = isHoliday,
+                                            TodayStatues = "Vacation",
+                                            EmployeeTodayStatuesId = 2,
+                                            Details = JsonSerializer.Serialize(new
+                                            {
+                                                Type = "Vacation",
+                                                vacation.VacationTypeId,
+                                                vacation.StartDate,
+                                                vacation.EndDate,
+                                                vacation.DaysCount,
+                                                vacation.Notes
+                                            })
+                                        };
                                         _db.TbEmployeeMonthlyReports.Add(newReport);
                                     }
                                 }
-                                break;
+                            }
+                            break;
 
-                            case 4: // Mission
-                                var mission = await _db.TbEmployeeMissions
-                                    .FirstOrDefaultAsync(m => m.ActivityId == activity.ActivityId, ct);
-                                if (mission != null)
-                                {
-                                    existingDayReport.TodayStatues += " Mission";
-                                    existingDayReport.EmployeeTodayStatuesId = 1; // not absent
-                                    // existingDayReport.Details = new { Type = "Mission", mission.StartDate, mission.EndDate };
+                        case 4: // Mission
+                            var mission = await _db.TbEmployeeMissions
+                                .FirstOrDefaultAsync(m => m.ActivityId == activity.ActivityId, ct);
+                            if (mission != null)
+                            {
+                                existingDayReport.TodayStatues += " Mission";
+                                existingDayReport.EmployeeTodayStatuesId = 1;
                                 existingDayReport.Details = JsonSerializer.Serialize(new
-                                    {
-                                        Type = "Mission",
-                                        mission.StartDatetime,
-                                        mission.EndDatetime,
-                                        mission.MissionLocation,
-                                        mission.MissionReason, 
-
-                                    });
-                                Flagcheck = true;
-                                }
-                                break;
-
-                            case 6: // Excuse
-                                var excuse = await _db.TbEmployeeExcuses
-                                    .FirstOrDefaultAsync(e => e.ActivityId == activity.ActivityId, ct);
-                                if (excuse != null)
                                 {
-                                    existingDayReport.TodayStatues += " Excuse";
-                                    existingDayReport.EmployeeTodayStatuesId = 1; // not absent
-                                    //existingDayReport.Details = new { Type = "Excuse", excuse.StartDate, excuse.EndDate };
-                                    existingDayReport.Details = JsonSerializer.Serialize(new
-                                    {
-                                        Type = "Excuse",
-                                        excuse.StartTime,
-                                        excuse.EndTime,
-                                        excuse.ExcuseReason,
-                                        excuse.ExcuseDate,
-                  
-                                    });
-                                }
-                                break;
+                                    Type = "Mission",
+                                    mission.StartDatetime,
+                                    mission.EndDatetime,
+                                    mission.MissionLocation,
+                                    mission.MissionReason
+                                });
+                            }
+                            break;
 
-                            default:
-                                break;
-                        }
-                    }    
-                    await _db.SaveChangesAsync(ct);
+                        case 6: // Excuse
+                            var excuse = await _db.TbEmployeeExcuses
+                                .FirstOrDefaultAsync(e => e.ActivityId == activity.ActivityId, ct);
+                            if (excuse != null)
+                            {
+                                existingDayReport.TodayStatues += " Excuse";
+                                existingDayReport.EmployeeTodayStatuesId = 1;
+                                existingDayReport.Details = JsonSerializer.Serialize(new
+                                {
+                                    Type = "Excuse",
+                                    excuse.StartTime,
+                                    excuse.EndTime,
+                                    excuse.ExcuseReason,
+                                    excuse.ExcuseDate
+                                });
+                            }
+                            break;
+                    }
+                }
             }
-           return "Monthly report updated successfully";
+
+            await _db.SaveChangesAsync(ct);
+            return "✅ Monthly report updated successfully";
         }
     }
 }
+
 
 
 // as a service
