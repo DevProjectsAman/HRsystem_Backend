@@ -52,6 +52,7 @@ namespace HRsystem.Api.Features.Employee
 
                 var dto = new EmployeeReadDto
                 {
+                    EmployeeId = e.EmployeeId,
                     EmployeeCodeFinance = e.EmployeeCodeFinance,
                     EmployeeCodeHr = e.EmployeeCodeHr,
                     EnglishFullName = e.EnglishFullName,
