@@ -1,6 +1,5 @@
 ﻿using HRsystem.Api.Database.DataSeeder;
 using HRsystem.Api.Database.DataTables;
-
 //using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Shared.DTO;
@@ -34,6 +33,8 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
     public virtual DbSet<TbDepartment> TbDepartments { get; set; }
 
     public virtual DbSet<TbEmployee> TbEmployees { get; set; }
+
+    public virtual DbSet<TbEmployeeMonthlyReport> TbEmployeeMonthlyReports { get; set; }
 
     public virtual DbSet<TbEmployeeActivity> TbEmployeeActivities { get; set; }
 

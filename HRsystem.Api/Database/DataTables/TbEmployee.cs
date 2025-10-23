@@ -97,7 +97,12 @@ public partial class TbEmployee
 
     public virtual TbDepartment Department { get; set; }
 
-   
+
+
+    //public virtual TbRemoteWorkDay RemoteWorkDayS { get; set; } 
+
+    //public virtual TbWorkDays WorkDays { get; set; } 
+
 
     public virtual ICollection<TbEmployeeActivity> TbEmployeeActivities { get; set; } = new List<TbEmployeeActivity>();
 
@@ -132,6 +137,8 @@ public partial class TbEmployee
 
     [MaxLength(250)]
     public string? Address { get; set; }          // العنوان
+
+    public EnumReligionType Religion { get; set; }
 
     [MaxLength(500)]
     public string? EmployeePhotoPath { get; set; } // صورة الموظف (path أو url)
