@@ -4,6 +4,7 @@ using HRsystem.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    partial class DBContextHRsystemModelSnapshot : ModelSnapshot
+    [Migration("20251023122910_arabicnamereportupdate")]
+    partial class arabicnamereportupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -746,30 +749,32 @@ namespace HRsystem.Api.Migrations
                     b.Property<long?>("AttendanceId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("CompanyId")
+                    b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ContractTypeId")
+                    b.Property<int>("ContractTypeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int?>("DepartmentId")
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Details")
                         .HasColumnType("json");
 
                     b.Property<string>("EmployeeCodeFinance")
+                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
 
                     b.Property<string>("EmployeeCodeHr")
+                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
 
-                    b.Property<int?>("EmployeeId")
+                    b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<int>("EmployeeTodayStatuesId")
@@ -791,7 +796,7 @@ namespace HRsystem.Api.Migrations
                     b.Property<bool>("IsWorkday")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int?>("JobLevelId")
+                    b.Property<int>("JobLevelId")
                         .HasColumnType("int");
 
                     b.Property<int?>("JobTitleId")
@@ -812,7 +817,7 @@ namespace HRsystem.Api.Migrations
                     b.Property<DateTime?>("RequestDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int?>("ShiftId")
+                    b.Property<int>("ShiftId")
                         .HasColumnType("int");
 
                     b.Property<string>("TodayStatues")
@@ -823,7 +828,7 @@ namespace HRsystem.Api.Migrations
                         .HasPrecision(5, 2)
                         .HasColumnType("decimal(5,2)");
 
-                    b.Property<int?>("WorkDaysId")
+                    b.Property<int>("WorkDaysId")
                         .HasColumnType("int");
 
                     b.HasKey("DayId");
@@ -1821,7 +1826,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 10, 23, 16, 6, 55, 700, DateTimeKind.Local).AddTicks(9983),
+                            CreatedAt = new DateTime(2025, 10, 23, 15, 29, 7, 320, DateTimeKind.Local).AddTicks(3244),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -1829,7 +1834,7 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2025, 10, 23, 13, 6, 55, 701, DateTimeKind.Utc).AddTicks(3609),
+                            LastPasswordChangedAt = new DateTime(2025, 10, 23, 12, 29, 7, 320, DateTimeKind.Utc).AddTicks(6489),
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
@@ -1838,7 +1843,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("27354276-ae1b-4a71-aed1-6e1691877f8c"),
+                            RowGuid = new Guid("5b3acde3-2d00-4a7b-ac05-7a835f0ea876"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",
