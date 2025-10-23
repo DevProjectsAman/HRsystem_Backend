@@ -26,6 +26,7 @@ using HRsystem.Api.Features.Organization.Govermenet;
 using HRsystem.Api.Features.Organization.JobManagment;
 using HRsystem.Api.Features.Organization.WorkLocation;
 using HRsystem.Api.Features.Project;
+using HRsystem.Api.Features.Reports;
 using HRsystem.Api.Features.Scheduling.RemoteWorkdays;
 using HRsystem.Api.Features.Scheduling.Shift;
 using HRsystem.Api.Features.Scheduling.VacationRule;
@@ -283,7 +284,7 @@ app.MapEmployeeAppEndPoints();
 
 //app.MapControllers();
 app.MapEmployeeReportEndpoints();
-
+app.MapReportEndPoints();
 app.Run();
 
 

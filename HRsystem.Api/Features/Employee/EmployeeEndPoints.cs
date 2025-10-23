@@ -85,6 +85,24 @@ namespace HRsystem.Api.Features.Employee
                     : Results.Ok(new { Success = true, Data = result });
             });
 
+
+
+           
+            // ✅ Get Employee By HR Code
+            group.MapGet("/GetEmployeeByCodeHr/{employeeCodeHr}", async (string employeeCodeHr, ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetEmployeeByCodeHrQuery(employeeCodeHr));
+
+                if (result == null || result.Data == null)
+                    return Results.NotFound(new { Success = false, Message = "Employee not found" });
+
+                return Results.Ok(new { Success = true, Data = result.Data });
+            })
+            .WithName("GetEmployeeByCodeHr")
+            .WithSummary("Get employee details by HR Code")
+            .WithDescription("Fetch employee details using HR Code.");
+
+
             // ✅ Create
             group.MapPost("/CreateEmployee", async (EmployeeCreateDto dto, ISender mediator) =>
             {
