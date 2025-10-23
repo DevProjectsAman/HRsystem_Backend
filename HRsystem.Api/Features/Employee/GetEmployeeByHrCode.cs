@@ -61,8 +61,8 @@ namespace HRsystem.Api.Features.Employee
                     HireDate = e.HireDate,
                     Email = e.Email,
                     Status = e.Status,
-                    DepartmentId = e.DepartmentId,
-                    CompanyId = e.CompanyId,
+                    DepartmentName = e.Department.DepartmentName,
+                    CompanyName = e.Company.CompanyName,
                     JobTitleId = e.JobTitleId
                 };
 

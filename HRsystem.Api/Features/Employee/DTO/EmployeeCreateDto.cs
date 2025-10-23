@@ -260,8 +260,8 @@ namespace HRsystem.Api.Features.Employee.DTO
         public string EmployeeCodeHr { get; set; }
         public int JobTitleId { get; set; }
         public LocalizedData JobTitleName { get; set; }
-     
-        public string? EnglishFullName { get; set; }
+        // test
+        public string? EnglishFullName { get; set;}
         public string? ArabicFullName { get; set; }
         public DateOnly HireDate { get; set; }
         public DateOnly Birthdate { get; set; }
