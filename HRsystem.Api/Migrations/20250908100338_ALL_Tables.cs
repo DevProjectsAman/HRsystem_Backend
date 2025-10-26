@@ -1164,7 +1164,7 @@ namespace HRsystem.Api.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                columns: new[] { "Id", "ConcurrencyStamp", "RoleName", "NormalizedName" },
                 values: new object[] { 1, "0b2f3b2f-a5d1-4d3f-be8b-db04070caed1", "SystemAdmin", "SYSTEMADMIN" });
 
             migrationBuilder.InsertData(

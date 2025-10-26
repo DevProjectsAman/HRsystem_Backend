@@ -213,10 +213,35 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "HRsystem API v1");
+
         // options.RoutePrefix = ""; // 👈 makes Swagger the root page
     });
 
 //}
+
+//app.UseSwagger();
+
+//if (app.Environment.IsDevelopment())
+//{
+//    // 👇 In development: Swagger is the default (root) page
+//    app.UseSwaggerUI(options =>
+//    {
+//        options.SwaggerEndpoint("/swagger/v1/swagger.json", "HRsystem API v1");
+//        options.RoutePrefix = string.Empty; // root access: https://localhost:5001/
+//    });
+//}
+//else
+//{
+//    // 👇 In production: Swagger only at /swagger
+//    app.UseSwaggerUI(options =>
+//    {
+//        options.SwaggerEndpoint("/swagger/v1/swagger.json", "HRsystem API v1");
+//        // No RoutePrefix override here
+//    });
+//}
+
+
+
 
 app.UseHttpsRedirection();
 
