@@ -1,6 +1,7 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,12 +10,12 @@ namespace HRsystem.Api.Features.Scheduling.Shift.GetAllShifts
 
 {
 
-    public record GetAllShiftsQuery() : IRequest<List<ShiftDto>>;
+    public record GetAllShiftsQuery(int companyId) : IRequest<List<ShiftDto>>;
 
     public class ShiftDto
     {
         public int ShiftId { get; set; }
-        public string ShiftName { get; set; }
+        public LocalizedData ShiftName { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
         public bool IsFlexible { get; set; }
@@ -23,6 +24,7 @@ namespace HRsystem.Api.Features.Scheduling.Shift.GetAllShifts
         public int GracePeriodMinutes { get; set; }
         public decimal? RequiredWorkingHours { get; set; }
         public string Notes { get; set; }
+        public int CompanyId { get; set; }
     }
     public class GetAllShiftsHandler : IRequestHandler<GetAllShiftsQuery, List<ShiftDto>>
     {
@@ -38,14 +40,15 @@ namespace HRsystem.Api.Features.Scheduling.Shift.GetAllShifts
 
         public async Task<List<ShiftDto>> Handle(GetAllShiftsQuery request, CancellationToken ct)
         {
-            var statues = await _db.TbShifts.ToListAsync(ct);
+            var statues = await _db.TbShifts.Where(c=>c.CompanyId==request.companyId).ToListAsync(ct);
 
             var lang = _currentUser.UserLanguage ?? "en";
 
             return statues.Select(s => new ShiftDto
             {
                 ShiftId = s.ShiftId,
-                ShiftName = s.ShiftName.GetTranslation(lang),
+               // ShiftName = s.ShiftName.GetTranslation(lang),
+                ShiftName = s.ShiftName,
                 StartTime = s.StartTime,
                 EndTime = s.EndTime,
                 GracePeriodMinutes = s.GracePeriodMinutes,
@@ -53,7 +56,8 @@ namespace HRsystem.Api.Features.Scheduling.Shift.GetAllShifts
                 MinStartTime = s.MinStartTime,
                 MaxStartTime = s.MaxStartTime,
                 RequiredWorkingHours = s.RequiredWorkingHours,
-                Notes = s.Notes
+                Notes = s.Notes,
+                CompanyId = s.CompanyId
             }).ToList();
 
         }

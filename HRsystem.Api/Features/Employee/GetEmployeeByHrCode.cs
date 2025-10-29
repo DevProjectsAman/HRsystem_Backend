@@ -10,7 +10,8 @@ using Microsoft.EntityFrameworkCore;
 namespace HRsystem.Api.Features.Employee
 {
     // ✅ Query record
-    public record GetEmployeeByCodeHrQuery(string EmployeeCodeHr) : IRequest<ResponseResultDTO<EmployeeReadDto?>>;
+    public record GetEmployeeByCodeHrQuery(string EmployeeCodeHr)
+        : IRequest<ResponseResultDTO<EmployeeReadDto?>>;
 
     // ✅ Validator
     public class GetEmployeeByCodeHrValidator : AbstractValidator<GetEmployeeByCodeHrQuery>
@@ -23,7 +24,8 @@ namespace HRsystem.Api.Features.Employee
     }
 
     // ✅ Handler
-    public class GetEmployeeByCodeHrHandler : IRequestHandler<GetEmployeeByCodeHrQuery, ResponseResultDTO<EmployeeReadDto?>>
+    public class GetEmployeeByCodeHrHandler
+        : IRequestHandler<GetEmployeeByCodeHrQuery, ResponseResultDTO<EmployeeReadDto?>>
     {
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUser;
@@ -38,6 +40,7 @@ namespace HRsystem.Api.Features.Employee
         {
             try
             {
+                // 🟢 Load employee with related entities
                 var e = await _db.TbEmployees
                     .AsNoTracking()
                     .Include(x => x.JobTitle)
@@ -45,11 +48,20 @@ namespace HRsystem.Api.Features.Employee
                     .Include(x => x.Manager)
                     .Include(x => x.Department)
                     .Include(x => x.Nationality)
+                    .Include(x => x.Shifts)
+                    .Include(x => x.MaritalStatus)
                     .FirstOrDefaultAsync(x => x.EmployeeCodeHr == request.EmployeeCodeHr, cancellationToken);
 
                 if (e == null)
-                    return new ResponseResultDTO<EmployeeReadDto?> { Success = false, Message = "Employee not found." };
+                {
+                    return new ResponseResultDTO<EmployeeReadDto?>
+                    {
+                        Success = false,
+                        Message = "Employee not found."
+                    };
+                }
 
+                // 🟢 Map to DTO safely
                 var dto = new EmployeeReadDto
                 {
                     EmployeeId = e.EmployeeId,
@@ -60,20 +72,52 @@ namespace HRsystem.Api.Features.Employee
                     Birthdate = e.Birthdate,
                     HireDate = e.HireDate,
                     Email = e.Email,
-                    Status = e.Status,
-                    DepartmentId = e.DepartmentId,
+                    Status = e.Status?.ToString() ?? "Unknown",
+
+                    // 🔹 Related data with null safety
+                    DepartmentId = e.DepartmentId ,
+                    DepartmentName = e.Department?.DepartmentName ?? new LocalizedData { en = "N/A", ar = "غير محدد" },
+
                     CompanyId = e.CompanyId,
-                    JobTitleId = e.JobTitleId
+                    CompanyName = e.Company?.CompanyName ?? "N/A",
+
+                    JobTitleId = e.JobTitleId,
+                    JobTitleName = e.JobTitle?.TitleName ?? new LocalizedData { en = "N/A", ar = "غير محدد" },
+
+                    ShiftId = e.ShiftId,
+                    ShiftName = e.Shifts?.ShiftName ?? new LocalizedData { en = "N/A", ar = "غير محدد" },
+
+                    MaritalStatusId = e.MaritalStatusId,
+                    MaritalStatusName = e.MaritalStatus?.NameAr ?? "غير محدد",
+
+                    NationalityId = e.NationalityId,
+                    NationalityName = e.Nationality?.NameEn ?? "N/A",
+
+                    ManagerId = e.ManagerId,
+                    ManagerName = e.Manager?.EnglishFullName ?? "N/A",
+
+                    PrivateMobile = e.PrivateMobile,
+                    BuisnessMobile = e.BuisnessMobile,
+                    SerialMobile = e.SerialMobile,
+                    Note = e.Note,
+                    CreatedAt = e.CreatedAt,
+                    CreatedBy = e.CreatedBy,
+                    UpdatedAt = e.UpdatedAt,
+                    UpdatedBy = e.UpdatedBy
                 };
 
-                return new ResponseResultDTO<EmployeeReadDto?> { Success = true, Data = dto };
+                return new ResponseResultDTO<EmployeeReadDto?>
+                {
+                    Success = true,
+                    Data = dto
+                };
             }
             catch (Exception ex)
             {
                 return new ResponseResultDTO<EmployeeReadDto?>
                 {
                     Success = false,
-                    Message = "Error retrieving employee: " + ex.Message
+                    Message = $"Error retrieving employee: {ex.Message}"
                 };
             }
         }

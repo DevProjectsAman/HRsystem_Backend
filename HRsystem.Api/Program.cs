@@ -2,6 +2,7 @@
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Features.AccessManagment.Auth.UserManagement;
+using HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles;
 using HRsystem.Api.Features.ActivityType;
 using HRsystem.Api.Features.AuditLog;
 using HRsystem.Api.Features.City;
@@ -213,10 +214,35 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "HRsystem API v1");
+
         // options.RoutePrefix = ""; // 👈 makes Swagger the root page
     });
 
 //}
+
+//app.UseSwagger();
+
+//if (app.Environment.IsDevelopment())
+//{
+//    // 👇 In development: Swagger is the default (root) page
+//    app.UseSwaggerUI(options =>
+//    {
+//        options.SwaggerEndpoint("/swagger/v1/swagger.json", "HRsystem API v1");
+//        options.RoutePrefix = string.Empty; // root access: https://localhost:5001/
+//    });
+//}
+//else
+//{
+//    // 👇 In production: Swagger only at /swagger
+//    app.UseSwaggerUI(options =>
+//    {
+//        options.SwaggerEndpoint("/swagger/v1/swagger.json", "HRsystem API v1");
+//        // No RoutePrefix override here
+//    });
+//}
+
+
+
 
 app.UseHttpsRedirection();
 
@@ -263,6 +289,8 @@ app.MapEmployeePunchEndpoints(); // from EmployeePunchEndpoints.cs
 //app.MapEmployeeVacationsEndPoints();
 app.MapEmployeeEndpoints();
 app.MapEmployeeActivityApprovalEndpoints();
+
+app.MapAspRoleEndpoints();
 
 
 app.MapEmployeeVacationsEndPoints();

@@ -1490,7 +1490,7 @@ namespace HRsystem.Api.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("RoleName")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
@@ -1819,13 +1819,13 @@ namespace HRsystem.Api.Migrations
                     b.Property<string>("LoginProvider")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("RoleName")
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Value")
                         .HasColumnType("longtext");
 
-                    b.HasKey("UserId", "LoginProvider", "Name");
+                    b.HasKey("UserId", "LoginProvider", "RoleName");
 
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
