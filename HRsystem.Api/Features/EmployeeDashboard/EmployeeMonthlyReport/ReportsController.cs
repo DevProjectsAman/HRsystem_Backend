@@ -40,4 +40,24 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
          }
          */
     }
+
+    [ApiController]
+    [Route("api/reports")]
+    public class ReportsController : ControllerBase
+    {
+        private readonly IEmployeeMonthlyReportService _reportService;
+
+        public ReportsController(IEmployeeMonthlyReportService reportService)
+        {
+            _reportService = reportService;
+        }
+
+        [HttpPost("generate-daily")]
+        public async Task<IActionResult> GenerateReport(CancellationToken ct)
+        {
+            var result = await _reportService.GenerateMonthlyReportAsync(ct);
+            return Ok(new { Success = true, Message = result });
+        }
+    }
+
 }

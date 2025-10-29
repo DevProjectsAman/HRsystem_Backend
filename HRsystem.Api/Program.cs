@@ -194,7 +194,8 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 //builder.Services.AddScoped<IAuthorizationHandler, PermissionHandlerService>();
 
 // Monthly Report Service
- //builder.Services.AddScoped<IEmployeeMonthlyReportService, EmployeeMonthlyReportService>();
+builder.Services.AddScoped<IEmployeeMonthlyReportService, EmployeeMonthlyReportService>();
+builder.Services.AddHostedService<EmployeeMonthlyReportScheduler>();
 
 
 
