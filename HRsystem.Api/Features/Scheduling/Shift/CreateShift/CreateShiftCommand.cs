@@ -19,15 +19,15 @@ namespace HRsystem.Api.Features.Scheduling.Shift.CreateShift
     decimal? RequiredWorkingHours,
     string? Notes,
     int CompanyId
-) : IRequest<int>;
+) : IRequest<TbShift>;
 
 
-    public class CreateShiftHandler : IRequestHandler<CreateShiftCommand, int>
+    public class CreateShiftHandler : IRequestHandler<CreateShiftCommand, TbShift>
     {
         private readonly DBContextHRsystem _db;
         public CreateShiftHandler(DBContextHRsystem db) => _db = db;
 
-        public async Task<int> Handle(CreateShiftCommand request, CancellationToken ct)
+        public async Task<TbShift> Handle(CreateShiftCommand request, CancellationToken ct)
         {
             var shift = new TbShift
             {
@@ -46,7 +46,8 @@ namespace HRsystem.Api.Features.Scheduling.Shift.CreateShift
 
             _db.TbShifts.Add(shift);
             await _db.SaveChangesAsync(ct);
-            return shift.ShiftId;
+
+            return shift;
         }
     }
 }

@@ -1,10 +1,13 @@
 ﻿using FluentValidation;
+using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.Scheduling.Shift.CreateShift;
 using HRsystem.Api.Features.Scheduling.Shift.DeleteShift;
 using HRsystem.Api.Features.Scheduling.Shift.GetAllShifts;
 using HRsystem.Api.Features.Scheduling.Shift.GetShiftById;
 using HRsystem.Api.Features.Scheduling.Shift.UpdateShift;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace HRsystem.Api.Features.Scheduling.Shift
 {
@@ -15,9 +18,9 @@ namespace HRsystem.Api.Features.Scheduling.Shift
             var group = app.MapGroup("/api/Scheduling/shifts").WithTags("Shifts");
 
             // Get all
-            group.MapGet("/ListShifts", async (ISender mediator) =>
+            group.MapGet("/ListShifts/{id}", async (int id ,ISender mediator) =>
             {
-                var result = await mediator.Send(new GetAllShiftsQuery());
+                var result = await mediator.Send(new GetAllShiftsQuery(id));
                 return Results.Ok(new { Success = true, Data = result });
             });
 
@@ -38,23 +41,26 @@ namespace HRsystem.Api.Features.Scheduling.Shift
                     return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
 
                 var result = await mediator.Send(command);
-                return Results.Created($"/api/shifts/{result}", new { Success = true, ShiftId = result });
+
+                return Results.Ok(new ResponseResultDTO<TbShift>()
+                {
+                    Success = true,
+                    Message = "Shift created successfully",
+                    Data = result
+                });
             });
 
             // Update
-            group.MapPut("/UpdateShift/{id}", async (int id, UpdateShiftCommand command, ISender mediator, IValidator<UpdateShiftCommand> validator) =>
+            group.MapPut("/UpdateShift", async (UpdateShiftCommand command, ISender mediator, IValidator<UpdateShiftCommand> validator) =>
             {
-                if (id != command.ShiftId)
-                    return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
-
                 var validation = await validator.ValidateAsync(command);
                 if (!validation.IsValid)
                     return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
 
                 var result = await mediator.Send(command);
                 return !result
-                    ? Results.NotFound(new { Success = false, Message = $"Shift {id} not found" })
-                    : Results.Ok(new { Success = true, Message = $"Shift {id} updated successfully" });
+                    ? Results.NotFound(new { Success = false, Message = $"Shift {command.ShiftId} not found" })
+                    : Results.Ok(new { Success = true, Message = $"Shift {command.ShiftId} updated successfully" });
             });
 
             // Delete
@@ -67,4 +73,6 @@ namespace HRsystem.Api.Features.Scheduling.Shift
             });
         }
     }
+
+
 }
