@@ -64,18 +64,18 @@ namespace HRsystem.Api.Features.Organization.Department.CreateDepartment
             RuleFor(x => x.DepartmentName.en)
                 .NotEmpty().WithMessage("English department name is required")
                 .MaximumLength(55).WithMessage("English department name cannot exceed 55 characters")
-                .MustAsync(BeUniqueEnglishName).WithMessage("English department name must be unique");
+                .MustAsync(BeUniqueEnglishName).WithMessage("English department name Already Exist");
 
             RuleFor(x => x.DepartmentName.ar)
                 .NotEmpty().WithMessage("Arabic department name is required")
                 .MaximumLength(55).WithMessage("Arabic department name cannot exceed 55 characters")
-                .MustAsync(BeUniqueArabicName).WithMessage("Arabic department name must be unique");
+                .MustAsync(BeUniqueArabicName).WithMessage("Arabic department name Already Exist");
 
 
             RuleFor(x => x.DepartmentCode)
            .NotEmpty().WithMessage("Department code is required")
            .MaximumLength(25).WithMessage("Department code cannot exceed 25 characters")
-           .MustAsync(BeUniqueCode).WithMessage("Department code must be unique");
+           .MustAsync(BeUniqueCode).WithMessage("Department code Already Exist");
 
             RuleFor(x => x.CompanyId)
                 .NotNull().WithMessage("CompanyId is required");
@@ -106,6 +106,8 @@ namespace HRsystem.Api.Features.Organization.Department.CreateDepartment
             return !_db.TbDepartments
                 .AsEnumerable() // switch to client evaluation
                 .Any(d => d.DepartmentName.en == name);
+
+
         }
 
         private async Task<bool> BeUniqueArabicName(string name, CancellationToken ct)

@@ -19,9 +19,7 @@ namespace HRsystem.Api.Features.Organization.Department.GetAllDeparmentsLocalize
     {
         public int DepartmentId { get; set; }
         public string DepartmentCode { get; set; }
-        public string DepartmentNameArabic { get; set; }
-        public string DepartmentNameEnglish { get; set; }
-
+        public LocalizedData DepartmentName { get; set; }
         public int? CompanyId { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
@@ -43,7 +41,7 @@ namespace HRsystem.Api.Features.Organization.Department.GetAllDeparmentsLocalize
 
         public async Task<List<DepartmentLocalizedDto>> Handle(GetAllDepartmentsLocalized request, CancellationToken ct)
         {
-            var statues = await _db.TbDepartments.Where(c=>c.CompanyId==request.companyID).ToListAsync(ct);
+            var statues = await _db.TbDepartments.Where(c => c.CompanyId == request.companyID).ToListAsync(ct);
 
             var lang = _currentUser.UserLanguage ?? "en";
 
@@ -51,9 +49,8 @@ namespace HRsystem.Api.Features.Organization.Department.GetAllDeparmentsLocalize
             {
                 DepartmentId = p.DepartmentId,
                 CompanyId = p.CompanyId,
-                DepartmentCode = p.DepartmentCode,
-                DepartmentNameArabic = p.DepartmentName.GetTranslation("ar"),
-                DepartmentNameEnglish = p.DepartmentName.GetTranslation("en"),
+                DepartmentCode = p.DepartmentCode ?? string.Empty, // Fixed the CS0019 error by replacing '0' with 'string.Empty'  
+                DepartmentName = p.DepartmentName,
                 CreatedBy = p.CreatedBy,
                 CreatedAt = p.CreatedAt,
                 UpdatedBy = p.UpdatedBy,

@@ -1,10 +1,14 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRsystem.Api.Database.DataTables;
 [Table("Tb_Job_Level")]
+[Index(nameof(JobLevelCode), nameof(CompanyId), IsUnique = true)]
+[Index(nameof(JobLevelDesc), nameof(CompanyId), IsUnique = true)]
+
 public partial class TbJobLevel
 {
     [Key]
@@ -14,6 +18,8 @@ public partial class TbJobLevel
     public string? JobLevelDesc { get; set; }
     [MaxLength(25)]
     public string? JobLevelCode { get; set; }
+
+    public int? CompanyId { get; set; }
 
     public int? CreatedBy { get; set; }
 

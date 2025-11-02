@@ -18,9 +18,9 @@ namespace HRsystem.Api.Features.Organization.Department
                            .WithTags("Departments");
 
             // ✅ Get All (localized)
-            group.MapGet("/listOfDepartmentsLocalized", async (ISender mediator) =>
+            group.MapGet("/listOfDepartmentsLocalized/{CompanyId}", async (int CompanyId ,ISender mediator) =>
             {
-                var result = await mediator.Send(new GetAllDepartmentsQuery());
+                var result = await mediator.Send(new GetAllDepartmentsLocalized(CompanyId));
                 return Results.Ok(new ResponseResultDTO<object>
                 {
                     Success = true,
@@ -32,7 +32,7 @@ namespace HRsystem.Api.Features.Organization.Department
             // ✅ Get All (non-localized)
             group.MapGet("/listOfDepartments/{CompanyId}", async (int CompanyId, ISender mediator) =>
             {
-                var result = await mediator.Send(new GetAllDepartmentsLocalized(CompanyId));
+                var result = await mediator.Send(new GetAllDepartmentsQuery(CompanyId));
                 return Results.Ok(new ResponseResultDTO<object>
                 {
                     Success = true,

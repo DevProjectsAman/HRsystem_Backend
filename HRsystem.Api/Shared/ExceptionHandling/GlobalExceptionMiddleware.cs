@@ -1,105 +1,114 @@
-﻿
-// File: Middlewares/GlobalExceptionMiddleware.cs
-
-using FluentValidation;
-using Microsoft.AspNetCore.Http;
+﻿using HRsystem.Api.Shared.DTO;
 using System.Net;
 using System.Text.Json;
+using FluentValidation;
 
-namespace HRsystem.Api.Shared.ExceptionHandling
+public class GlobalExceptionMiddleware
 {
-    public class GlobalExceptionMiddleware
+    private readonly RequestDelegate _next;
+
+    public GlobalExceptionMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public GlobalExceptionMiddleware(RequestDelegate next)
+    public async Task Invoke(HttpContext context)
+    {
+        try
         {
-            _next = next;
+            await _next(context);
         }
-
-        public async Task Invoke(HttpContext context)
+        catch (ValidationException ex)
         {
-            try
-            {
-                await _next(context); // run the next middleware
-            }
-            catch (ValidationException ex)
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            context.Response.ContentType = "application/json";
 
-                var response = new
+            var response = new ResponseResultDTO
+            {
+                Success = false,
+                Message = "Validation failed",
+                Errors = new List<ResponseErrorDTO>
                 {
-                    success = false,
-                    message = "Validation failed",
-                    errors = ex.Errors.Select(e => e.ErrorMessage).ToList()
-                };
+                    new ResponseErrorDTO
+                    {
+                        Property = string.Empty,
+                        Error = ex.InnerException?.Message ?? ex.Message
+                    }
+                }
+            };
+                       
 
-                var json = JsonSerializer.Serialize(response);
-                await context.Response.WriteAsync(json);
-            }
-            catch (Exception ex)
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"🔥 Unhandled exception: {ex}");
+
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.ContentType = "application/json";
+
+            string friendlyMessage = "An unexpected error occurred.";
+
+            if (ex is Microsoft.EntityFrameworkCore.DbUpdateException dbUpdateEx && dbUpdateEx.InnerException != null)
             {
-                Console.WriteLine($"🔥 Unhandled exception: {ex}");
+                friendlyMessage = GetFriendlyMessage(dbUpdateEx.InnerException.Message);
+            }
 
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Response.ContentType = "application/json";
-
-                string friendlyMessage = "An unexpected error occurred.";
-
-                if (ex is Microsoft.EntityFrameworkCore.DbUpdateException dbUpdateEx && dbUpdateEx.InnerException != null)
+            var response = new ResponseResultDTO
+            {
+                Success = false,
+                Message = friendlyMessage,
+                Errors = new List<ResponseErrorDTO>
                 {
-                    friendlyMessage = GetFriendlyMessage(dbUpdateEx.InnerException.Message);
+                    new ResponseErrorDTO
+                    {
+                        Property = string.Empty,
+                        Error = ex.InnerException?.Message ?? ex.Message
+                    }
+                }
+            };
+
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        }
+    }
+
+    private static string GetFriendlyMessage(string dbMessage)
+    {
+        try
+        {
+            if (dbMessage.Contains("FOREIGN KEY constraint fails", StringComparison.OrdinalIgnoreCase))
+            {
+                if (dbMessage.Contains("TbEmployees", StringComparison.OrdinalIgnoreCase) &&
+                    dbMessage.Contains("TbDepartments", StringComparison.OrdinalIgnoreCase))
+                {
+                    return "Cannot delete this department because employees are still assigned to it.";
                 }
 
-                var response = new
-                {
-                    success = false,
-                    message = friendlyMessage,
-                    error = ex.InnerException?.Message ?? ex.Message // keep raw for devs
-                };
+                return "This record cannot be deleted because it is referenced by other data.";
+            }
 
-                var json = JsonSerializer.Serialize(response);
-                await context.Response.WriteAsync(json);
+            if (dbMessage.Contains("Duplicate entry", StringComparison.OrdinalIgnoreCase))
+                return "A record with the same unique value already exists.";
+
+            var match = System.Text.RegularExpressions.Regex.Match(
+                dbMessage,
+                @"fails \(`(?<db>.+?)`\.`(?<table>.+?)`, CONSTRAINT `(?<fk>.+?)` FOREIGN KEY \(`(?<column>.+?)`\) REFERENCES `(?<refTable>.+?)`"
+            );
+
+            if (match.Success)
+            {
+                var table = match.Groups["table"].Value;
+                var refTable = match.Groups["refTable"].Value;
+
+                string Clean(string name) =>
+                    string.Join(" ", name.Split('_', StringSplitOptions.RemoveEmptyEntries)
+                                          .Select(w => char.ToUpper(w[0]) + w.Substring(1).ToLower()));
+
+                return $"The record in **{Clean(table)}** cannot be deleted because related records exist in **{Clean(refTable)}**.";
             }
         }
+        catch { }
 
-
-
-        private static string GetFriendlyMessage(string dbMessage)
-        {
-            try
-            {
-                // Match the MySQL FK error structure
-                var match = System.Text.RegularExpressions.Regex.Match(
-                    dbMessage,
-                    @"fails \(`(?<db>.+?)`\.`(?<table>.+?)`, CONSTRAINT `(?<fk>.+?)` FOREIGN KEY \(`(?<column>.+?)`\) REFERENCES `(?<refTable>.+?)`"
-                );
-
-                if (match.Success)
-                {
-                    var table = match.Groups["table"].Value;
-                    var column = match.Groups["column"].Value;
-                    var refTable = match.Groups["refTable"].Value;
-
-                    // Convert snake_case to nicer words
-                    string Clean(string name) =>
-                        string.Join(" ", name.Split('_', StringSplitOptions.RemoveEmptyEntries)
-                                              .Select(w => char.ToUpper(w[0]) + w.Substring(1).ToLower()));
-
-                    return $"The value for **{Clean(column)}** in **{Clean(table)}** must match an existing record in **{Clean(refTable)}**.";
-                }
-            }
-            catch
-            {
-                // fallback
-            }
-
-            return "A database relationship error occurred. Please check related data.";
-        }
-
-
+        return "A database relationship error occurred. Please check related data.";
     }
 }
-
-

@@ -1,6 +1,7 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace HRsystem.Api.Features.Organization.Department.GetAllDepartments
 {
-    public record GetAllDepartmentsQuery() : IRequest<List<DepartmentDto>>;
+    public record GetAllDepartmentsQuery(int companyId): IRequest<List<DepartmentDto>>;
 
     public class DepartmentDto
     {
@@ -40,7 +41,7 @@ namespace HRsystem.Api.Features.Organization.Department.GetAllDepartments
 
         public async Task<List<DepartmentDto>> Handle(GetAllDepartmentsQuery request, CancellationToken ct)
         {
-            var statues = await _db.TbDepartments.ToListAsync(ct);
+            var statues = await _db.TbDepartments.Where(c=>c.CompanyId==request.companyId).ToListAsync(ct);
 
             var lang = _currentUser.UserLanguage ?? "en";
 

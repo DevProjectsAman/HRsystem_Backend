@@ -21,6 +21,7 @@ namespace HRsystem.Api.Features.Organization.Department.DeleteDepartment
             _db.TbDepartments.Remove(entity);
             await _db.SaveChangesAsync(ct);
             return true;
+
         }
     }
 }

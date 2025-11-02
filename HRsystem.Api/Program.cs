@@ -67,6 +67,13 @@ var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
 
 
+// ✅ Make JSON property name matching case-insensitive globally
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
+});
+
+
 builder.Services.AddDbContext<DBContextHRsystem>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
