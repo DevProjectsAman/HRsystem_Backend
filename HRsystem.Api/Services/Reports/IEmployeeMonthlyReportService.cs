@@ -1,8 +1,5 @@
 ﻿using HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
 
 namespace HRsystem.Api.Services.Reports
 {

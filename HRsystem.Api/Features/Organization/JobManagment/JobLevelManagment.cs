@@ -14,15 +14,14 @@ using System;
 namespace HRsystem.Api.Features.Organization.JobManagment
 
 {
-
     public static class JobLevelEndpoints
     {
         public static void MapJobLevelEndpoints(this IEndpointRouteBuilder app)
         {
             var group = app.MapGroup("/api/Organization/JobLevel").WithTags("Organization");
 
-            group.MapGet("/ListJobLevels", [Authorize] async (IMediator mediator) =>
-                await mediator.Send(new GetAllJobLevelsQuery()))
+            group.MapGet("/ListJobLevels/{companyId}", [Authorize] async (IMediator mediator,int companyId) =>
+                await mediator.Send(new GetAllJobLevelsQuery(companyId)))
                 .WithName("ListJobLevels");
 
 
@@ -68,14 +67,14 @@ namespace HRsystem.Api.Features.Organization.JobManagment
     //    public int CompanyId { get; set; }
     //}
 
-    public record GetAllJobLevelsQuery : IRequest<ResponseResultDTO<List<JobLevelDto>>>;
+    public record GetAllJobLevelsQuery(int companyId) : IRequest<ResponseResultDTO<List<JobLevelDto>>>;
 
     public class GetAllJobLevelsHandler(DBContextHRsystem db)
         : IRequestHandler<GetAllJobLevelsQuery, ResponseResultDTO<List<JobLevelDto>>>
     {
         public async Task<ResponseResultDTO<List<JobLevelDto>>> Handle(GetAllJobLevelsQuery request, CancellationToken ct)
         {
-            var data = await db.TbJobLevels
+            var data = await db.TbJobLevels.Where(c=>c.CompanyId==request.companyId)
                 .Select(jl => new JobLevelDto
                 {
                     JobLevelId = jl.JobLevelId,
@@ -84,7 +83,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
                     JobTitles = jl.TbJobTitles.Select(t => new JobTitleDto
                     {
                         JobTitleId = t.JobTitleId,
-                        TitleName = t.TitleName.ToString(), // لو LocalizedData رجعها كـ string
+                        TitleName = t.TitleName, // لو LocalizedData رجعها كـ string
 
                     }).ToList()
                 })
@@ -121,14 +120,42 @@ namespace HRsystem.Api.Features.Organization.JobManagment
     #endregion
 
     #region Create
-    public record CreateJobLevelCommand(string? JobLevelDesc, string? JobLevelCode) : IRequest<ResponseResultDTO<int>>;
+    public record CreateJobLevelCommand(int companyId ,string? JobLevelDesc, string? JobLevelCode) : IRequest<ResponseResultDTO<int>>;
 
     public class CreateJobLevelValidator : AbstractValidator<CreateJobLevelCommand>
     {
-        public CreateJobLevelValidator()
+
+        private readonly DBContextHRsystem _db;
+
+        public CreateJobLevelValidator(DBContextHRsystem dBContextHRsystem)
+
         {
-            RuleFor(x => x.JobLevelDesc).NotEmpty().MaximumLength(55);
-            RuleFor(x => x.JobLevelCode).NotEmpty().MaximumLength(25);
+            _db = dBContextHRsystem;
+
+            RuleFor(x => x.JobLevelDesc)
+                .NotEmpty().MaximumLength(55)
+                 .MustAsync(BeUniqueDescPerCompany)
+              .WithMessage("Job level Description already exists for this company.");
+            ;
+
+             
+           
+            RuleFor(x => x.JobLevelCode)
+              .NotEmpty()
+              .MaximumLength(25)
+              .MustAsync(BeUniqueCodePerCompany)
+              .WithMessage("Job level code already exists for this company.");
+        }
+
+        private async Task<bool> BeUniqueCodePerCompany(CreateJobLevelCommand cmd, string jobLevelCode, CancellationToken ct)
+        {
+            return !await _db.TbJobLevels
+                .AnyAsync(x => x.CompanyId == cmd.companyId && x.JobLevelCode == jobLevelCode, ct);
+        } 
+        private async Task<bool> BeUniqueDescPerCompany(CreateJobLevelCommand cmd, string jobLevelDesc, CancellationToken ct)
+        {
+            return !await _db.TbJobLevels
+                .AnyAsync(x => x.CompanyId == cmd.companyId && x.JobLevelDesc == jobLevelDesc, ct);
         }
     }
 
@@ -143,6 +170,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
 
                 var entity = new TbJobLevel
                 {
+                    CompanyId = request.companyId,
                     JobLevelDesc = request.JobLevelDesc,
                     JobLevelCode = request.JobLevelCode,
                     CreatedAt = DateTime.UtcNow,
@@ -178,9 +206,9 @@ namespace HRsystem.Api.Features.Organization.JobManagment
     #region Update
     public record UpdateJobLevelCommand : IRequest<ResponseResultDTO<bool>>
     {
-
-        public string? JobLevelDesc { get; set; }
-        public string? JobLevelCode { get; set; }
+        public int JobLevelId { get; set; }
+        public string JobLevelDesc { get; set; }
+        public string JobLevelCode { get; set; }
     }
 
     public class UpdateJobLevelValidator : AbstractValidator<UpdateJobLevelCommand>
@@ -189,6 +217,8 @@ namespace HRsystem.Api.Features.Organization.JobManagment
         {
             RuleFor(x => x.JobLevelDesc).NotEmpty().MaximumLength(55);
             RuleFor(x => x.JobLevelCode).NotEmpty().MaximumLength(25);
+            RuleFor(x => x.JobLevelId).GreaterThan(0);
+
         }
     }
 
@@ -196,9 +226,22 @@ namespace HRsystem.Api.Features.Organization.JobManagment
     {
         public async Task<ResponseResultDTO<bool>> Handle(UpdateJobLevelCommand request, CancellationToken ct)
         {
-            var entity = await db.TbJobLevels.FindAsync(new object?[] { }, ct);
+            var entity = await db.TbJobLevels.FindAsync(new object[] { request.JobLevelId }, ct);
             if (entity == null)
                 return new ResponseResultDTO<bool> { Success = false, Message = "Not found" };
+
+            // Optional: Check if the new code already exists for the same company (and not the same record)
+            var exists = await db.TbJobLevels
+                .AnyAsync(x => x.CompanyId == entity.CompanyId
+                            && (x.JobLevelCode == request.JobLevelCode || x.JobLevelDesc == request.JobLevelDesc)
+                            && x.JobLevelId != request.JobLevelId, ct);
+
+            if (exists)
+                return new ResponseResultDTO<bool>
+                {
+                    Success = false,
+                    Message = "Job level Code Or Description already exists for this company"
+                };
 
             entity.JobLevelDesc = request.JobLevelDesc;
             entity.JobLevelCode = request.JobLevelCode;

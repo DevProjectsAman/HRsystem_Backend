@@ -17,11 +17,32 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             var group = app.MapGroup("/api/Organization/JobTitle").WithTags("Job Titles");
 
             // Get All
-            group.MapGet("/ListJobTitles", async (ISender mediator) =>
+
+            // Fix for CS7036: Pass the required parameters 'CompanyId' and 'DepartmentId' to the GetAllJobTitlesQuery constructor.
+            group.MapGet("/ListJobTitles", async (int companyId, int departmentId, ISender mediator) =>
             {
-                var result = await mediator.Send(new GetAllJobTitlesQuery());
+                var result = await mediator.Send(new GetAllJobTitlesQuery(companyId, departmentId));
                 return Results.Ok(new { Success = true, Data = result });
             });
+
+            //// Removed the duplicate endpoint that caused the CS7036 error.  
+            //group.MapGet("/ListJobTitles", async (int companyId, int departmentId, ISender mediator) =>
+            //{
+            //    var result = await mediator.Send(new GetAllJobTitlesQuery(companyId, departmentId));
+            //    return Results.Ok(new { Success = true, Data = result });
+            //});
+
+            // Fix for CS7036: Removed the invalid endpoint that was missing required parameters 'CompanyId' and 'DepartmentId'.
+            //group.MapGet("/ListJobTitles", async (int companyId, int departmentId, ISender mediator) =>
+            //{
+            //    var result = await mediator.Send(new GetAllJobTitlesQuery(companyId, departmentId));
+            //    return Results.Ok(new { Success = true, Data = result });
+            //});
+            //group.MapGet("/ListJobTitles", async (ISender mediator) =>
+            //{
+            //    var result = await mediator.Send(new GetAllJobTitlesQuery());
+            //    return Results.Ok(new { Success = true, Data = result });
+            //});
 
             // Get One
             group.MapGet("/GetOneJobTitle/{id}", async (int id, ISender mediator) =>
@@ -73,12 +94,12 @@ namespace HRsystem.Api.Features.Organization.JobManagment
     }
 
     #region Get All
-    public record GetAllJobTitlesQuery() : IRequest<List<JobTitleDto>>;
+    public record GetAllJobTitlesQuery(int CompanyId,int DepartmentId) : IRequest<List<JobTitleDto>>;
 
     public class JobTitleDto
     {
         public int JobTitleId { get; set; }
-        public string TitleName { get; set; }
+        public LocalizedData TitleName { get; set; }
         public int CompanyId { get; set; }
         public string CompanyName { get; set; }
         public int DepartmentId { get; set; }
@@ -102,7 +123,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
         {
             var lang = _currentUser.UserLanguage ?? "en";
 
-            var jobTitles = await _db.TbJobTitles
+            var jobTitles = await _db.TbJobTitles.Where(j => j.CompanyId == request.CompanyId && j.DepartmentId == request.DepartmentId)
                 .Include(j => j.Company)
                 .Include(j => j.Department)
                 .Include(j => j.JobLevel)
@@ -112,7 +133,8 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             return jobTitles.Select(j => new JobTitleDto
             {
                 JobTitleId = j.JobTitleId,
-                TitleName = j.TitleName.GetTranslation(lang), // ✅ multi-language
+                TitleName = j.TitleName, // ✅ multi-language
+              //  TitleName = j.TitleName.GetTranslation(lang), // ✅ multi-language
                 CompanyId = j.CompanyId,
                 CompanyName = j.Company.CompanyName,
                 DepartmentId = j.DepartmentId,
