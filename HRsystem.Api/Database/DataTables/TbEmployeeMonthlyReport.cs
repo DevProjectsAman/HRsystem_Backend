@@ -54,7 +54,7 @@ public partial class TbEmployeeMonthlyReport
     public int ?ActivityTypeId { get; set; }
 
     /*for all*/
-    public int EmployeeTodayStatuesId { get; set; }
+    public int EmployeeTodayStatuesId { get; set; } = 2;
 
     public long? RequestBy { get; set; }
 
@@ -85,7 +85,7 @@ public partial class TbEmployeeMonthlyReport
 
     public bool IsRemoteday { get; set; }
 
-    public string TodayStatues { get; set; } = "Attendance";
+    public string TodayStatues { get; set; } = "Workday";
     
     [Column(TypeName = "json")]
     public string? Details { get; set; } = "{}";
