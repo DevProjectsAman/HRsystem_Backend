@@ -38,6 +38,10 @@ namespace HRsystem.Api.Features.Holiday.CreateHoliday
             _db.TbHolidays.Add(entity);
             await _db.SaveChangesAsync(ct);
 
+
+            var hType = _db.TbHolidayTypes.Where(c => c.HolidayTypeId == entity.HolidayTypeId).Select(d => d.HolidayTypeName).FirstOrDefault();
+
+
             return new HolidayDto
             {
                 HolidayId = entity.HolidayId,
@@ -47,7 +51,8 @@ namespace HRsystem.Api.Features.Holiday.CreateHoliday
                 EndDate = entity.EndDate,
                 IsForChristiansOnly = entity.IsForChristiansOnly,
                 IsActive = entity.IsActive,
-                CompanyId = entity.CompanyId
+                CompanyId = entity.CompanyId,
+                 HolidayTypeName= hType
             };
         }
     }

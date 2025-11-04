@@ -22,7 +22,7 @@ namespace HRsystem.Api.Features.Holiday.GetHolidayById
                 {
                     HolidayId = h.HolidayId,
                     HolidayTypeId = h.HolidayTypeId,
-                    HolidayTypeName = h.HolidayType.HolidayTypeName.en,
+                    HolidayTypeName = h.HolidayType.HolidayTypeName,
                     HolidayName = h.HolidayName,
                     StartDate = h.StartDate,
                     EndDate = h.EndDate,

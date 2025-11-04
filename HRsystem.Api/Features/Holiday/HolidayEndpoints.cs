@@ -3,6 +3,7 @@ using HRsystem.Api.Features.Holiday.DeleteHoliday;
 using HRsystem.Api.Features.Holiday.GetAllHolidays;
 using HRsystem.Api.Features.Holiday.GetHolidayById;
 using HRsystem.Api.Features.Holiday.UpdateHoliday;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 
 namespace HRsystem.Api.Features.Holiday
@@ -13,41 +14,52 @@ namespace HRsystem.Api.Features.Holiday
         {
             var group = app.MapGroup("/api/holidays").WithTags("Holidays");
 
-            group.MapGet("/", async (ISender mediator) =>
+            group.MapGet("/GetAllHolidays/{companyId}", async (ISender mediator,int companyId) =>
             {
-                var result = await mediator.Send(new GetAllHolidaysQuery());
-                return Results.Ok(new { Success = true, Data = result });
+                var result = await mediator.Send(new GetAllHolidaysQuery(companyId));
+                return Results.Ok(new ResponseResultDTO<object>
+                {
+                    Success = true,
+                    Data = result
+                });
             });
 
             group.MapGet("/{id}", async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetHolidayByIdQuery(id));
                 return result == null
-                    ? Results.NotFound(new { Success = false, Message = "Holiday not found" })
-                    : Results.Ok(new { Success = true, Data = result });
+                    ? Results.NotFound(new ResponseResultDTO { Success = false, Message = "Holiday not found" })
+                    : Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
-            group.MapPost("/", async (CreateHolidayCommand cmd, ISender mediator) =>
+            group.MapPost("/CreateHoliday", async (CreateHolidayCommand cmd, ISender mediator) =>
             {
                 var result = await mediator.Send(cmd);
-                return Results.Created($"/api/holidays/{result.HolidayId}", new { Success = true, Data = result });
+                return Results.Created($"/api/holidays/{result?.HolidayId}", new ResponseResultDTO<object>
+                {
+                    Success = true,
+                    Message = "Created",
+                    Data = result
+                });
             });
 
             group.MapPut("/{id}", async (int id, UpdateHolidayCommand cmd, ISender mediator) =>
             {
-                if (id != cmd.HolidayId) return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
+                if (id != cmd.HolidayId)
+                    return Results.BadRequest(new ResponseResultDTO { Success = false, Message = "Id mismatch" });
+
                 var result = await mediator.Send(cmd);
                 return result == null
-                    ? Results.NotFound(new { Success = false, Message = "Holiday not found" })
-                    : Results.Ok(new { Success = true, Data = result });
+                    ? Results.NotFound(new ResponseResultDTO { Success = false, Message = "Holiday not found" })
+                    : Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
             group.MapDelete("/{id}", async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteHolidayCommand(id));
                 return !result
-                    ? Results.NotFound(new { Success = false, Message = "Holiday not found" })
-                    : Results.Ok(new { Success = true, Message = "Deleted successfully" });
+                    ? Results.NotFound(new ResponseResultDTO { Success = false, Message = "Holiday not found" })
+                    : Results.Ok(new ResponseResultDTO { Success = true, Message = "Deleted successfully" });
             });
         }
     }
