@@ -11,14 +11,14 @@ namespace HRsystem.Api.Features.VacationType.CreateVacationType
         string? Description,
         bool? IsPaid,
         bool? RequiresHrApproval
-    ) : IRequest<TbVacationType>;
+    ) : IRequest<int>;
 
-    public class Handler : IRequestHandler<CreateVacationTypeCommand, TbVacationType>
+    public class Handler : IRequestHandler<CreateVacationTypeCommand, int>
     {
         private readonly DBContextHRsystem _db;
         public Handler(DBContextHRsystem db) => _db = db;
 
-        public async Task<TbVacationType> Handle(CreateVacationTypeCommand request, CancellationToken ct)
+        public async Task<int> Handle(CreateVacationTypeCommand request, CancellationToken ct)
         {
             var entity = new TbVacationType
             {
@@ -31,7 +31,7 @@ namespace HRsystem.Api.Features.VacationType.CreateVacationType
             _db.TbVacationTypes.Add(entity);
             await _db.SaveChangesAsync(ct);
 
-            return entity;
+            return entity.VacationTypeId;
         }
     }
 }

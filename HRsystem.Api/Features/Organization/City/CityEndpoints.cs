@@ -1,10 +1,13 @@
-﻿using HRsystem.Api.Features.City.CreateCity;
-using HRsystem.Api.Features.City.UpdateCity;
-using HRsystem.Api.Features.City.GetAllCities;
-using HRsystem.Api.Features.City.GetCityById;
+﻿using FluentValidation;
+using HRsystem.Api.Features.City.CreateCity;
 using HRsystem.Api.Features.City.DeleteCity;
+using HRsystem.Api.Features.City.GetAllCities;
+using HRsystem.Api.Features.City.UpdateCity;
+using HRsystem.Api.Features.Organization.City.GetCityByGovId;
+using HRsystem.Api.Features.Organization.City.GetCityById;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
-using FluentValidation;
+using System.Linq;
 
 namespace HRsystem.Api.Features.City
 {
@@ -18,16 +21,25 @@ namespace HRsystem.Api.Features.City
             group.MapGet("/ListOfCities", async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllCitiesQuery());
-                return Results.Ok(new { Success = true, Data = result });
+                return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
             // Get One
             group.MapGet("/GetOneCity/{id}", async (int id, ISender mediator) =>
             {
-                var result = await mediator.Send(new GetCityByIdQuery(id));
+                var result = await mediator.Send(new GetCityByCityIdQuery(id));
                 return result == null
-                    ? Results.NotFound(new { Success = false, Message = $"City {id} not found" })
-                    : Results.Ok(new { Success = true, Data = result });
+                    ? Results.NotFound(new ResponseResultDTO { Success = false, Message = $"City {id} not found" })
+                    : Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
+            });
+
+            // Get One By GovID
+            group.MapGet("/GetOneCityByGov/{GovId}", async (int GovId, ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetCityByGovIdQuery(GovId));
+                return result == null
+                    ? Results.NotFound(new ResponseResultDTO { Success = false, Message = $"City {GovId} not found" })
+                    : Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
             // Create
@@ -35,34 +47,53 @@ namespace HRsystem.Api.Features.City
             {
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
-                    return Results.BadRequest(new
+                {
+                    var errors = validationResult.Errors
+                        .Select(e => new ResponseErrorDTO { Property = e.PropertyName, Error = e.ErrorMessage })
+                        .ToList();
+
+                    return Results.BadRequest(new ResponseResultDTO
                     {
                         Success = false,
-                        Errors = validationResult.Errors.Select(e => e.ErrorMessage)
+                        Message = "Validation failed",
+                        Errors = errors
                     });
+                }
 
                 var result = await mediator.Send(cmd);
-                return Results.Created($"/api/cities/{result.CityId}", new { Success = true, Data = result });
+                return Results.Created($"/api/Organization/cities/{result.CityId}", new ResponseResultDTO<object>
+                {
+                    Success = true,
+                    Data = result,
+                    Message = "Created"
+                });
             });
 
             // Update
             group.MapPut("/UpdateCity/{id}", async (int id, UpdateCityCommand cmd, ISender mediator, IValidator<UpdateCityCommand> validator) =>
             {
                 if (id != cmd.CityId)
-                    return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
+                    return Results.BadRequest(new ResponseResultDTO { Success = false, Message = "Id mismatch" });
 
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
-                    return Results.BadRequest(new
+                {
+                    var errors = validationResult.Errors
+                        .Select(e => new ResponseErrorDTO { Property = e.PropertyName, Error = e.ErrorMessage })
+                        .ToList();
+
+                    return Results.BadRequest(new ResponseResultDTO
                     {
                         Success = false,
-                        Errors = validationResult.Errors.Select(e => e.ErrorMessage)
+                        Message = "Validation failed",
+                        Errors = errors
                     });
+                }
 
                 var result = await mediator.Send(cmd);
                 return result == null
-                    ? Results.NotFound(new { Success = false, Message = $"City {id} not found" })
-                    : Results.Ok(new { Success = true, Data = result });
+                    ? Results.NotFound(new ResponseResultDTO { Success = false, Message = $"City {id} not found" })
+                    : Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
             // Delete
@@ -70,8 +101,8 @@ namespace HRsystem.Api.Features.City
             {
                 var result = await mediator.Send(new DeleteCityCommand(id));
                 return !result
-                    ? Results.NotFound(new { Success = false, Message = $"City {id} not found" })
-                    : Results.Ok(new { Success = true, Message = $"City {id} deleted successfully" });
+                    ? Results.NotFound(new ResponseResultDTO { Success = false, Message = $"City {id} not found" })
+                    : Results.Ok(new ResponseResultDTO { Success = true, Message = $"City {id} deleted successfully" });
             });
         }
     }

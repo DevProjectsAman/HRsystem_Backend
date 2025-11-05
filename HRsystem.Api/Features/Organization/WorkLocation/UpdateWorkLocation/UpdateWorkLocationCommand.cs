@@ -16,14 +16,14 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.UpdateWorkLocation
         decimal? Longitude,
         int? AllowedRadiusM,
         int? CityId
-    ) : IRequest<TbWorkLocation?>;
+    ) : IRequest<int>;
 
-    public class Handler : IRequestHandler<UpdateWorkLocationCommand, TbWorkLocation?>
+    public class Handler : IRequestHandler<UpdateWorkLocationCommand, int>
     {
         private readonly DBContextHRsystem _db;
         public Handler(DBContextHRsystem db) => _db = db;
 
-        public async Task<TbWorkLocation?> Handle(UpdateWorkLocationCommand request, CancellationToken ct)
+        public async Task<int> Handle(UpdateWorkLocationCommand request, CancellationToken ct)
         {
             var entity = await _db.TbWorkLocations
                 .FirstOrDefaultAsync(x => x.WorkLocationId == request.WorkLocationId, ct);
@@ -43,7 +43,7 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.UpdateWorkLocation
             entity.UpdatedAt = DateTime.UtcNow;
 
             await _db.SaveChangesAsync(ct);
-            return entity;
+            return entity.WorkLocationId;
         }
     }
 }

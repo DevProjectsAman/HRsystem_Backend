@@ -4,7 +4,9 @@ using HRsystem.Api.Features.VacationType.DeleteVacationType;
 using HRsystem.Api.Features.VacationType.GetAllVacationTypes;
 using HRsystem.Api.Features.VacationType.GetVacationTypeById;
 using HRsystem.Api.Features.VacationType.UpdateVacationType;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
+using System.Linq;
 
 
 namespace HRsystem.Api.Features.ShiftEndpoints
@@ -19,7 +21,7 @@ namespace HRsystem.Api.Features.ShiftEndpoints
             group.MapGet("/ListOfVacation", async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllVacationTypesQuery());
-                return Results.Ok(new { Success = true, Data = result });
+                return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
             // Get by Id
@@ -27,8 +29,8 @@ namespace HRsystem.Api.Features.ShiftEndpoints
             {
                 var result = await mediator.Send(new GetVacationTypeByIdQuery(id));
                 return result == null
-                    ? Results.NotFound(new { Success = false, Message = $"VacationType {id} not found" })
-                    : Results.Ok(new { Success = true, Data = result });
+                    ? Results.NotFound(new ResponseResultDTO { Success = false, Message = $"VacationType {id} not found" })
+                    : Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
             // Create
@@ -36,29 +38,56 @@ namespace HRsystem.Api.Features.ShiftEndpoints
             {
                 var validation = await validator.ValidateAsync(command);
                 if (!validation.IsValid)
-                    return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
+                {
+                    var errors = validation.Errors
+                        .Select(e => new ResponseErrorDTO { Property = e.PropertyName, Error = e.ErrorMessage })
+                        .ToList();
+
+                    return Results.BadRequest(new ResponseResultDTO
+                    {
+                        Success = false,
+                        Message = "Validation failed",
+                        Errors = errors
+                    });
+                }
 
                 var result = await mediator.Send(command);
-                return Results.Created($"/api/vacationtypes/{result}", new { Success = true, VacationTypeId = result });
+                return Results.Created($"/api/vacationtypes/{result}", new ResponseResultDTO<int>
+                {
+                    Success = true,
+                    Message = "Created",
+                    Data = result
+                });
             });
 
             // Update
             group.MapPut("/UpdateVacation/{id}", async (int id, UpdateVacationTypeCommand command, ISender mediator, IValidator<UpdateVacationTypeCommand> validator) =>
             {
                 if (id != command.VacationTypeId)
-                    return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
+                    return Results.BadRequest(new ResponseResultDTO { Success = false, Message = "Id mismatch" });
 
                 var validation = await validator.ValidateAsync(command);
                 if (!validation.IsValid)
-                    return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
+                {
+                    var errors = validation.Errors
+                        .Select(e => new ResponseErrorDTO { Property = e.PropertyName, Error = e.ErrorMessage })
+                        .ToList();
+
+                    return Results.BadRequest(new ResponseResultDTO
+                    {
+                        Success = false,
+                        Message = "Validation failed",
+                        Errors = errors
+                    });
+                }
 
                 var result = await mediator.Send(command);
                 if (result == null)
                 {
-                    return Results.NotFound(new { Success = false, Message = "Not found" });
+                    return Results.NotFound(new ResponseResultDTO { Success = false, Message = "Not found" });
                 }
 
-                 return Results.Ok(new { Success = true, Message = $"VacationType {id} updated successfully" });
+                return Results.Ok(new ResponseResultDTO { Success = true, Message = $"VacationType {id} updated successfully" });
             });
 
             // Delete
@@ -66,8 +95,8 @@ namespace HRsystem.Api.Features.ShiftEndpoints
             {
                 var result = await mediator.Send(new DeleteVacationTypeCommand(id));
                 return !result
-                    ? Results.NotFound(new { Success = false, Message = $"VacationType {id} not found" })
-                    : Results.Ok(new { Success = true, Message = $"VacationType {id} deleted successfully" });
+                    ? Results.NotFound(new ResponseResultDTO { Success = false, Message = $"VacationType {id} not found" })
+                    : Results.Ok(new ResponseResultDTO { Success = true, Message = $"VacationType {id} deleted successfully" });
             });
         }
     }

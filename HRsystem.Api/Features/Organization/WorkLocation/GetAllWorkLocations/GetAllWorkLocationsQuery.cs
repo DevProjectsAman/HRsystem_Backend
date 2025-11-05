@@ -1,5 +1,6 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,13 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.GetAllWorkLocations
         public int WorkLocationId { get; set; }
         public int CompanyId { get; set; }
         public string WorkLocationCode { get; set; }
-        public string LocationName { get; set; }
+        public LocalizedData LocationName { get; set; }
+
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
+
+        public int? AllowedRadiusM { get; set; }
+        
         public int? CityId { get; set; }
     }
 
@@ -37,9 +44,13 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.GetAllWorkLocations
             {
                 WorkLocationId = s.WorkLocationId,
                 CompanyId = s.CompanyId,
-                LocationName = s.LocationName.GetTranslation(lang),// ✅ translated here
+                LocationName = s.LocationName,// ✅ translated here
                 CityId = s.CityId,
-                WorkLocationCode = s.WorkLocationCode
+                WorkLocationCode = s.WorkLocationCode,
+                Latitude = s.Latitude,
+                Longitude = s.Longitude,
+                AllowedRadiusM = s.AllowedRadiusM,
+
             }).ToList();
 
         }

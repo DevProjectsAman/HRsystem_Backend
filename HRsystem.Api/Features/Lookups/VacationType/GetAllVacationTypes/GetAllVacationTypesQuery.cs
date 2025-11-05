@@ -2,6 +2,7 @@
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.ActivityType.GetAllActivityTypes;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ namespace HRsystem.Api.Features.VacationType.GetAllVacationTypes
        
         public int VacationTypeId { get; set; }   
         
-        public string VacationTypeName { get; set; }
+        public LocalizedData VacationTypeName { get; set; }
 
         public string Description { get; set; }
 
@@ -49,7 +50,7 @@ namespace HRsystem.Api.Features.VacationType.GetAllVacationTypes
             {
                 VacationTypeId = s.VacationTypeId,
                 Description = s.Description,
-                VacationTypeName = s.VacationName.GetTranslation(lang),// ✅ translated here
+                VacationTypeName = s.VacationName,// ✅ translated here
                 IsPaid = s.IsPaid,
                 RequiresHrApproval = s.RequiresHrApproval,
             }).ToList();
