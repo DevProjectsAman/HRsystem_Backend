@@ -1,11 +1,11 @@
-﻿using HRsystem.Api.Features.Project.CreateProject;
-using HRsystem.Api.Features.Project.GetAllProjects;
-using HRsystem.Api.Features.Project.GetProjectById;
-using HRsystem.Api.Features.Project.UpdateProject;
+﻿using HRsystem.Api.Features.Organization.Project.CreateProject;
+using HRsystem.Api.Features.Organization.Project.GetAllProjects;
+using HRsystem.Api.Features.Organization.Project.GetProjectById;
+using HRsystem.Api.Features.Organization.Project.UpdateProject;
 using HRsystem.Api.Features.Project.DeleteProject;
 using MediatR;
 
-namespace HRsystem.Api.Features.Project
+namespace HRsystem.Api.Features.Organization.Project
 {
     public static class ProjectEndpoints
     {

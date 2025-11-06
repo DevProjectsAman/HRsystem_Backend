@@ -4,7 +4,7 @@ using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.Project.GetProjectById
+namespace HRsystem.Api.Features.Organization.Project.GetProjectById
 {
     public record GetProjectByIdCommand(int ProjectId) : IRequest<ProjectResponse?>;
 
@@ -12,8 +12,8 @@ namespace HRsystem.Api.Features.Project.GetProjectById
         int ProjectId,
         string ProjectCode,
         string ProjectName,
-        int? CityId,
-        int? WorkLocationId,
+        //int? CityId,
+        //int? WorkLocationId,
         int CompanyId
     );
 
@@ -27,7 +27,7 @@ namespace HRsystem.Api.Features.Project.GetProjectById
                 throw new KeyNotFoundException($"Project with ID {request.ProjectId} not found.");
             }
 
-                return new ProjectResponse(entity.ProjectId, entity.ProjectCode, entity.ProjectName.GetTranslation(currentUser.UserLanguage), entity.CityId, entity.WorkLocationId, entity.CompanyId);
+                return new ProjectResponse(entity.ProjectId, entity.ProjectCode, entity.ProjectName.GetTranslation(currentUser.UserLanguage),  entity.CompanyId);
         }
     }
 }

@@ -17,9 +17,9 @@ public partial class TbProject
     //[MaxLength(100)]
     public LocalizedData ProjectName { get; set; } = null!;
 
-    public int? CityId { get; set; }
+    //public int? CityId { get; set; }
 
-    public int? WorkLocationId { get; set; }
+    //public int? WorkLocationId { get; set; }
 
     public int CompanyId { get; set; }
 
@@ -31,8 +31,7 @@ public partial class TbProject
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual TbCity? City { get; set; }
-
+    
     public virtual TbCompany Company { get; set; } = null!;
 
     public virtual ICollection<TbEmployeeProject> TbEmployeeProjects { get; set; } = new List<TbEmployeeProject>();

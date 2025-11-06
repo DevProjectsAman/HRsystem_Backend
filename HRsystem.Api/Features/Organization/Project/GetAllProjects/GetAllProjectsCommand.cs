@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.Design;
 
-namespace HRsystem.Api.Features.Project.GetAllProjects
+namespace HRsystem.Api.Features.Organization.Project.GetAllProjects
 {
     public record GetAllProjectsCommand() : IRequest<List<ProjectResponse>>;
 
@@ -14,8 +14,7 @@ namespace HRsystem.Api.Features.Project.GetAllProjects
        public int ProjectId { get; set; }
         public string ProjectCode { get; set; }
         public string ProjectName { get; set; }
-        public int? CityId { get; set; }
-        public int? WorkLocationId { get; set; }
+       
         public int CompanyId { get; set; }
         }
 
@@ -41,8 +40,8 @@ namespace HRsystem.Api.Features.Project.GetAllProjects
                   ProjectId = p.ProjectId,
                   ProjectCode = p.ProjectCode,
                   ProjectName = p.ProjectName.GetTranslation(lang),
-                  CityId = p.CityId,
-                  WorkLocationId = p.WorkLocationId,
+                  //CityId = p.CityId,
+                  //WorkLocationId = p.WorkLocationId,
                   CompanyId = p.CompanyId
                 }).ToList();
 

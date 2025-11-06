@@ -43,7 +43,7 @@ public partial class TbWorkLocation
 
     public virtual TbJobTitle? JobTitle { get; set; }
 
-    public virtual TbProject? Project { get; set; }
+    
 
     public virtual TbWorkLocation? WorkingLocation { get; set; }
 }

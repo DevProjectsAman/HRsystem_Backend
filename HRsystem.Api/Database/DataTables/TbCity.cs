@@ -25,7 +25,7 @@ public partial class TbCity
 
     public virtual TbGov? Gov { get; set; }
 
-    public virtual ICollection<TbProject> TbProjects { get; set; } = new List<TbProject>();
+    
 
     public virtual ICollection<TbWorkLocation> TbWorkLocations { get; set; } = new List<TbWorkLocation>();
 }
