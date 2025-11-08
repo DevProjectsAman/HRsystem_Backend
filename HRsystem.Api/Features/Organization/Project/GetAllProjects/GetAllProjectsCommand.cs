@@ -1,5 +1,6 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ namespace HRsystem.Api.Features.Organization.Project.GetAllProjects
     {
        public int ProjectId { get; set; }
         public string ProjectCode { get; set; }
-        public string ProjectName { get; set; }
+        public LocalizedData ProjectName { get; set; }
        
         public int CompanyId { get; set; }
         }
@@ -39,7 +40,7 @@ namespace HRsystem.Api.Features.Organization.Project.GetAllProjects
             {
                   ProjectId = p.ProjectId,
                   ProjectCode = p.ProjectCode,
-                  ProjectName = p.ProjectName.GetTranslation(lang),
+                  ProjectName = p.ProjectName,
                   //CityId = p.CityId,
                   //WorkLocationId = p.WorkLocationId,
                   CompanyId = p.CompanyId
