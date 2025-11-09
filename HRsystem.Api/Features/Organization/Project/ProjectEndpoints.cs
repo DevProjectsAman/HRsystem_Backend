@@ -14,9 +14,9 @@ namespace HRsystem.Api.Features.Organization.Project
             var group = app.MapGroup("/api/Organization/Project").WithTags("Projects");
 
             // Get all
-            group.MapGet("/ListOfProjects", async (ISender mediator) =>
+            group.MapGet("/ListOfProjects/{CompanyId}", async (ISender mediator,int CompanyId) =>
             {
-                var result = await mediator.Send(new GetAllProjectsCommand());
+                var result = await mediator.Send(new GetAllProjectsCommand(CompanyId));
                 return Results.Ok(new { Success = true, Data = result });
             });
 

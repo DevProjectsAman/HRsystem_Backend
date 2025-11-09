@@ -8,7 +8,7 @@ using System.ComponentModel.Design;
 
 namespace HRsystem.Api.Features.Organization.Project.GetAllProjects
 {
-    public record GetAllProjectsCommand() : IRequest<List<ProjectResponse>>;
+    public record GetAllProjectsCommand(int CompanyId) : IRequest<List<ProjectResponse>>;
 
     public class ProjectResponse
     {
@@ -32,7 +32,7 @@ namespace HRsystem.Api.Features.Organization.Project.GetAllProjects
         }
         public async Task<List<ProjectResponse>> Handle(GetAllProjectsCommand request, CancellationToken ct)
         {
-            var statues = await _db.TbProjects.ToListAsync(ct);
+            var statues = await _db.TbProjects.Where(c=>c.CompanyId==request.CompanyId).ToListAsync(ct);
             var lang = _currentUser.UserLanguage ?? "en";
 
 
