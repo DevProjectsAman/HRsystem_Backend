@@ -4,6 +4,7 @@ using HRsystem.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    partial class DBContextHRsystemModelSnapshot : ModelSnapshot
+    [Migration("20251109073200_shiftrulesJobLevels")]
+    partial class shiftrulesJobLevels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1405,9 +1408,6 @@ namespace HRsystem.Api.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DepartmentId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("GovID")
                         .HasColumnType("int");
 
@@ -1437,13 +1437,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasKey("RuleId");
 
-                    b.HasIndex("CityID");
-
                     b.HasIndex("CompanyId");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("GovID");
 
                     b.HasIndex("JobLevelId");
 
@@ -1831,7 +1825,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 11, 9, 16, 9, 29, 894, DateTimeKind.Local).AddTicks(1455),
+                            CreatedAt = new DateTime(2025, 11, 9, 9, 31, 59, 745, DateTimeKind.Local).AddTicks(3374),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -1839,7 +1833,7 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2025, 11, 9, 14, 9, 29, 894, DateTimeKind.Utc).AddTicks(4467),
+                            LastPasswordChangedAt = new DateTime(2025, 11, 9, 7, 31, 59, 745, DateTimeKind.Utc).AddTicks(6606),
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
@@ -1848,7 +1842,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("59c7808a-7ee2-4880-81c1-4e2a8e3685d7"),
+                            RowGuid = new Guid("f72fd56a-71e0-41cc-9b37-7d52d5afd618"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",
@@ -2451,23 +2445,11 @@ namespace HRsystem.Api.Migrations
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbShiftRule", b =>
                 {
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbCity", "City")
-                        .WithMany()
-                        .HasForeignKey("CityID");
-
                     b.HasOne("HRsystem.Api.Database.DataTables.TbCompany", "Company")
                         .WithMany("TbShiftRules")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbDepartment", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId");
-
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbGov", "Gov")
-                        .WithMany()
-                        .HasForeignKey("GovID");
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbJobLevel", "JobLevel")
                         .WithMany()
@@ -2491,13 +2473,7 @@ namespace HRsystem.Api.Migrations
                         .WithMany()
                         .HasForeignKey("WorkingLocationId");
 
-                    b.Navigation("City");
-
                     b.Navigation("Company");
-
-                    b.Navigation("Department");
-
-                    b.Navigation("Gov");
 
                     b.Navigation("JobLevel");
 

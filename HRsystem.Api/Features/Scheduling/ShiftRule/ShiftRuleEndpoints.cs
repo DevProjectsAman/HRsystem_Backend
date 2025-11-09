@@ -1,13 +1,13 @@
-﻿using HRsystem.Api.Features.ShiftRule.CreateShiftRule;
-using HRsystem.Api.Features.ShiftRule.GetAllShiftRules;
-using HRsystem.Api.Features.ShiftRule.GetShiftRuleById;
-using HRsystem.Api.Features.ShiftRule.UpdateShiftRule;
+﻿using FluentValidation;
+using HRsystem.Api.Features.Scheduling.ShiftRule.GetAllShiftRules;
+using HRsystem.Api.Features.ShiftRule.CreateShiftRule;
 using HRsystem.Api.Features.ShiftRule.DeleteShiftRule;
-using MediatR;
-using FluentValidation;
+using HRsystem.Api.Features.ShiftRule.GetShiftRuleById;
 using HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters;
+using HRsystem.Api.Features.ShiftRule.UpdateShiftRule;
+using MediatR;
 
-namespace HRsystem.Api.Features.ShiftRule
+namespace HRsystem.Api.Features.Scheduling.ShiftRule
 {
     public static class ShiftRuleEndpoints
     {
@@ -16,9 +16,9 @@ namespace HRsystem.Api.Features.ShiftRule
             var group = app.MapGroup("/api/Scheduling/shiftrules").WithTags("ShiftRules");
 
             // Get all
-            group.MapGet("/ListShiftRules", async (ISender mediator) =>
+            group.MapGet("/ListShiftRules/{CompanyId}", async (ISender mediator, int CompanyId) =>
             {
-                var result = await mediator.Send(new GetAllShiftRulesQuery());
+                var result = await mediator.Send(new GetAllShiftRulesQuery(CompanyId));
                 return Results.Ok(new { Success = true, Data = result });
             });
 
@@ -30,6 +30,7 @@ namespace HRsystem.Api.Features.ShiftRule
                     ? Results.NotFound(new { Success = false, Message = $"Shift Rule {id} not found" })
                     : Results.Ok(new { Success = true, Data = result });
             });
+
 
             // ✅ NEW: Get by parameters (progressive filter)
             group.MapPost("/GetMatchingShiftRules", async (

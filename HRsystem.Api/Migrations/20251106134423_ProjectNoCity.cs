@@ -11,21 +11,14 @@ namespace HRsystem.Api.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "WorkLocationId",
-                table: "Tb_Project");
-
+           
            
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "WorkLocationId",
-                table: "Tb_Project",
-                type: "int",
-                nullable: true);
+             
 
         }
     }
