@@ -39,6 +39,7 @@ using HRsystem.Api.Features.WorkDaysRules;
 using HRsystem.Api.Services;
 using HRsystem.Api.Services.AuditLog;
 using HRsystem.Api.Services.Auth;
+using HRsystem.Api.Services.Chatbot;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Services.Reports;
 using HRsystem.Api.Shared.EncryptText;
@@ -206,6 +207,10 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IEmployeeMonthlyReportService, EmployeeMonthlyReportService>();
 builder.Services.AddHostedService<EmployeeMonthlyReportScheduler>();
 
+//chatbot
+builder.Services.AddScoped<ChatbotService>();
+builder.Services.AddScoped<IntentExecutorService>();
+builder.Services.AddControllers();
 
 
 var app = builder.Build();
@@ -320,7 +325,9 @@ app.MapHolidayEndpoints();
 app.MapEmployeeAppEndPoints();
 
 
-//app.MapControllers();
+
+app.MapControllers();
+
 app.MapEmployeeReportEndpoints();
 app.MapReportEndPoints();
 app.Run();

@@ -1,0 +1,115 @@
+USE db_hrsystem;
+
+SET @date = '2025-10-23';
+
+SELECT 
+    e.EmployeeId, 
+    e.EmployeeCodeHr,
+    e.ArabicFullName, 
+    JSON_UNQUOTE(JSON_EXTRACT(d.DepartmentName, '$.ar')) AS DepartmentName
+FROM Tb_Employee e
+LEFT JOIN Tb_Employee_Monthly_Report r 
+    ON e.EmployeeId = r.EmployeeId AND r.Date = @date
+LEFT JOIN Tb_Department d 
+    ON d.DepartmentId = e.DepartmentId
+WHERE r.EmployeeTodayStatuesId = 2;
+
+
+**********************
+SELECT e.EmployeeId, e.ArabicFullName , e.EmployeeCodeHr
+FROM Tb_Employee_Monthly_Report r
+JOIN Tb_Employee e ON e.EmployeeId = r.EmployeeId
+WHERE r.Date = '2025-10-30'
+  AND r.EmployeeTodayStatuesId = 2
+  AND e.DepartmentId = 10;
+  **********************************
+
+  USE db_hrsystem;
+
+
+
+
+
+SELECT 
+    e.EmployeeId, 
+    e.ArabicFullName, 
+    COUNT(*) AS AbsentDays
+FROM 
+    Tb_Employee_Monthly_Report r
+JOIN 
+    Tb_Employee e ON e.EmployeeId = r.EmployeeId
+WHERE 
+    YEAR(r.Date) = 2025
+    AND r.EmployeeTodayStatuesId = 2
+GROUP BY 
+    e.EmployeeId, 
+    e.ArabicFullName
+HAVING 
+    COUNT(*) >= 5;
+*************************************
+
+USE db_hrsystem;
+
+SELECT 
+    e.EmployeeId, 
+    e.ArabicFullName, 
+    att.FirstPuchin, 
+    att.LastPuchout, 
+    att.AttStatues, 
+    att.AttendanceDate
+FROM 
+    Tb_Employee e
+JOIN 
+    Tb_Employee_Activity act ON e.EmployeeId = act.EmployeeId
+JOIN 
+    Tb_Employee_Attendance att ON act.ActivityId = att.ActivityId
+WHERE 
+    e.EmployeeCodeHr = 'A3EUM0EF0Z520'
+    AND att.AttendanceDate >= '2025-4-29 00:00:00'
+    AND att.AttendanceDate <  '2025-4-30 00:00:00';
+
+
+
+    ******************************
+
+    USE db_hrsystem;
+
+SELECT v.VacationTypeId, JSON_UNQUOTE(JSON_EXTRACT(vt.VacationName, '$.ar')) AS VacationTypeName, v.StartDate, v.EndDate, v.DaysCount, v.Notes FROM Tb_Employee_Vacation v JOIN Tb_Employee_Activity act ON v.ActivityId = act.ActivityId JOIN Tb_Employee e ON e.EmployeeId = act.EmployeeId JOIN Tb_Vacation_Type vt ON v.VacationTypeId = vt.VacationTypeId WHERE e.EmployeeCodeHr = '2B5U02DJA' AND YEAR(v.StartDate) = 2025;
+
+******************************
+
+
+USE db_hrsystem;
+
+SELECT e.EmployeeId, e.ArabicFullName, v.StartDate, v.EndDate, v.DaysCount FROM Tb_Employee_Vacation v JOIN Tb_Employee_Activity act ON v.ActivityId = act.ActivityId JOIN Tb_Employee e ON e.EmployeeId = act.EmployeeId WHERE e.DepartmentId = 10 AND MONTH(act.RequestDate) = 10 AND YEAR(act.RequestDate) = 2025;",
+    
+    ******************************
+
+        USE db_hrsystem;
+
+SELECT COUNT(*) AS RequestsCount FROM Tb_Employee_Activity act JOIN Tb_Employee_Vacation v ON act.ActivityId = v.ActivityId WHERE MONTH(act.RequestDate) = 10 AND YEAR(act.RequestDate) = 2025;    
+
+    ******************************
+        USE db_hrsystem;
+
+SELECT b.TotalDays, b.UsedDays, b.RemainingDays, JSON_UNQUOTE(JSON_EXTRACT(vt.VacationName, '$.ar')) AS VacationTypeName FROM Tb_Employee_Vacation_Balance b JOIN Tb_Employee e ON b.EmployeeId = e.EmployeeId JOIN Tb_Vacation_Type vt ON b.VacationTypeId = vt.VacationTypeId WHERE e.EmployeeCodeHr = '1' AND b.Year = 2025;
+
+******************************
+
+USE db_hrsystem;
+SELECT e.EmployeeId, e.ArabicFullName, r.Date FROM Tb_Employee_Monthly_Report r JOIN Tb_Employee e ON e.EmployeeId = r.EmployeeId WHERE MONTH(r.Date) = 10 AND YEAR(r.Date) = 2025 AND r.IsHoliday = 1 AND r.EmployeeTodayStatuesId != 2;
+
+******************************
+
+USE db_hrsystem;
+SELECT e.EmployeeId, e.ArabicFullName, r.Date 
+FROM Tb_Employee_Monthly_Report r 
+JOIN Tb_Employee e ON e.EmployeeId = r.EmployeeId 
+WHERE r.Date >= '2025-04-01 00:00:00' 
+  AND r.Date <  '2025-04-02 00:00:00' 
+  AND r.IsHoliday = 1 
+  AND r.EmployeeTodayStatuesId != 2;
+
+  ******************************
+
+

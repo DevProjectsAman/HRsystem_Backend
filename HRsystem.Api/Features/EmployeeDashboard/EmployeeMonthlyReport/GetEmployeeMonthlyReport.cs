@@ -495,14 +495,14 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                 if (isHoliday)
                 {
                     existingDayReport.EmployeeTodayStatuesId = 1;
-                    existingDayReport.TodayStatues = "Holiday";
+                    existingDayReport.TodayStatues += "Holiday";
                 }
-                else if (isRemoteDay)
+                 if (isRemoteDay)
                 {
                     existingDayReport.EmployeeTodayStatuesId = 1;
-                    existingDayReport.TodayStatues = "RemoteDay";
+                    existingDayReport.TodayStatues += "RemoteDay";
                 }
-                else if (isWorkday)
+                 else if (isWorkday)
                 {
                     existingDayReport.EmployeeTodayStatuesId = 2; // kda absent
                     existingDayReport.TodayStatues = "Workday";
@@ -584,7 +584,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                                             IsRemoteday = isRemoteDay,
                                             IsHoliday = isHoliday,
                                             TodayStatues = "Vacation",
-                                            EmployeeTodayStatuesId = 1, // يعني في إجازة مش غياب
+                                            EmployeeTodayStatuesId = 3, // يعني في إجازة مش غياب
                                             Details = JsonSerializer.Serialize(new
                                             {
                                                 Type = "Vacation",

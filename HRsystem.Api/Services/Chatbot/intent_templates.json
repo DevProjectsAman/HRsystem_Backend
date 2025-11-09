@@ -1,0 +1,136 @@
+﻿{
+  "Absent_Today_All": {
+    "description": "عرض الموظفين الغائبين اليوم في كل الأقسام",
+    "parameters": [ "date" ],
+    "sql": "SELECT e.EmployeeId,e.EmployeeCodeHr, e.ArabicFullName, JSON_UNQUOTE(JSON_EXTRACT(d.DepartmentName, '$.ar')) AS DepartmentName FROM Tb_Employee e LEFT JOIN Tb_Employee_Monthly_Report r ON e.EmployeeId = r.EmployeeId AND r.Date = @date LEFT JOIN Tb_Department d ON d.DepartmentId = e.DepartmentId WHERE r.EmployeeTodayStatuesId = 2;",
+    "examples": [
+      "مين الموظفين الغايبين النهارده؟",
+      "اعرضلي الغياب بتاع النهارده",
+      "فيه مين ماحضرش الشغل النهارده؟"
+    ]
+  },
+
+  "Absent_Today_ByDepartment": {
+    "description": "عرض الموظفين الغائبين اليوم في قسم معين",
+    "parameters": [ "date", "departmentId" ],
+    "sql": "SELECT e.EmployeeId, e.ArabicFullName ,e.EmployeeCodeHr FROM Tb_Employee_Monthly_Report r JOIN Tb_Employee e ON e.EmployeeId = r.EmployeeId WHERE r.Date = @date AND r.EmployeeTodayStatuesId = 2 AND e.DepartmentId = @departmentId;",
+    "examples": [
+      "مين الغايبين في قسم الموارد البشرية النهارده؟",
+      "اعرض الغياب في قسم المبيعات بتاريخ اليوم"
+    ]
+  },
+
+  "Absent_MoreThan5Days_Yearly": {
+    "description": "عرض الموظفين الذين غابوا أكثر من 5 أيام خلال السنة",
+    "parameters": [ "year" ],
+    "sql": "SELECT e.EmployeeId, e.EmployeeCodeHr,e.ArabicFullName, COUNT(*) AS AbsentDays FROM Tb_Employee_Monthly_Report r JOIN Tb_Employee e ON e.EmployeeId = r.EmployeeId WHERE YEAR(r.Date) = @year AND r.EmployeeTodayStatuesId = 2 GROUP BY e.EmployeeId, e.ArabicFullName HAVING COUNT(*) > 5;",
+    "examples": [
+      "مين الموظفين اللي غابوا أكتر من 5 أيام السنة دي؟",
+      "عايز قائمة بالموظفين اللي بيتغيبوا كتير خلال السنة"
+    ]
+  },
+
+
+  "Late_ByEmployeeCode": {
+    "description": "عرض وقت حضور موظف بناءً على كود HR وحالته",
+    "parameters": [ "hrCode", "endDate", "startDate" ],
+    "sql": "SELECT e.EmployeeId,e.EmployeeCodeHr, e.ArabicFullName, att.FirstPuchin, att.LastPuchout, att.AttStatues, att.AttendanceDate FROM Tb_Employee e JOIN Tb_Employee_Activity act ON e.EmployeeId = act.EmployeeId JOIN Tb_Employee_Attendance att ON act.ActivityId = att.ActivityId WHERE e.EmployeeCodeHr = @hrCode AND att.AttendanceDate >= @startDate AND att.AttendanceDate < @endDate;",
+    "examples": [
+      "الموظف بكود HR123 حضر الساعة كام النهارده؟",
+      "عايز أعرف حضور الموظف HR045 بتاريخ اليوم"
+    ]
+  },
+
+  "Vacation_ByEmployeeCode": {
+    "description": "عرض إجازات موظف معين خلال السنة",
+    "parameters": [ "hrCode", "year" ],
+    "sql": "SELECT v.VacationTypeId, JSON_UNQUOTE(JSON_EXTRACT(vt.VacationName, '$.ar')) AS VacationTypeName, v.StartDate, v.EndDate, v.DaysCount, v.Notes FROM Tb_Employee_Vacation v JOIN Tb_Employee_Activity act ON v.ActivityId = act.ActivityId JOIN Tb_Employee e ON e.EmployeeId = act.EmployeeId JOIN Tb_Vacation_Type vt ON v.VacationTypeId = vt.VacationTypeId WHERE e.EmployeeCodeHr = @hrCode AND YEAR(v.StartDate) = @year;",
+    "examples": [
+      "عايز أعرف الإجازات اللي أخدها الموظف HR101 السنة دي",
+      "كم يوم أجازة أخدها HR009 السنة الحالية"
+    ]
+  },
+
+  "Vacation_Requests_ByDepartment": {
+    "description": "عرض طلبات الإجازة للموظفين في قسم معين",
+    "parameters": [ "departmentId", "month", "year" ],
+    "sql": "SELECT e.EmployeeId, e.EmployeeCodeHr,e.ArabicFullName, v.StartDate, v.EndDate, v.DaysCount FROM Tb_Employee_Vacation v JOIN Tb_Employee_Activity act ON v.ActivityId = act.ActivityId JOIN Tb_Employee e ON e.EmployeeId = act.EmployeeId WHERE e.DepartmentId = @departmentId AND MONTH(act.RequestDate) = @month AND YEAR(act.RequestDate) = @year;",
+    "examples": [
+      "طلبات الإجازة في قسم تكنولوجيا المعلومات الشهر ده",
+      "اعرض الإجازات المطلوبة في قسم المالية خلال الشهر الحالي"
+    ]
+  },
+
+  "Vacation_Requests_CurrentMonth": {
+    "description": "عرض جميع طلبات الإجازة خلال الشهر الحالي",
+    "parameters": [ "month", "year" ],
+    "sql": "SELECT COUNT(*) AS RequestsCount FROM Tb_Employee_Activity act JOIN Tb_Employee_Vacation v ON act.ActivityId = v.ActivityId WHERE MONTH(act.RequestDate) = @month AND YEAR(act.RequestDate) = @year;",
+    "examples": [
+      "عدد طلبات الإجازة هذا الشهر",
+      "كام موظف قدم على إجازة الشهر ده"
+    ]
+  },
+
+  "Vacation_Balance_ByEmployeeCode": {
+    "description": "عرض رصيد إجازات موظف معين",
+    "parameters": [ "hrCode", "year" ],
+    "sql": "SELECT b.TotalDays, b.UsedDays, b.RemainingDays, JSON_UNQUOTE(JSON_EXTRACT(vt.VacationName, '$.ar')) AS VacationTypeName FROM Tb_Employee_Vacation_Balance b JOIN Tb_Employee e ON b.EmployeeId = e.EmployeeId JOIN Tb_Vacation_Type vt ON b.VacationTypeId = vt.VacationTypeId WHERE e.EmployeeCodeHr = @hrCode AND b.Year = @year;",
+    "examples": [
+      "رصيد الإجازات للموظف HR234",
+      "قد إيه باقي للموظف HR099 من الإجازات السنة دي"
+    ]
+  },
+
+
+  "WorkOnHoliday": {
+    "description": "عرض الموظفين الذين عملوا في عطلات رسمية",
+    "parameters": [ "startDate", "endDate" ],
+    "sql": "SELECT e.EmployeeId, e.EmployeeCodeHr, e.ArabicFullName, r.Date FROM Tb_Employee_Monthly_Report r JOIN Tb_Employee e ON e.EmployeeId = r.EmployeeId WHERE r.Date >= @startDate AND r.Date < @endDate AND r.IsHoliday = 1 AND r.EmployeeTodayStatuesId != 2;",
+    "examples": [
+      "مين اشتغل في الإجازات الرسمية الشهر ده؟",
+      "مين اشتغل في الإجازات الرسمية في شهر 10 سنه 2025؟",
+      "مين اشتغل يوم 25 يناير؟",
+      "اعرض العمل في العطلات من 1 أكتوبر لـ 31 أكتوبر"
+    ]
+  },
+
+  "Mission_TopDepartment_CurrentMonth": {
+    "description": "عرض أكثر قسم طلب مهمات هذا الشهر",
+    "parameters": [ "month", "year" ],
+    "sql": "SELECT JSON_UNQUOTE(JSON_EXTRACT(d.DepartmentName, '$.ar')) AS DepartmentName, COUNT(*) AS MissionCount FROM Tb_Employee_Mission m JOIN Tb_Employee_Activity act ON m.ActivityId = act.ActivityId JOIN Tb_Employee e ON e.EmployeeId = act.EmployeeId JOIN Tb_Department d ON e.DepartmentId = d.DepartmentId WHERE MONTH(act.RequestDate) = @month AND YEAR(act.RequestDate) = @year GROUP BY d.DepartmentId, d.DepartmentName ORDER BY MissionCount DESC LIMIT 1;",
+    "examples": [
+      "ايه أكتر قسم طلب مهمات الشهر ده؟",
+      "اعرض القسم اللي عنده أكبر عدد مهمات الشهر الحالي"
+    ]
+  },
+
+  "Mission_ByEmployee_CurrentMonth": {
+    "description": "عرض جميع الموظفين الذين طلبوا مهمات هذا الشهر",
+    "parameters": [ "month", "year" ],
+    "sql": "SELECT e.EmployeeId, e.EmployeeCodeHr,e.ArabicFullName, m.StartDatetime, m.EndDatetime, m.MissionLocation FROM Tb_Employee_Mission m JOIN Tb_Employee_Activity act ON m.ActivityId = act.ActivityId JOIN Tb_Employee e ON e.EmployeeId = act.EmployeeId WHERE MONTH(act.RequestDate) = @month AND YEAR(act.RequestDate) = @year;",
+    "examples": [
+      "مين قدم مهمات الشهر ده؟",
+      "اعرض الموظفين اللي عندهم مهمات حالياً"
+    ]
+  },
+
+  "EmployeeInfo_NewHires_CurrentMonth": {
+    "description": "عرض الموظفين الذين تم تعيينهم هذا الشهر",
+    "parameters": [ "month", "year" ],
+    "sql": "SELECT e.EmployeeId, e.EmployeeCodeHr, e.ArabicFullName, e.StartDate, d.DepartmentName FROM Tb_Employee e JOIN Tb_Department d ON e.DepartmentId = d.DepartmentId WHERE MONTH(e.StartDate) = @month AND YEAR(e.StartDate) = @year;",
+    "examples": [
+      "مين الموظفين الجدد اللي انضموا الشهر ده؟",
+      "اعرض التعيينات الجديدة الشهر الحالي"
+    ]
+  },
+
+  "EmployeeInfo_Terminated_CurrentMonth": {
+    "description": "عرض الموظفين الذين تم فصلهم هذا الشهر",
+    "parameters": [ "month", "year" ],
+    "sql": "SELECT e.EmployeeId, e.EmployeeCodeHr,e.ArabicFullName, e.EndDate, d.DepartmentName FROM Tb_Employee e JOIN Tb_Department d ON e.DepartmentId = d.DepartmentId WHERE e.EndDate IS NOT NULL AND MONTH(e.EndDate) = @month AND YEAR(e.EndDate) = @year;",
+    "examples": [
+      "مين اللي استقال أو اتفصل الشهر ده؟",
+      "اعرض الموظفين اللي انتهت خدمتهم الشهر الحالي"
+    ]
+  }
+}

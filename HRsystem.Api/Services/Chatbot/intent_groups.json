@@ -1,0 +1,59 @@
+﻿{
+  "Absent": {
+    "title": "📅 Absent Group",
+    "description": "الأسئلة الخاصة بالغياب اليومي أو الشهري",
+    "intents": [
+      "Absent_Today_All",
+      "Absent_Today_ByDepartment",
+      "Absent_MoreThan5Days_Yearly"
+    ]
+  },
+
+  "Latency": {
+    "title": "⏰ Latency Group",
+    "description": "الأسئلة الخاصة بالتأخير وحضور الموظفين",
+    "intents": [
+      "Late_Today_ByDepartment",
+      "Late_MoreThan5Days",
+      "Late_ByEmployeeCode"
+    ]
+  },
+
+  "Vacation": {
+    "title": "🏖️ Vacation Group",
+    "description": "الأسئلة المتعلقة بالإجازات ورصيدها",
+    "intents": [
+      "Vacation_ByEmployeeCode",
+      "Vacation_Requests_ByDepartment",
+      "Vacation_Requests_CurrentMonth",
+      "Vacation_Balance_ByEmployeeCode",
+      "Vacation_Balance_ByDepartment"
+    ]
+  },
+
+  "WorkOnHoliday": {
+    "title": "🛠️ Work On Holiday Group",
+    "description": "الأسئلة الخاصة بالعمل في العطلات الرسمية",
+    "intents": [
+      "WorkOnHoliday"
+    ]
+  },
+
+  "Mission": {
+    "title": "🚀 Mission Group",
+    "description": "الأسئلة الخاصة بالمهمات الميدانية للموظفين أو الأقسام",
+    "intents": [
+      "Mission_TopDepartment_CurrentMonth",
+      "Mission_ByEmployee_CurrentMonth"
+    ]
+  },
+
+  "EmployeeInfo": {
+    "title": "👥 Employee Info Group",
+    "description": "الأسئلة المتعلقة بمعلومات الموظفين (تعيين - إنهاء خدمة)",
+    "intents": [
+      "EmployeeInfo_NewHires_CurrentMonth",
+      "EmployeeInfo_Terminated_CurrentMonth"
+    ]
+  }
+}

@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HRsystem.Api.Database.DataTables;
 
 [Table("Tb_Employee_Attendance")]
-public partial class TbEmployeeAttendance
+public partial class TbEmployeeAttendance   
 {
     [Key]
     public long AttendanceId { get; set; }
