@@ -8,6 +8,8 @@ using MediatR;
 namespace HRsystem.Api.Features.ShiftRule.CreateShiftRule
 {
     public record CreateShiftRuleCommand(
+        int? JobLevelId,
+        int? DepartmentId,
         int? JobTitleId,
         int? GovId,
         int? CityId,
@@ -32,6 +34,7 @@ namespace HRsystem.Api.Features.ShiftRule.CreateShiftRule
         {
             var entity = new TbShiftRule
             {
+                JobLevelId = request.JobLevelId,
                 JobTitleId = request.JobTitleId,
                 WorkingLocationId = request.WorkingLocationId,
                 GovID = request.GovId ,

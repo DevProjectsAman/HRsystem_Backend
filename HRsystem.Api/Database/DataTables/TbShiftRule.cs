@@ -12,6 +12,9 @@ public partial class TbShiftRule
     public int? GovID { get; set; }
     public int? CityID { get; set; }
 
+    public int? JobLevelId { get; set; }
+
+    public int? DepartmentId { get; set; }
     public int? JobTitleId { get; set; }
 
     public int? WorkingLocationId { get; set; }
@@ -34,6 +37,8 @@ public partial class TbShiftRule
 
     public virtual TbCompany Company { get; set; } = null!;
 
+    public virtual TbJobLevel? JobLevel { get; set; }
+   
     public virtual TbJobTitle? JobTitle { get; set; }
 
     public virtual TbProject? Project { get; set; }
@@ -41,4 +46,17 @@ public partial class TbShiftRule
     public virtual TbShift Shift { get; set; } = null!;
 
     public virtual TbWorkLocation? WorkingLocation { get; set; }
+
+
+    // ✅ Add these
+    [ForeignKey("GovID")]
+    public virtual TbGov? Gov { get; set; }
+
+    [ForeignKey("CityID")]
+    public virtual TbCity? City { get; set; }
+
+
+    [ForeignKey("DepartmentId")]
+    public virtual TbDepartment? Department { get; set; }
+
 }

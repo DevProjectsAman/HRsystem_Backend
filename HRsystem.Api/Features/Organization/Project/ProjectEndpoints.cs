@@ -1,11 +1,11 @@
-﻿using HRsystem.Api.Features.Project.CreateProject;
-using HRsystem.Api.Features.Project.GetAllProjects;
-using HRsystem.Api.Features.Project.GetProjectById;
-using HRsystem.Api.Features.Project.UpdateProject;
+﻿using HRsystem.Api.Features.Organization.Project.CreateProject;
+using HRsystem.Api.Features.Organization.Project.GetAllProjects;
+using HRsystem.Api.Features.Organization.Project.GetProjectById;
+using HRsystem.Api.Features.Organization.Project.UpdateProject;
 using HRsystem.Api.Features.Project.DeleteProject;
 using MediatR;
 
-namespace HRsystem.Api.Features.Project
+namespace HRsystem.Api.Features.Organization.Project
 {
     public static class ProjectEndpoints
     {
@@ -14,9 +14,9 @@ namespace HRsystem.Api.Features.Project
             var group = app.MapGroup("/api/Organization/Project").WithTags("Projects");
 
             // Get all
-            group.MapGet("/ListOfProjects", async (ISender mediator) =>
+            group.MapGet("/ListOfProjects/{CompanyId}", async (ISender mediator,int CompanyId) =>
             {
-                var result = await mediator.Send(new GetAllProjectsCommand());
+                var result = await mediator.Send(new GetAllProjectsCommand(CompanyId));
                 return Results.Ok(new { Success = true, Data = result });
             });
 

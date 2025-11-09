@@ -20,33 +20,85 @@ namespace HRsystem.Api.Features.Organization.JobManagment
         {
             var group = app.MapGroup("/api/Organization/JobLevel").WithTags("Organization");
 
-            group.MapGet("/ListJobLevels/{companyId}", [Authorize] async (IMediator mediator,int companyId) =>
-                await mediator.Send(new GetAllJobLevelsQuery(companyId)))
-                .WithName("ListJobLevels");
+            group.MapGet("/ListJobLevels/{companyId}", [Authorize] async (IMediator mediator, int companyId) =>
+            {
+                try
+                {
+                    var result = await mediator.Send(new GetAllJobLevelsQuery(companyId));
+                    return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Json(new ResponseResultDTO { Success = false, Message = ex.InnerException?.Message ?? ex.Message }, statusCode: 500);
+                }
+            })
+            .WithName("ListJobLevels");
 
 
             group.MapGet("/GetOneJobLevel/{id}", [Authorize] async (IMediator mediator, int id) =>
-                await mediator.Send(new GetJobLevelByIdQuery(id)))
-                .WithName("GetOneJobLevel");
+            {
+                try
+                {
+                    var result = await mediator.Send(new GetJobLevelByIdQuery(id));
+                    return result.Success ? Results.Ok(result) : Results.NotFound(result);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Json(new ResponseResultDTO { Success = false, Message = ex.InnerException?.Message ?? ex.Message }, statusCode: 500);
+                }
+            })
+            .WithName("GetOneJobLevel");
 
 
             group.MapPost("/CreateJobLevel", [Authorize] async (IMediator mediator, CreateJobLevelCommand cmd) =>
-                await mediator.Send(cmd))
-                .WithName("CreateJobLevel");
+            {
+                try
+                {
+                    var result = await mediator.Send(cmd);
+                    return result.Success
+                        ? Results.Created($"/api/Organization/JobLevel/{result.Data}", result)
+                        : Results.BadRequest(result);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Json(new ResponseResultDTO<int> { Success = false, Message = ex.InnerException?.Message ?? ex.Message }, statusCode: 500);
+                }
+            })
+            .WithName("CreateJobLevel");
 
 
             group.MapPut("/UpdateJobLevel/{id}", [Authorize] async (IMediator mediator, int id, UpdateJobLevelCommand cmd) =>
             {
+                try
+                {
+                    if (id != cmd.JobLevelId)
+                        return Results.BadRequest(new ResponseResultDTO { Success = false, Message = "Id mismatch" });
 
-                return await mediator.Send(cmd);
+                    var result = await mediator.Send(cmd);
+                    return result.Success ? Results.Ok(result) : Results.NotFound(result);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Json(new ResponseResultDTO<bool> { Success = false, Message = ex.InnerException?.Message ?? ex.Message }, statusCode: 500);
+                }
             })
             .WithName("UpdateJobLevel");
-            
+
 
             group.MapDelete("/DeleteJobLevel/{id}", [Authorize] async (IMediator mediator, int id) =>
-                await mediator.Send(new DeleteJobLevelCommand(id)))
-                .WithName("DeleteJobLevel")
-                .WithTags("Job Management");
+            {
+                try
+                {
+                    var result = await mediator.Send(new DeleteJobLevelCommand(id));
+                    return result.Success ? Results.Ok(result) : Results.NotFound(result);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Json(new ResponseResultDTO<bool> { Success = false, Message = ex.InnerException?.Message ?? ex.Message }, statusCode: 500);
+                }
+            })
+            .WithName("DeleteJobLevel")
+            .WithTags("Job Management");
 
         }
     }
@@ -195,7 +247,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
                 return new ResponseResultDTO<int>
                 {
                     Success = false,
-                    Message = ex.InnerException.Message
+                    Message = ex.InnerException?.Message ?? ex.Message
 
                 }; ;
             }

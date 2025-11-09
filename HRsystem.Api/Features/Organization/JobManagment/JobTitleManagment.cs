@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Features.Organization.JobManagment.GetJobTitlesByFilter;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Shared.Tools;
@@ -17,84 +16,73 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             var group = app.MapGroup("/api/Organization/JobTitle").WithTags("Job Titles");
 
             // Get All
-
-            // Fix for CS7036: Pass the required parameters 'CompanyId' and 'DepartmentId' to the GetAllJobTitlesQuery constructor.
-            group.MapGet("/ListJobTitles", async (int companyId, int departmentId, ISender mediator) =>
+            group.MapGet("/ListJobTitles", async (int companyId, int departmentId, IMediator mediator) =>
             {
                 var result = await mediator.Send(new GetAllJobTitlesQuery(companyId, departmentId));
-                return Results.Ok(new { Success = true, Data = result });
+                return Results.Ok(new ResponseResultDTO<List<JobTitleDto>>
+                {
+                    Success = true,
+                    Data = result
+                });
             });
 
-            //// Removed the duplicate endpoint that caused the CS7036 error.  
-            //group.MapGet("/ListJobTitles", async (int companyId, int departmentId, ISender mediator) =>
-            //{
-            //    var result = await mediator.Send(new GetAllJobTitlesQuery(companyId, departmentId));
-            //    return Results.Ok(new { Success = true, Data = result });
-            //});
-
-            // Fix for CS7036: Removed the invalid endpoint that was missing required parameters 'CompanyId' and 'DepartmentId'.
-            //group.MapGet("/ListJobTitles", async (int companyId, int departmentId, ISender mediator) =>
-            //{
-            //    var result = await mediator.Send(new GetAllJobTitlesQuery(companyId, departmentId));
-            //    return Results.Ok(new { Success = true, Data = result });
-            //});
-            //group.MapGet("/ListJobTitles", async (ISender mediator) =>
-            //{
-            //    var result = await mediator.Send(new GetAllJobTitlesQuery());
-            //    return Results.Ok(new { Success = true, Data = result });
-            //});
-
             // Get One
-            group.MapGet("/GetOneJobTitle/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneJobTitle/{id}", async (int id, IMediator mediator) =>
             {
                 var result = await mediator.Send(new GetJobTitleByIdQuery(id));
-                return result == null
-                    ? Results.NotFound(new { Success = false, Message = $"JobTitle {id} not found" })
-                    : Results.Ok(new { Success = true, Data = result });
+                return result.Success
+                    ? Results.Ok(result)
+                    : Results.NotFound(result);
             });
 
             // Create
-            group.MapPost("/CreateJobTitle", async (CreateJobTitleCommand cmd, ISender mediator) =>
+            group.MapPost("/CreateJobTitle", async (CreateJobTitleCommand cmd, IMediator mediator) =>
             {
                 var result = await mediator.Send(cmd);
-                return Results.Created($"/api/jobtitles/{result.Data}", new { Success = true, Data = result });
+                return result.Success
+                    ? Results.Created($"/api/Organization/JobTitle/{result.Data}", result)
+                    : Results.BadRequest(result);
             });
 
             // Update
-            group.MapPut("/UpdateJobTitle/{id}", async (int id, UpdateJobTitleCommand cmd, ISender mediator) =>
+            group.MapPut("/UpdateJobTitle/{id}", async (int id, UpdateJobTitleCommand cmd, IMediator mediator) =>
             {
                 if (id != cmd.JobTitleId)
-                    return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
+                    return Results.BadRequest(new ResponseResultDTO { Success = false, Message = "Id mismatch" });
 
                 var result = await mediator.Send(cmd);
-                return !result.Success
-                    ? Results.NotFound(new { Success = false, Message = $"JobTitle {id} not found" })
-                    : Results.Ok(new { Success = true, Data = result });
+                return result.Success
+                    ? Results.Ok(result)
+                    : Results.NotFound(result);
             });
 
             // Delete
-            group.MapDelete("/DeleteJobTitle/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteJobTitle/{id}", async (int id, IMediator mediator) =>
             {
                 var result = await mediator.Send(new DeleteJobTitleCommand(id));
-                return !result.Success
-                    ? Results.NotFound(new { Success = false, Message = $"JobTitle {id} not found" })
-                    : Results.Ok(new { Success = true, Message = $"JobTitle {id} deleted successfully" });
+                return result.Success
+                    ? Results.Ok(result)
+                    : Results.NotFound(result);
             });
 
             // Filter
-            group.MapGet("/filter", async (int companyId, int departmentId, int jobLevelId, ISender mediator) =>
+            group.MapGet("/filter", async (int companyId, int departmentId, int jobLevelId, IMediator mediator) =>
             {
                 var result = await mediator.Send(new GetFilteredJobTitlesQuery(companyId, departmentId, jobLevelId));
                 if (result == null || !result.Any())
-                    return Results.NotFound(new { Success = false, Message = "No job titles found for the given filters" });
+                    return Results.NotFound(new ResponseResultDTO { Success = false, Message = "No job titles found for the given filters" });
 
-                return Results.Ok(new { Success = true, Data = result });
+                return Results.Ok(new ResponseResultDTO<List<JobTitleDto>>
+                {
+                    Success = true,
+                    Data = result
+                });
             });
         }
     }
 
     #region Get All
-    public record GetAllJobTitlesQuery(int CompanyId,int DepartmentId) : IRequest<List<JobTitleDto>>;
+    public record GetAllJobTitlesQuery(int CompanyId,int DepartmentId) : IRequest<System.Collections.Generic.List<JobTitleDto>>;
 
     public class JobTitleDto
     {
@@ -108,7 +96,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
         public string JobLevelDesc { get; set; }
     }
 
-    public class Handler : IRequestHandler<GetAllJobTitlesQuery, List<JobTitleDto>>
+    public class Handler : IRequestHandler<GetAllJobTitlesQuery, System.Collections.Generic.List<JobTitleDto>>
     {
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUser;
@@ -119,7 +107,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             _currentUser = currentUser;
         }
 
-        public async Task<List<JobTitleDto>> Handle(GetAllJobTitlesQuery request, CancellationToken ct)
+        public async Task<System.Collections.Generic.List<JobTitleDto>> Handle(GetAllJobTitlesQuery request, CancellationToken ct)
         {
             var lang = _currentUser.UserLanguage ?? "en";
 
@@ -133,8 +121,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             return jobTitles.Select(j => new JobTitleDto
             {
                 JobTitleId = j.JobTitleId,
-                TitleName = j.TitleName, // ✅ multi-language
-              //  TitleName = j.TitleName.GetTranslation(lang), // ✅ multi-language
+                TitleName = j.TitleName,
                 CompanyId = j.CompanyId,
                 CompanyName = j.Company.CompanyName,
                 DepartmentId = j.DepartmentId,
@@ -283,4 +270,41 @@ namespace HRsystem.Api.Features.Organization.JobManagment
         }
     }
     #endregion
+
+
+
+
+    public record GetFilteredJobTitlesQuery(int CompanyId, int DepartmentId, int JobLevelId) : IRequest<List<JobTitleDto>>;
+
+    public class GetFilteredJobTitlesHandler : IRequestHandler<GetFilteredJobTitlesQuery, List<JobTitleDto>>
+    {
+        private readonly DBContextHRsystem _db;
+        private readonly ICurrentUserService _currentUser;
+        public GetFilteredJobTitlesHandler(DBContextHRsystem db, ICurrentUserService currentUser)
+        {
+            _db = db;
+            _currentUser = currentUser;
+
+        }
+
+        public async Task<List<JobTitleDto>> Handle(GetFilteredJobTitlesQuery request, CancellationToken cancellationToken)
+        {
+            var jobTitles = await _db.TbJobTitles
+                .Where(j => j.CompanyId == request.CompanyId &&
+                            j.DepartmentId == request.DepartmentId &&
+                            j.JobLevelId == request.JobLevelId)
+                .Select(j => new { j.JobTitleId, j.TitleName }) // fetch only needed fields
+                .ToListAsync(cancellationToken);
+
+            return jobTitles
+                .Select(j => new JobTitleDto
+                {
+                    JobTitleId = j.JobTitleId,
+                    TitleName = j.TitleName
+                    // Other properties can be set to default/null if not available
+                })
+                .ToList();
+        }
+
+    }
 }

@@ -12,6 +12,7 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
         int CompanyId,
         int? GovId,
         int? CityId,
+        int? JobLevelId,
         int? JobTitleId,
         int? WorkingLocationId,
         int? ProjectId
@@ -21,6 +22,7 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
         int RuleId,
         int? GovId,
         int? CityId,
+        int? JobLevelId,
         int? JobTitleId,
         int? WorkingLocationId,
         int? ProjectId,
@@ -97,6 +99,7 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
                 r.GovID,
                 r.CityID,
                 r.JobTitleId,
+                r.JobLevelId,
                 r.WorkingLocationId,
                 r.ProjectId,
                 r.ShiftId,

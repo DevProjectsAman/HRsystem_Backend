@@ -1,21 +1,21 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.Design;
 
-namespace HRsystem.Api.Features.Project.GetAllProjects
+namespace HRsystem.Api.Features.Organization.Project.GetAllProjects
 {
-    public record GetAllProjectsCommand() : IRequest<List<ProjectResponse>>;
+    public record GetAllProjectsCommand(int CompanyId) : IRequest<List<ProjectResponse>>;
 
     public class ProjectResponse
     {
        public int ProjectId { get; set; }
         public string ProjectCode { get; set; }
-        public string ProjectName { get; set; }
-        public int? CityId { get; set; }
-        public int? WorkLocationId { get; set; }
+        public LocalizedData ProjectName { get; set; }
+       
         public int CompanyId { get; set; }
         }
 
@@ -32,7 +32,7 @@ namespace HRsystem.Api.Features.Project.GetAllProjects
         }
         public async Task<List<ProjectResponse>> Handle(GetAllProjectsCommand request, CancellationToken ct)
         {
-            var statues = await _db.TbProjects.ToListAsync(ct);
+            var statues = await _db.TbProjects.Where(c=>c.CompanyId==request.CompanyId).ToListAsync(ct);
             var lang = _currentUser.UserLanguage ?? "en";
 
 
@@ -40,9 +40,9 @@ namespace HRsystem.Api.Features.Project.GetAllProjects
             {
                   ProjectId = p.ProjectId,
                   ProjectCode = p.ProjectCode,
-                  ProjectName = p.ProjectName.GetTranslation(lang),
-                  CityId = p.CityId,
-                  WorkLocationId = p.WorkLocationId,
+                  ProjectName = p.ProjectName,
+                  //CityId = p.CityId,
+                  //WorkLocationId = p.WorkLocationId,
                   CompanyId = p.CompanyId
                 }).ToList();
 

@@ -2,6 +2,7 @@
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.ShiftRule.UpdateShiftRule;
+using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ namespace HRsystem.Api.Features.ShiftRule.UpdateShiftRule
 {
     public record UpdateShiftRuleCommand(
         int RuleId,
+        int? JobLevelId,
         int? JobTitleId,
         int? GovId,
         int? CityId,
@@ -16,16 +18,20 @@ namespace HRsystem.Api.Features.ShiftRule.UpdateShiftRule
         int? ProjectId,
         int ShiftId,
         int? Priority,
-        int CompanyId,
-        int? UpdatedBy
+        int CompanyId       
     ) : IRequest<TbShiftRule?>;
 
     public class UpdateShiftRuleHandler : IRequestHandler<UpdateShiftRuleCommand, TbShiftRule?>
     {
         private readonly DBContextHRsystem _db;
-        public UpdateShiftRuleHandler(DBContextHRsystem db) => _db = db;
-
-        public async Task<TbShiftRule?> Handle(UpdateShiftRuleCommand request, CancellationToken ct)
+        private readonly ICurrentUserService _currentUserService;
+        public UpdateShiftRuleHandler(DBContextHRsystem db, ICurrentUserService currentUserService)
+        {
+            _db = db;
+            _currentUserService = currentUserService;
+        }
+        
+                public async Task<TbShiftRule?> Handle(UpdateShiftRuleCommand request, CancellationToken ct)
         {
             var entity = await _db.TbShiftRules.FirstOrDefaultAsync(r => r.RuleId == request.RuleId, ct);
             if (entity == null)
@@ -43,7 +49,7 @@ namespace HRsystem.Api.Features.ShiftRule.UpdateShiftRule
             entity.ShiftId = request.ShiftId;
             entity.Priority = request.Priority;
             entity.CompanyId = request.CompanyId;
-            entity.UpdatedBy = request.UpdatedBy;
+            entity.UpdatedBy = _currentUserService.UserId;
             entity.UpdatedAt = DateTime.UtcNow;
 
             await _db.SaveChangesAsync(ct);

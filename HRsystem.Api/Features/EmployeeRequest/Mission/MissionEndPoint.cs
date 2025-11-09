@@ -1,8 +1,6 @@
 ﻿using HRsystem.Api.Features.Mission.CreateMission;
-using HRsystem.Api.Features.Project.CreateProject;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace HRsystem.Api.Features.Mission
 {

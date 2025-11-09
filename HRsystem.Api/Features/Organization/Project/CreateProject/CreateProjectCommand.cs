@@ -4,13 +4,13 @@ using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 
-namespace HRsystem.Api.Features.Project.CreateProject
+namespace HRsystem.Api.Features.Organization.Project.CreateProject
 {
     public record CreateProjectCommand(
         string? ProjectCode,
         LocalizedData ProjectName,
-        int? CityId,
-        int? WorkLocationId,
+        //int? CityId,
+        //int? WorkLocationId,
         int CompanyId,
         int? CreatedBy
     ) : IRequest<CreateProjectResponse>;
@@ -19,8 +19,8 @@ namespace HRsystem.Api.Features.Project.CreateProject
         int ProjectId,
         string ProjectCode,
         LocalizedData ProjectName,
-        int? CityId,
-        int? WorkLocationId,
+        //int? CityId,
+        //int? WorkLocationId,
         int CompanyId
     );
 
@@ -32,8 +32,8 @@ namespace HRsystem.Api.Features.Project.CreateProject
             {
                 ProjectCode = request.ProjectCode,
                 ProjectName = request.ProjectName,
-                CityId = request.CityId,
-                WorkLocationId = request.WorkLocationId,
+                //CityId = request.CityId,
+                //WorkLocationId = request.WorkLocationId,
                 CompanyId = request.CompanyId,
                 CreatedBy = request.CreatedBy,
                 CreatedAt = DateTime.UtcNow
@@ -42,7 +42,7 @@ namespace HRsystem.Api.Features.Project.CreateProject
             db.TbProjects.Add(entity);
             await db.SaveChangesAsync(ct);
 
-            return new CreateProjectResponse(entity.ProjectId, entity.ProjectCode, entity.ProjectName, entity.CityId, entity.WorkLocationId, entity.CompanyId);
+            return new CreateProjectResponse(entity.ProjectId, entity.ProjectCode, entity.ProjectName,  entity.CompanyId);
         }
     }
 

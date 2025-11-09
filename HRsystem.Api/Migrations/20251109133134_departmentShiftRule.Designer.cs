@@ -4,6 +4,7 @@ using HRsystem.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    partial class DBContextHRsystemModelSnapshot : ModelSnapshot
+    [Migration("20251109133134_departmentShiftRule")]
+    partial class departmentShiftRule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1408,6 +1411,9 @@ namespace HRsystem.Api.Migrations
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("DepartmentsDepartmentId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("GovID")
                         .HasColumnType("int");
 
@@ -1441,7 +1447,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.HasIndex("DepartmentId");
+                    b.HasIndex("DepartmentsDepartmentId");
 
                     b.HasIndex("GovID");
 
@@ -1831,7 +1837,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 11, 9, 16, 9, 29, 894, DateTimeKind.Local).AddTicks(1455),
+                            CreatedAt = new DateTime(2025, 11, 9, 15, 31, 31, 287, DateTimeKind.Local).AddTicks(3613),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -1839,7 +1845,7 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2025, 11, 9, 14, 9, 29, 894, DateTimeKind.Utc).AddTicks(4467),
+                            LastPasswordChangedAt = new DateTime(2025, 11, 9, 13, 31, 31, 287, DateTimeKind.Utc).AddTicks(6895),
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
@@ -1848,7 +1854,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("59c7808a-7ee2-4880-81c1-4e2a8e3685d7"),
+                            RowGuid = new Guid("306e9e5a-11f9-45ac-970e-f4fcb53ef302"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",
@@ -2461,9 +2467,9 @@ namespace HRsystem.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbDepartment", "Department")
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbDepartment", "Departments")
                         .WithMany()
-                        .HasForeignKey("DepartmentId");
+                        .HasForeignKey("DepartmentsDepartmentId");
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbGov", "Gov")
                         .WithMany()
@@ -2495,7 +2501,7 @@ namespace HRsystem.Api.Migrations
 
                     b.Navigation("Company");
 
-                    b.Navigation("Department");
+                    b.Navigation("Departments");
 
                     b.Navigation("Gov");
 

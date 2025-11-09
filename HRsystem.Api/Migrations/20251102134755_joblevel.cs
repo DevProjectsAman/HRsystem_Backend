@@ -13,11 +13,7 @@ namespace HRsystem.Api.Migrations
         {
            
 
-            migrationBuilder.AddColumn<int>(
-                name: "CompanyId",
-                table: "Tb_Job_Level",
-                type: "int",
-                nullable: true);
+             
 
             
            

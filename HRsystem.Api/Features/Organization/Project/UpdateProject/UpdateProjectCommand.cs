@@ -4,14 +4,14 @@ using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.Project.UpdateProject
+namespace HRsystem.Api.Features.Organization.Project.UpdateProject
 {
     public record UpdateProjectCommand(
         int ProjectId,
         string? ProjectCode,
         LocalizedData ProjectName,
-        int? CityId,
-        int? WorkLocationId,
+        //int? CityId,
+        //int? WorkLocationId,
         int CompanyId,
         int? UpdatedBy
     ) : IRequest<UpdateProjectResponse?>;
@@ -20,8 +20,8 @@ namespace HRsystem.Api.Features.Project.UpdateProject
         int ProjectId,
         string ProjectCode,
         LocalizedData ProjectName,
-        int? CityId,
-        int? WorkLocationId,
+        //int? CityId,
+        //int? WorkLocationId,
         int CompanyId
     );
 
@@ -38,15 +38,15 @@ namespace HRsystem.Api.Features.Project.UpdateProject
 
                 entity.ProjectCode = request.ProjectCode;
             entity.ProjectName = request.ProjectName;
-            entity.CityId = request.CityId;
-            entity.WorkLocationId = request.WorkLocationId;
+            //entity.CityId = request.CityId;
+            //entity.WorkLocationId = request.WorkLocationId;
             entity.CompanyId = request.CompanyId;
             entity.UpdatedBy = request.UpdatedBy;
             entity.UpdatedAt = DateTime.UtcNow;
 
             await db.SaveChangesAsync(ct);
 
-            return new UpdateProjectResponse(entity.ProjectId, entity.ProjectCode, entity.ProjectName, entity.CityId, entity.WorkLocationId, entity.CompanyId);
+            return new UpdateProjectResponse(entity.ProjectId, entity.ProjectCode, entity.ProjectName, entity.CompanyId);
         }
     }
 
