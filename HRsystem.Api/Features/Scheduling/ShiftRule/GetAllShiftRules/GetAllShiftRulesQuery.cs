@@ -1,4 +1,7 @@
-﻿using HRsystem.Api.Database;
+﻿using AutoMapper;
+using HRsystem.Api.Database;
+using HRsystem.Api.Database.DataTables;
+using HRsystem.Api.Features.Scheduling.Shift.GetAllShifts;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +13,13 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule.GetAllShiftRules
     public class GetAllShiftRulesHandler : IRequestHandler<GetAllShiftRulesQuery, List<ShiftRuleDto>>
     {
         private readonly DBContextHRsystem _db;
-        public GetAllShiftRulesHandler(DBContextHRsystem db) => _db = db;
+        private readonly IMapper _mapper;
+
+        public GetAllShiftRulesHandler(DBContextHRsystem db, IMapper mapper)
+        {
+            _db = db;
+            _mapper = mapper;
+        }
 
         public async Task<List<ShiftRuleDto>> Handle(GetAllShiftRulesQuery request, CancellationToken ct)
         {
@@ -33,11 +42,10 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule.GetAllShiftRules
                     JobTitleId = r.JobTitleId,
                     WorkingLocationId = r.WorkingLocationId,
                     ProjectId = r.ProjectId,
-                    ShiftId = r.ShiftId,
+                    shiftDto = _mapper.Map<ShiftDto>(r.Shift),
                     Priority = r.Priority,
                     CompanyId = r.CompanyId,
                     DeparmentId = r.DepartmentId,
-
 
                     // ✅ include related names (optional, depends on your DTO)
                     GovName = r.Gov != null ? r.Gov.GovName : null,
@@ -46,7 +54,7 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule.GetAllShiftRules
                     ProjectName = r.Project != null ? r.Project.ProjectName : null,
                     JobLevelName = r.JobLevel != null ? r.JobLevel.JobLevelDesc : null,
                     TitleName = r.JobTitle != null ? r.JobTitle.TitleName : null,
-                    ShiftName = r.Shift != null ? r.Shift.ShiftName : null,
+                    //  ShiftName = r.Shift != null ? r.Shift.ShiftName : null,
                     DepartmentName = r.Department != null ? r.Department.DepartmentName : null,
 
 
@@ -83,8 +91,11 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule.GetAllShiftRules
         public LocalizedData? TitleName { get; set; } = null!;
 
         // Shift Details
-        public int ShiftId { get; set; }
-        public LocalizedData? ShiftName { get; set; } = null!;
+        //public int ShiftId { get; set; }
+        //public LocalizedData? ShiftName { get; set; } = null!;
+
+        public ShiftDto shiftDto { get; set; } = null!;
+
         public int? Priority { get; set; }
 
         // Other fields (optional)
