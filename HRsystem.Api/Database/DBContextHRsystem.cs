@@ -28,7 +28,7 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
 
     public virtual DbSet<TbCity> TbCities { get; set; }
 
-    public virtual DbSet<TbAttendanceStatues> TbAttendanceStatueses { get; set; }
+    public virtual DbSet<TbAttendanceStatues> TbAttendanceStatues { get; set; }
     
     public virtual DbSet<TbCompany> TbCompanies { get; set; }
 

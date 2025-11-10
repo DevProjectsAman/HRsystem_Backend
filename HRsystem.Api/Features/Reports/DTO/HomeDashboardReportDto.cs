@@ -1,13 +1,20 @@
 ﻿namespace HRsystem.Api.Features.Reports.DTO
 {
 
+    public class DepartmentAttendanceStatusDto
+    {
+        public string StatusCode { get; set; }   // "attendance","Absent","vacation"
+        public string StatusName { get; set; }      
+        public double Percentage { get; set; }   
+    }
+
     public class DepartmentAttendanceDto
     {
         public int DepartmentId { get; set; }
         public string DepartmentName { get; set; }
 
-        public double AttendancePercentage { get; set; } // %
-        public double AbsencePercentage { get; set; } // %
+        // قائمة كل حالة ونسبتها
+        public List<DepartmentAttendanceStatusDto> Statuses { get; set; }
     }
 
     public class HomeDashboardReportDto

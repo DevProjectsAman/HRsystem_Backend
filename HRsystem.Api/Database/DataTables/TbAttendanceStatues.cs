@@ -8,7 +8,7 @@ namespace HRsystem.Api.Database.DataTables;
 
 
 
-[Table("Tb_Attendance_Statues")]
+[Table("tb_attendance_statues")]
 public partial class TbAttendanceStatues
 {
     [Key]
