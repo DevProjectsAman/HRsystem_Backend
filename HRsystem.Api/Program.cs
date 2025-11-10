@@ -189,6 +189,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PipelineValidationHandler<,>));
 
 
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddScoped<AuditLogService>();
 
