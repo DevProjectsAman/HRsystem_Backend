@@ -28,6 +28,8 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
 
     public virtual DbSet<TbCity> TbCities { get; set; }
 
+    public virtual DbSet<TbAttendanceStatues> TbAttendanceStatues { get; set; }
+    
     public virtual DbSet<TbCompany> TbCompanies { get; set; }
 
     public virtual DbSet<TbDepartment> TbDepartments { get; set; }
@@ -140,6 +142,13 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
         modelBuilder.Entity<TbHolidayType>(entity =>
         {
             entity.Property(e => e.HolidayTypeName)
+                  .HasConversion(LocalizedConverter)
+                  .HasColumnType("json");
+        });
+
+        modelBuilder.Entity<TbAttendanceStatues>(entity =>
+        {
+            entity.Property(e => e.AttendanceStatuesName)
                   .HasConversion(LocalizedConverter)
                   .HasColumnType("json");
         });

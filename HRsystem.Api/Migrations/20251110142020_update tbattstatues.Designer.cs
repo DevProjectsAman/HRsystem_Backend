@@ -4,6 +4,7 @@ using HRsystem.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    partial class DBContextHRsystemModelSnapshot : ModelSnapshot
+    [Migration("20251110142020_update tbattstatues")]
+    partial class updatetbattstatues
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1607,13 +1610,7 @@ namespace HRsystem.Api.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DepartmentId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("GovID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("JobLevelId")
                         .HasColumnType("int");
 
                     b.Property<int?>("JobTitleId")
@@ -1632,22 +1629,6 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("WorkDaysRuleId");
-
-                    b.HasIndex("CityID");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("GovID");
-
-                    b.HasIndex("JobLevelId");
-
-                    b.HasIndex("JobTitleId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("WorkDaysId");
-
-                    b.HasIndex("WorkingLocationId");
 
                     b.ToTable("Tb_WorkDays_Rules");
                 });
@@ -1875,7 +1856,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 11, 11, 12, 8, 29, 592, DateTimeKind.Local).AddTicks(8054),
+                            CreatedAt = new DateTime(2025, 11, 10, 16, 20, 19, 625, DateTimeKind.Local).AddTicks(1378),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -1883,7 +1864,7 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2025, 11, 11, 12, 8, 29, 593, DateTimeKind.Local).AddTicks(1482),
+                            LastPasswordChangedAt = new DateTime(2025, 11, 10, 14, 20, 19, 625, DateTimeKind.Utc).AddTicks(5049),
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
@@ -1892,7 +1873,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("74e5ca98-de9f-47e8-bd48-432710640da3"),
+                            RowGuid = new Guid("4cc5de59-7862-4909-a393-df251c86adbe"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",
@@ -2563,59 +2544,6 @@ namespace HRsystem.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("VacationType");
-                });
-
-            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkDaysRule", b =>
-                {
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbCity", "City")
-                        .WithMany()
-                        .HasForeignKey("CityID");
-
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbDepartment", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId");
-
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbGov", "Gov")
-                        .WithMany()
-                        .HasForeignKey("GovID");
-
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbJobLevel", "JobLevel")
-                        .WithMany()
-                        .HasForeignKey("JobLevelId");
-
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbJobTitle", "JobTitle")
-                        .WithMany()
-                        .HasForeignKey("JobTitleId");
-
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbProject", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId");
-
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbWorkDays", "WorkDays")
-                        .WithMany()
-                        .HasForeignKey("WorkDaysId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbWorkLocation", "WorkingLocation")
-                        .WithMany()
-                        .HasForeignKey("WorkingLocationId");
-
-                    b.Navigation("City");
-
-                    b.Navigation("Department");
-
-                    b.Navigation("Gov");
-
-                    b.Navigation("JobLevel");
-
-                    b.Navigation("JobTitle");
-
-                    b.Navigation("Project");
-
-                    b.Navigation("WorkDays");
-
-                    b.Navigation("WorkingLocation");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkLocation", b =>
