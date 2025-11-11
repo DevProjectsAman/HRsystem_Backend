@@ -4,6 +4,7 @@ using HRsystem.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    partial class DBContextHRsystemModelSnapshot : ModelSnapshot
+    [Migration("20251111090841_workdaysRulesChanges")]
+    partial class workdaysRulesChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1603,6 +1606,9 @@ namespace HRsystem.Api.Migrations
                     b.Property<int?>("ProjectId")
                         .HasColumnType("int");
 
+                    b.Property<int>("ShiftId")
+                        .HasColumnType("int");
+
                     b.Property<int>("WorkDaysId")
                         .HasColumnType("int");
 
@@ -1623,7 +1629,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.HasIndex("WorkDaysId");
+                    b.HasIndex("ShiftId");
 
                     b.HasIndex("WorkingLocationId");
 
@@ -1853,7 +1859,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 11, 11, 12, 8, 29, 592, DateTimeKind.Local).AddTicks(8054),
+                            CreatedAt = new DateTime(2025, 11, 11, 11, 8, 40, 256, DateTimeKind.Local).AddTicks(2558),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -1861,7 +1867,7 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2025, 11, 11, 12, 8, 29, 593, DateTimeKind.Local).AddTicks(1482),
+                            LastPasswordChangedAt = new DateTime(2025, 11, 11, 11, 8, 40, 256, DateTimeKind.Local).AddTicks(5691),
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
@@ -1870,7 +1876,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("74e5ca98-de9f-47e8-bd48-432710640da3"),
+                            RowGuid = new Guid("02cbdbd0-9168-4920-b263-57634ab20104"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",
@@ -2569,9 +2575,9 @@ namespace HRsystem.Api.Migrations
                         .WithMany()
                         .HasForeignKey("ProjectId");
 
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbWorkDays", "WorkDays")
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbShift", "Shift")
                         .WithMany()
-                        .HasForeignKey("WorkDaysId")
+                        .HasForeignKey("ShiftId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2591,7 +2597,7 @@ namespace HRsystem.Api.Migrations
 
                     b.Navigation("Project");
 
-                    b.Navigation("WorkDays");
+                    b.Navigation("Shift");
 
                     b.Navigation("WorkingLocation");
                 });

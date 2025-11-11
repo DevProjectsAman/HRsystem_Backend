@@ -27,7 +27,7 @@ namespace HRsystem.Api.Services.AuditLog
             {
                 CompanyId = companyId,
                 UserId = userId,
-                ActionDatetime = DateTime.UtcNow,
+                ActionDatetime = DateTime.Now,
                 TableName = tableName,
                 ActionType = actionType,
                 RecordId = recordId,

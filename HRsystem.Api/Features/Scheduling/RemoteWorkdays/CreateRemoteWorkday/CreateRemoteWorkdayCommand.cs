@@ -18,7 +18,7 @@ namespace HRsystem.Api.Features.Scheduling.RemoteWorkdays.CreateRemoteWorkday
             {
                 RemoteWorkDaysNames = request.RemoteWorkDaysNames,
                 CreatedBy = request.CreatedBy,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now
             };
 
             _db.TbRemoteWorkDays.Add(entity);

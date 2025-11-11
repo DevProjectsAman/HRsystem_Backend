@@ -11,9 +11,9 @@ namespace HRsystem.Api.Features.WorkDaysRules
             var group = app.MapGroup("/api/Scheduling/workdaysrules").WithTags("WorkDaysRules");
 
             // Get All
-            group.MapGet("/GetListOfWorkDaysRule", async (ISender mediator) =>
+            group.MapGet("/GetListOfWorkDaysRule/{CompanyId}", async (ISender mediator,int CompanyId) =>
             {
-                var result = await mediator.Send(new GetAllWorkDaysRulesQuery());
+                var result = await mediator.Send(new GetAllWorkDaysRulesQuery(CompanyId));
                 return Results.Ok(new { Success = true, Data = result });
             });
 

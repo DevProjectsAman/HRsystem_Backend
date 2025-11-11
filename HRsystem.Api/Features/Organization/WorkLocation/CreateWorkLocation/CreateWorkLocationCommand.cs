@@ -32,7 +32,7 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.CreateWorkLocation
                 Longitude = request.Longitude,
                 AllowedRadiusM = request.AllowedRadiusM,
                 CityId = request.CityId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now
             };
 
             _db.TbWorkLocations.Add(entity);

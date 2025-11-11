@@ -113,7 +113,7 @@ namespace HRsystem.Api.Services.DocumentHandling
                 DocFullPath = virtualFilePath,
                 FileSizeBytes = size,
                 FileSizeReadable = FormatFileSize(size),
-                UploadedAt = DateTime.UtcNow
+                UploadedAt = DateTime.Now
             };
         }
 
