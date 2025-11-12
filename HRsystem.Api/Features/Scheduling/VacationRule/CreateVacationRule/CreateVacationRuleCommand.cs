@@ -16,8 +16,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.CreateVacationRule
         EnumGenderType Gender,
         EnumReligionType Religion,
         int YearlyBalance,
-        bool? Prorate,
-        string RuleName
+        bool? Prorate 
     ) : IRequest<TbVacationRule>;
 
     public class CreateVacationRuleHandler : IRequestHandler<CreateVacationRuleCommand, TbVacationRule>
@@ -39,7 +38,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.CreateVacationRule
                 Religion = request.Religion,
                 YearlyBalance = request.YearlyBalance,
                 Prorate = request.Prorate,
-                VacationRuleName = request.RuleName
+                
             };
 
             _db.TbVacationRules.Add(entity);
@@ -82,7 +81,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.CreateVacationRule
             RuleFor(x => x.YearlyBalance)
                 .GreaterThanOrEqualTo(0).WithMessage("YearlyBalance must be >= 0");
 
-            RuleFor(x => x.RuleName)
+            RuleFor(x => x.VacationRuleName)
                 .NotEmpty().WithMessage("VacationRuleName is required")
                 .MaximumLength(100).WithMessage("VacationRuleName must not exceed 100 characters");
         }

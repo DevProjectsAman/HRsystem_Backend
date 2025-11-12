@@ -34,14 +34,13 @@ namespace HRsystem.Api.Features.WorkDaysRules
             });
 
             // Update
-            group.MapPut("/UpdateOneOfWorkDaysRule/{id}", async (int id, UpdateWorkDaysRuleCommand cmd, ISender mediator) =>
+            group.MapPut("/UpdateOneOfWorkDaysRule", async ( UpdateWorkDaysRuleCommand cmd, ISender mediator) =>
             {
-                if (id != cmd.WorkDaysRuleId)
-                    return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
+                 
 
                 var result = await mediator.Send(cmd);
                 return result == null
-                    ? Results.NotFound(new { Success = false, Message = $"WorkDaysRule {id} not found" })
+                    ? Results.NotFound(new { Success = false, Message = $"WorkDaysRule {cmd.WorkDaysRuleId} not found" })
                     : Results.Ok(new { Success = true, Data = result });
             });
 

@@ -36,6 +36,7 @@ namespace HRsystem.Api.Features.ShiftRule.CreateShiftRule
             var entity = new TbShiftRule
             {
                 JobLevelId = request.JobLevelId,
+                ShiftRuleName = request.ShiftRuleName,
                 JobTitleId = request.JobTitleId,
                 WorkingLocationId = request.WorkingLocationId,
                 GovID = request.GovId ,
