@@ -36,6 +36,7 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule.GetAllShiftRules
                 .Select(r => new ShiftRuleDto
                 {
                     RuleId = r.RuleId,
+                    ShiftRuleName = r.ShiftRuleName,
                     GovID = r.GovID,
                     CityID = r.CityID,
                     JobLevelId = r.JobLevelId,
@@ -70,6 +71,8 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule.GetAllShiftRules
     public class ShiftRuleDto
     {
         public int RuleId { get; set; }
+
+        public string? ShiftRuleName { get; set; }
 
         // Location/Hierarchy Fields
         public int? GovID { get; set; }

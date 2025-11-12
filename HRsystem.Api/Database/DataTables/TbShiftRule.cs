@@ -9,6 +9,8 @@ public partial class TbShiftRule
     [Key]
     public int RuleId { get; set; }
 
+    [MaxLength(100)]
+    public string? ShiftRuleName { get; set; } = string.Empty;
     public int? GovID { get; set; }
     public int? CityID { get; set; }
 

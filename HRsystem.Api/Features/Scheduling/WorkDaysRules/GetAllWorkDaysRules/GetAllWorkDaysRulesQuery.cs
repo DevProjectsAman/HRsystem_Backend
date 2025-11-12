@@ -9,6 +9,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
     public class WorkDaysRuleDto
     {
         public int WorkDaysRuleId { get; set; }
+        public string? WorkDaysRuleName { get; set; }
         public int? GovID { get; set; }
         public string? GovName { get; set; }
         public int? CityID { get; set; }
@@ -43,6 +44,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
 
     // Create
     public record CreateWorkDaysRuleCommand(
+        string? WorkDaysRuleName,
         int? GovID,
         int? CityID,
         int? JobLevelId,
@@ -59,6 +61,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
     // Update
     public record UpdateWorkDaysRuleCommand(
         int WorkDaysRuleId,
+        string? WorkDaysRuleName,
         int? GovID,
         int? CityID,
          int? JobLevelId,
@@ -98,6 +101,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
                 .Select(r => new WorkDaysRuleDto
                 {
                     WorkDaysRuleId = r.WorkDaysRuleId,
+                    WorkDaysRuleName = r.WorkDaysRuleName,
                     GovID = r.GovID,
                     GovName = r.Gov.GovName,
                     CityID = r.CityID,
@@ -138,6 +142,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
                 .Select(r => new WorkDaysRuleDto
                 {
                     WorkDaysRuleId = r.WorkDaysRuleId,
+                    WorkDaysRuleName = r.WorkDaysRuleName,
                     GovID = r.GovID,
                     CityID = r.CityID,
                     JobTitleId = r.JobTitleId,
@@ -171,7 +176,9 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
         {
             var entity = new TbWorkDaysRule
             {
+                
                 GovID = request.GovID,
+                WorkDaysRuleName = request.WorkDaysRuleName,
                 CityID = request.CityID,
                 JobTitleId = request.JobTitleId,
                 WorkingLocationId = request.WorkingLocationId,
@@ -190,6 +197,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
             return new WorkDaysRuleDto
             {
                 WorkDaysRuleId = entity.WorkDaysRuleId,
+                WorkDaysRuleName = entity.WorkDaysRuleName,
                 GovID = entity.GovID,
                 CityID = entity.CityID,
                 JobTitleId = entity.JobTitleId,
@@ -224,6 +232,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
             if (entity == null) return null;
 
             entity.GovID = request.GovID;
+            entity.WorkDaysRuleName = request.WorkDaysRuleName;
             entity.CityID = request.CityID;
             entity.JobTitleId = request.JobTitleId;
             entity.WorkingLocationId = request.WorkingLocationId;

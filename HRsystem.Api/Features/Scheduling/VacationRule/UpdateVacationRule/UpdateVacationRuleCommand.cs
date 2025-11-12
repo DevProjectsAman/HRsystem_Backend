@@ -10,6 +10,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule
 {
     public record UpdateVacationRuleCommand(
         int RuleId,
+        string? VacationRuleName,
         int VacationTypeId,
         int? MinAge,
         int? MaxAge,
@@ -36,6 +37,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule
             }
 
             entity.VacationTypeId = request.VacationTypeId;
+            entity.VacationRuleName = request.VacationRuleName;
             entity.MinAge = request.MinAge;
             entity.MaxAge = request.MaxAge;
             entity.MinServiceYears = request.MinServiceYears;
@@ -44,7 +46,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule
             entity.Religion = request.Religion;
             entity.YearlyBalance = request.YearlyBalance;
             entity.Prorate = request.Prorate;
-            entity.RuleName = request.RuleName;
+            entity.VacationRuleName = request.RuleName;
 
             await _db.SaveChangesAsync(ct);
             return entity;
@@ -87,8 +89,8 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule
                 .GreaterThanOrEqualTo(0).WithMessage("YearlyBalance must be >= 0");
 
             RuleFor(x => x.RuleName)
-                .NotEmpty().WithMessage("RuleName is required")
-                .MaximumLength(100).WithMessage("RuleName must not exceed 100 characters");
+                .NotEmpty().WithMessage("VacationRuleName is required")
+                .MaximumLength(100).WithMessage("VacationRuleName must not exceed 100 characters");
         }
     }
 }

@@ -8,6 +8,7 @@ using MediatR;
 namespace HRsystem.Api.Features.ShiftRule.CreateShiftRule
 {
     public record CreateShiftRuleCommand(
+        string? ShiftRuleName,
         int? JobLevelId,
         int? DepartmentId,
         int? JobTitleId,

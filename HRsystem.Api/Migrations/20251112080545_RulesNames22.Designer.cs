@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    [Migration("20250924102228_Employee_workdays_remote")]
-    partial class Employee_workdays_remote
+    [Migration("20251112080545_RulesNames22")]
+    partial class RulesNames22
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,6 +59,48 @@ namespace HRsystem.Api.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("Tb_Activity_Status");
+                });
+
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbActivityStatusWorkflow", b =>
+                {
+                    b.Property<int>("WorkflowId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("WorkflowId"));
+
+                    b.Property<int>("ActivityTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApproverRole")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsFinalStep")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("NextStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StepOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VacationTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("WorkflowId");
+
+                    b.ToTable("tb_activity_status_workflow");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbActivityType", b =>
@@ -130,6 +172,28 @@ namespace HRsystem.Api.Migrations
                     b.HasIndex("StatusId");
 
                     b.ToTable("tb_activity_type_status");
+                });
+
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbAttendanceStatues", b =>
+                {
+                    b.Property<int>("AttendanceStatuesId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("AttendanceStatuesId"));
+
+                    b.Property<string>("AttendanceStatuesCode")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .HasColumnType("varchar(25)");
+
+                    b.Property<string>("AttendanceStatuesName")
+                        .IsRequired()
+                        .HasColumnType("json");
+
+                    b.HasKey("AttendanceStatuesId");
+
+                    b.ToTable("tb_attendance_statues");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbAuditLog", b =>
@@ -297,15 +361,16 @@ namespace HRsystem.Api.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("EmployeeId"));
 
-                    b.Property<string>("ArabicFirstName")
-                        .HasMaxLength(55)
-                        .HasColumnType("varchar(55)");
+                    b.Property<string>("Address")
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)");
 
-                    b.Property<string>("ArabicLastName")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                    b.Property<string>("ArabicFullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
 
-                    b.Property<DateOnly?>("Birthdate")
+                    b.Property<DateOnly>("Birthdate")
                         .HasColumnType("date");
 
                     b.Property<string>("BloodGroup")
@@ -319,41 +384,51 @@ namespace HRsystem.Api.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int?>("CreatedBy")
+                    b.Property<int>("ContractTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DepartmentId")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
                     b.Property<string>("EmployeeCodeFinance")
+                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
 
                     b.Property<string>("EmployeeCodeHr")
+                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
+
+                    b.Property<string>("EmployeePhotoPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("EnglishFullName")
                         .IsRequired()
-                        .HasMaxLength(55)
-                        .HasColumnType("varchar(55)");
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
 
                     b.Property<string>("Gender")
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("ENUM('Male','Female')");
 
-                    b.Property<DateOnly?>("HireDate")
+                    b.Property<DateOnly>("HireDate")
                         .HasColumnType("date");
 
                     b.Property<sbyte?>("IsFulldocument")
@@ -362,25 +437,21 @@ namespace HRsystem.Api.Migrations
                     b.Property<sbyte?>("IsTopmanager")
                         .HasColumnType("tinyint");
 
-                    b.Property<int?>("JobTitleId")
+                    b.Property<int>("JobTitleId")
                         .HasColumnType("int");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(55)
-                        .HasColumnType("varchar(55)");
-
-                    b.Property<int?>("ManagerId")
+                    b.Property<int>("ManagerId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MaritalStatusId")
+                    b.Property<int>("MaritalStatusId")
                         .HasColumnType("int");
 
                     b.Property<string>("NationalId")
+                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
-                    b.Property<int?>("NationalityId")
+                    b.Property<int>("NationalityId")
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
@@ -391,37 +462,44 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("varchar(25)");
 
                     b.Property<string>("PlaceOfBirth")
+                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
 
                     b.Property<string>("PrivateMobile")
+                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
+
+                    b.Property<int>("Religion")
+                        .HasColumnType("int");
 
                     b.Property<int?>("RemoteWorkDaysId")
                         .HasColumnType("int");
 
                     b.Property<string>("SerialMobile")
+                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
-                    b.Property<int?>("ShiftId")
+                    b.Property<int>("ShiftId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("StartDate")
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Status")
+                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int?>("UpdatedBy")
+                    b.Property<int>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("WorkDaysId")
+                    b.Property<int>("WorkDaysId")
                         .HasColumnType("int");
 
                     b.HasKey("EmployeeId");
@@ -438,7 +516,11 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("NationalityId");
 
+                    b.HasIndex("RemoteWorkDaysId");
+
                     b.HasIndex("ShiftId");
+
+                    b.HasIndex("WorkDaysId");
 
                     b.ToTable("Tb_Employee");
                 });
@@ -533,6 +615,9 @@ namespace HRsystem.Api.Migrations
                     b.Property<decimal?>("ActualWorkingHours")
                         .HasPrecision(5, 2)
                         .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("AttStatues")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("AttendanceDate")
                         .HasColumnType("datetime(6)");
@@ -647,6 +732,128 @@ namespace HRsystem.Api.Migrations
                     b.HasIndex("ActivityId");
 
                     b.ToTable("Tb_Employee_Mission");
+                });
+
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeMonthlyReport", b =>
+                {
+                    b.Property<int>("DayId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("DayId"));
+
+                    b.Property<long?>("ActivityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("ActivityTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("ActualWorkingHours")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<long?>("ApprovedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ArabicFullName")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<int?>("AttStatues")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("AttendanceDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<long?>("AttendanceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ContractTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("json");
+
+                    b.Property<string>("EmployeeCodeFinance")
+                        .HasMaxLength(55)
+                        .HasColumnType("varchar(55)");
+
+                    b.Property<string>("EmployeeCodeHr")
+                        .HasMaxLength(55)
+                        .HasColumnType("varchar(55)");
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeTodayStatuesId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EnglishFullName")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTime?>("FirstPuchin")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsHoliday")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsRemoteday")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsWorkday")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("JobLevelId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("JobTitleId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastPuchout")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("ManagerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RemoteWorkDaysId")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("RequestBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("RequestDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("ShiftId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TodayStatues")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<decimal?>("TotalHours")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int?>("WorkDaysId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DayId");
+
+                    b.ToTable("Tb_Employee_Monthly_Report");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeProject", b =>
@@ -899,6 +1106,60 @@ namespace HRsystem.Api.Migrations
                     b.ToTable("Tb_Group");
                 });
 
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbHolidayType", b =>
+                {
+                    b.Property<int>("HolidayTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("HolidayTypeId"));
+
+                    b.Property<string>("HolidayTypeName")
+                        .IsRequired()
+                        .HasColumnType("json");
+
+                    b.HasKey("HolidayTypeId");
+
+                    b.ToTable("tb_holiday_types");
+                });
+
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbHolidays", b =>
+                {
+                    b.Property<int>("HolidayId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("HolidayId"));
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("HolidayName")
+                        .IsRequired()
+                        .HasColumnType("json");
+
+                    b.Property<int>("HolidayTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsForChristiansOnly")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("HolidayId");
+
+                    b.HasIndex("HolidayTypeId");
+
+                    b.ToTable("tb_holidays");
+                });
+
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbJobLevel", b =>
                 {
                     b.Property<int>("JobLevelId")
@@ -906,6 +1167,9 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("JobLevelId"));
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -928,6 +1192,12 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("JobLevelId");
+
+                    b.HasIndex("JobLevelCode", "CompanyId")
+                        .IsUnique();
+
+                    b.HasIndex("JobLevelDesc", "CompanyId")
+                        .IsUnique();
 
                     b.ToTable("Tb_Job_Level");
                 });
@@ -1028,9 +1298,6 @@ namespace HRsystem.Api.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ProjectId"));
 
-                    b.Property<int?>("CityId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
@@ -1054,19 +1321,14 @@ namespace HRsystem.Api.Migrations
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("WorkLocationId")
-                        .HasColumnType("int");
-
                     b.HasKey("ProjectId");
-
-                    b.HasIndex("CityId");
 
                     b.HasIndex("CompanyId");
 
                     b.ToTable("Tb_Project");
                 });
 
-            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbRemoteWorkDays", b =>
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbRemoteWorkDay", b =>
                 {
                     b.Property<int>("RemoteWorkDaysId")
                         .ValueGeneratedOnAdd()
@@ -1081,18 +1343,11 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("int");
 
                     b.PrimitiveCollection<string>("RemoteWorkDaysNames")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<int?>("TbEmployeeEmployeeId")
-                        .HasColumnType("int");
+                        .HasColumnType("json");
 
                     b.HasKey("RemoteWorkDaysId");
 
-                    b.HasIndex("TbEmployeeEmployeeId");
-
-                    b.ToTable("Tb_Remote_Work_Days");
+                    b.ToTable("Tb_Remote_WorkDays");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbShift", b =>
@@ -1175,7 +1430,13 @@ namespace HRsystem.Api.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("GovID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("JobLevelId")
                         .HasColumnType("int");
 
                     b.Property<int?>("JobTitleId")
@@ -1190,6 +1451,10 @@ namespace HRsystem.Api.Migrations
                     b.Property<int>("ShiftId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ShiftRuleName")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -1201,7 +1466,15 @@ namespace HRsystem.Api.Migrations
 
                     b.HasKey("RuleId");
 
+                    b.HasIndex("CityID");
+
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("GovID");
+
+                    b.HasIndex("JobLevelId");
 
                     b.HasIndex("JobTitleId");
 
@@ -1238,6 +1511,9 @@ namespace HRsystem.Api.Migrations
                     b.Property<int?>("MinServiceYears")
                         .HasColumnType("int");
 
+                    b.Property<int?>("Priority")
+                        .HasColumnType("int");
+
                     b.Property<bool?>("Prorate")
                         .HasColumnType("tinyint(1)");
 
@@ -1246,7 +1522,6 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("ENUM('All','Muslim','Christian')");
 
                     b.Property<string>("VacationRuleName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
@@ -1304,9 +1579,6 @@ namespace HRsystem.Api.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("WorkDaysId"));
 
-                    b.Property<int?>("TbEmployeeEmployeeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("WorkDaysDescription")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -1314,17 +1586,14 @@ namespace HRsystem.Api.Migrations
 
                     b.PrimitiveCollection<string>("WorkDaysNames")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("json");
 
                     b.HasKey("WorkDaysId");
-
-                    b.HasIndex("TbEmployeeEmployeeId");
 
                     b.ToTable("Tb_WorkDays");
                 });
 
-            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkDaysRules", b =>
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkDaysRule", b =>
                 {
                     b.Property<int>("WorkDaysRuleId")
                         .ValueGeneratedOnAdd()
@@ -1344,7 +1613,13 @@ namespace HRsystem.Api.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("GovID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("JobLevelId")
                         .HasColumnType("int");
 
                     b.Property<int?>("JobTitleId")
@@ -1359,10 +1634,30 @@ namespace HRsystem.Api.Migrations
                     b.Property<int>("WorkDaysId")
                         .HasColumnType("int");
 
+                    b.Property<string>("WorkDaysRuleName")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<int?>("WorkingLocationId")
                         .HasColumnType("int");
 
                     b.HasKey("WorkDaysRuleId");
+
+                    b.HasIndex("CityID");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("GovID");
+
+                    b.HasIndex("JobLevelId");
+
+                    b.HasIndex("JobTitleId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("WorkDaysId");
+
+                    b.HasIndex("WorkingLocationId");
 
                     b.ToTable("Tb_WorkDays_Rules");
                 });
@@ -1390,6 +1685,9 @@ namespace HRsystem.Api.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
+                    b.Property<int?>("JobTitleId")
+                        .HasColumnType("int");
+
                     b.Property<decimal?>("Latitude")
                         .HasPrecision(9, 6)
                         .HasColumnType("decimal(9,6)");
@@ -1412,11 +1710,18 @@ namespace HRsystem.Api.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
+                    b.Property<int?>("WorkingLocationWorkLocationId")
+                        .HasColumnType("int");
+
                     b.HasKey("WorkLocationId");
 
                     b.HasIndex("CityId");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("JobTitleId");
+
+                    b.HasIndex("WorkingLocationWorkLocationId");
 
                     b.ToTable("Tb_Work_Location");
                 });
@@ -1433,7 +1738,7 @@ namespace HRsystem.Api.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("RoleName")
+                    b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
@@ -1580,7 +1885,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 9, 24, 13, 22, 27, 273, DateTimeKind.Local).AddTicks(3480),
+                            CreatedAt = new DateTime(2025, 11, 12, 10, 5, 44, 635, DateTimeKind.Local).AddTicks(4182),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -1588,7 +1893,7 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2025, 9, 24, 10, 22, 27, 273, DateTimeKind.Utc).AddTicks(6666),
+                            LastPasswordChangedAt = new DateTime(2025, 11, 12, 10, 5, 44, 635, DateTimeKind.Local).AddTicks(8403),
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
@@ -1597,7 +1902,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("fd12433f-e49f-45b8-96f9-7d96581aa915"),
+                            RowGuid = new Guid("23a1807c-d886-4d08-9a88-927c3b0cd04a"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",
@@ -1762,13 +2067,13 @@ namespace HRsystem.Api.Migrations
                     b.Property<string>("LoginProvider")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("RoleName")
+                    b.Property<string>("Name")
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Value")
                         .HasColumnType("longtext");
 
-                    b.HasKey("UserId", "LoginProvider", "RoleName");
+                    b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
@@ -1868,27 +2173,49 @@ namespace HRsystem.Api.Migrations
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbDepartment", "Department")
                         .WithMany("TbEmployees")
-                        .HasForeignKey("DepartmentId");
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbJobTitle", "JobTitle")
                         .WithMany("TbEmployees")
-                        .HasForeignKey("JobTitleId");
+                        .HasForeignKey("JobTitleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbEmployee", "Manager")
                         .WithMany("InverseManager")
-                        .HasForeignKey("ManagerId");
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbMaritalStatus", "MaritalStatus")
                         .WithMany()
-                        .HasForeignKey("MaritalStatusId");
+                        .HasForeignKey("MaritalStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbNationality", "Nationality")
                         .WithMany()
-                        .HasForeignKey("NationalityId");
+                        .HasForeignKey("NationalityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbRemoteWorkDay", "TbRemoteWorkDays")
+                        .WithMany()
+                        .HasForeignKey("RemoteWorkDaysId");
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbShift", "Shifts")
                         .WithMany()
-                        .HasForeignKey("ShiftId");
+                        .HasForeignKey("ShiftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbWorkDays", "TbWorkDays")
+                        .WithMany()
+                        .HasForeignKey("WorkDaysId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Company");
 
@@ -1903,6 +2230,10 @@ namespace HRsystem.Api.Migrations
                     b.Navigation("Nationality");
 
                     b.Navigation("Shifts");
+
+                    b.Navigation("TbRemoteWorkDays");
+
+                    b.Navigation("TbWorkDays");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeActivity", b =>
@@ -2102,7 +2433,7 @@ namespace HRsystem.Api.Migrations
                         .IsRequired();
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbWorkLocation", "WorkLocation")
-                        .WithMany("TbEmployeeWorkLocations")
+                        .WithMany()
                         .HasForeignKey("WorkLocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2112,6 +2443,17 @@ namespace HRsystem.Api.Migrations
                     b.Navigation("Employee");
 
                     b.Navigation("WorkLocation");
+                });
+
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbHolidays", b =>
+                {
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbHolidayType", "HolidayType")
+                        .WithMany("Holidays")
+                        .HasForeignKey("HolidayTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HolidayType");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbJobTitle", b =>
@@ -2141,26 +2483,13 @@ namespace HRsystem.Api.Migrations
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbProject", b =>
                 {
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbCity", "City")
-                        .WithMany("TbProjects")
-                        .HasForeignKey("CityId");
-
                     b.HasOne("HRsystem.Api.Database.DataTables.TbCompany", "Company")
                         .WithMany("TbProjects")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("City");
-
                     b.Navigation("Company");
-                });
-
-            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbRemoteWorkDays", b =>
-                {
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbEmployee", null)
-                        .WithMany("TbRemoteWorkDays")
-                        .HasForeignKey("TbEmployeeEmployeeId");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbShift", b =>
@@ -2176,11 +2505,27 @@ namespace HRsystem.Api.Migrations
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbShiftRule", b =>
                 {
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbCity", "City")
+                        .WithMany()
+                        .HasForeignKey("CityID");
+
                     b.HasOne("HRsystem.Api.Database.DataTables.TbCompany", "Company")
                         .WithMany("TbShiftRules")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbDepartment", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId");
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbGov", "Gov")
+                        .WithMany()
+                        .HasForeignKey("GovID");
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbJobLevel", "JobLevel")
+                        .WithMany()
+                        .HasForeignKey("JobLevelId");
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbJobTitle", "JobTitle")
                         .WithMany("TbShiftRules")
@@ -2197,10 +2542,18 @@ namespace HRsystem.Api.Migrations
                         .IsRequired();
 
                     b.HasOne("HRsystem.Api.Database.DataTables.TbWorkLocation", "WorkingLocation")
-                        .WithMany("TbShiftRules")
+                        .WithMany()
                         .HasForeignKey("WorkingLocationId");
 
+                    b.Navigation("City");
+
                     b.Navigation("Company");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Gov");
+
+                    b.Navigation("JobLevel");
 
                     b.Navigation("JobTitle");
 
@@ -2222,11 +2575,57 @@ namespace HRsystem.Api.Migrations
                     b.Navigation("VacationType");
                 });
 
-            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkDays", b =>
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkDaysRule", b =>
                 {
-                    b.HasOne("HRsystem.Api.Database.DataTables.TbEmployee", null)
-                        .WithMany("TbWorkDays")
-                        .HasForeignKey("TbEmployeeEmployeeId");
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbCity", "City")
+                        .WithMany()
+                        .HasForeignKey("CityID");
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbDepartment", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId");
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbGov", "Gov")
+                        .WithMany()
+                        .HasForeignKey("GovID");
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbJobLevel", "JobLevel")
+                        .WithMany()
+                        .HasForeignKey("JobLevelId");
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbJobTitle", "JobTitle")
+                        .WithMany()
+                        .HasForeignKey("JobTitleId");
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbProject", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbWorkDays", "WorkDays")
+                        .WithMany()
+                        .HasForeignKey("WorkDaysId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbWorkLocation", "WorkingLocation")
+                        .WithMany()
+                        .HasForeignKey("WorkingLocationId");
+
+                    b.Navigation("City");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Gov");
+
+                    b.Navigation("JobLevel");
+
+                    b.Navigation("JobTitle");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("WorkDays");
+
+                    b.Navigation("WorkingLocation");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkLocation", b =>
@@ -2241,9 +2640,21 @@ namespace HRsystem.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbJobTitle", "JobTitle")
+                        .WithMany()
+                        .HasForeignKey("JobTitleId");
+
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbWorkLocation", "WorkingLocation")
+                        .WithMany()
+                        .HasForeignKey("WorkingLocationWorkLocationId");
+
                     b.Navigation("City");
 
                     b.Navigation("Company");
+
+                    b.Navigation("JobTitle");
+
+                    b.Navigation("WorkingLocation");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.Entities.AspRolePermissions", b =>
@@ -2330,8 +2741,6 @@ namespace HRsystem.Api.Migrations
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbCity", b =>
                 {
-                    b.Navigation("TbProjects");
-
                     b.Navigation("TbWorkLocations");
                 });
 
@@ -2384,10 +2793,6 @@ namespace HRsystem.Api.Migrations
                     b.Navigation("TbEmployeeVacationBalances");
 
                     b.Navigation("TbEmployeeWorkLocations");
-
-                    b.Navigation("TbRemoteWorkDays");
-
-                    b.Navigation("TbWorkDays");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeActivity", b =>
@@ -2416,6 +2821,11 @@ namespace HRsystem.Api.Migrations
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbGroup", b =>
                 {
                     b.Navigation("TbCompanies");
+                });
+
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbHolidayType", b =>
+                {
+                    b.Navigation("Holidays");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbJobLevel", b =>
@@ -2451,13 +2861,6 @@ namespace HRsystem.Api.Migrations
                     b.Navigation("TbEmployeeVacations");
 
                     b.Navigation("TbVacationRules");
-                });
-
-            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbWorkLocation", b =>
-                {
-                    b.Navigation("TbEmployeeWorkLocations");
-
-                    b.Navigation("TbShiftRules");
                 });
 #pragma warning restore 612, 618
         }

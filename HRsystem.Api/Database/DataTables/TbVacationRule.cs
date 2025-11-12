@@ -14,7 +14,7 @@ public partial class TbVacationRule
     public int RuleId { get; set; }
 
     [MaxLength(100)]
-    public string RuleName { get; set; }
+    public string? VacationRuleName { get; set; }
 
     public int VacationTypeId { get; set; }
 

@@ -1448,6 +1448,10 @@ namespace HRsystem.Api.Migrations
                     b.Property<int>("ShiftId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ShiftRuleName")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -1514,8 +1518,7 @@ namespace HRsystem.Api.Migrations
                         .IsRequired()
                         .HasColumnType("ENUM('All','Muslim','Christian')");
 
-                    b.Property<string>("RuleName")
-                        .IsRequired()
+                    b.Property<string>("VacationRuleName")
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
@@ -1627,6 +1630,10 @@ namespace HRsystem.Api.Migrations
 
                     b.Property<int>("WorkDaysId")
                         .HasColumnType("int");
+
+                    b.Property<string>("WorkDaysRuleName")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int?>("WorkingLocationId")
                         .HasColumnType("int");
@@ -1875,7 +1882,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 11, 11, 12, 8, 29, 592, DateTimeKind.Local).AddTicks(8054),
+                            CreatedAt = new DateTime(2025, 11, 12, 10, 5, 44, 635, DateTimeKind.Local).AddTicks(4182),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -1883,7 +1890,7 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2025, 11, 11, 12, 8, 29, 593, DateTimeKind.Local).AddTicks(1482),
+                            LastPasswordChangedAt = new DateTime(2025, 11, 12, 10, 5, 44, 635, DateTimeKind.Local).AddTicks(8403),
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
@@ -1892,7 +1899,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("74e5ca98-de9f-47e8-bd48-432710640da3"),
+                            RowGuid = new Guid("23a1807c-d886-4d08-9a88-927c3b0cd04a"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",

@@ -9,6 +9,9 @@ namespace HRsystem.Api.Database.DataTables
         [Key]
         public int WorkDaysRuleId { get; set; }
 
+        [MaxLength(100)]
+        public string? WorkDaysRuleName { get; set; } = string.Empty;
+
         public int? GovID { get; set; }
         public int? CityID { get; set; }
 
