@@ -8,6 +8,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.CreateVacationRule
 {
     public record CreateVacationRuleCommand(
         int VacationTypeId,
+        int CompanyId,
         string? VacationRuleName,
         int? MinAge,
         int? MaxAge,
@@ -29,6 +30,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.CreateVacationRule
             var entity = new TbVacationRule
             {
                 VacationTypeId = request.VacationTypeId,
+                CompanyId = request.CompanyId,
                 VacationRuleName = request.VacationRuleName,
                 MinAge = request.MinAge,
                 MaxAge = request.MaxAge,

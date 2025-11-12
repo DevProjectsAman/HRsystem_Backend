@@ -15,7 +15,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule
 {
 
     public record GetVacationByMatchingRulesQueury(
-     //int RuleId,
+     int CompanyId,
       int? MinAge,
       int? MaxAge,
       //int VacationTypeId,
@@ -31,6 +31,8 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule
 
     public record VacationRuleDto(
       int RuleId,
+      string? VacationRuleName,
+      int CompanyId,
       int? MinAge,
       int? MaxAge,
       int VacationTypeId,
@@ -182,6 +184,8 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule
 
             return rules.Select(r => new VacationRuleDto(
                 r.RuleId,
+                r.VacationRuleName,
+                r.CompanyId,
                 r.MinAge,
                 r.MaxAge,
                 r.VacationTypeId,

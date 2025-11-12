@@ -12,6 +12,8 @@ public partial class TbVacationRule
 {
     [Key]
     public int RuleId { get; set; }
+    [Required]
+    public int CompanyId { get; set; }
 
     [MaxLength(100)]
     public string? VacationRuleName { get; set; }
