@@ -8,6 +8,8 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.CreateVacationRule
 {
     public record CreateVacationRuleCommand(
         int VacationTypeId,
+        int CompanyId,
+        string? VacationRuleName,
         int? MinAge,
         int? MaxAge,
         int? MinServiceYears,
@@ -15,8 +17,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.CreateVacationRule
         EnumGenderType Gender,
         EnumReligionType Religion,
         int YearlyBalance,
-        bool? Prorate,
-        string RuleName
+        bool? Prorate 
     ) : IRequest<TbVacationRule>;
 
     public class CreateVacationRuleHandler : IRequestHandler<CreateVacationRuleCommand, TbVacationRule>
@@ -29,6 +30,8 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.CreateVacationRule
             var entity = new TbVacationRule
             {
                 VacationTypeId = request.VacationTypeId,
+                CompanyId = request.CompanyId,
+                VacationRuleName = request.VacationRuleName,
                 MinAge = request.MinAge,
                 MaxAge = request.MaxAge,
                 MinServiceYears = request.MinServiceYears,
@@ -37,7 +40,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.CreateVacationRule
                 Religion = request.Religion,
                 YearlyBalance = request.YearlyBalance,
                 Prorate = request.Prorate,
-                RuleName = request.RuleName
+                
             };
 
             _db.TbVacationRules.Add(entity);
@@ -80,9 +83,9 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.CreateVacationRule
             RuleFor(x => x.YearlyBalance)
                 .GreaterThanOrEqualTo(0).WithMessage("YearlyBalance must be >= 0");
 
-            RuleFor(x => x.RuleName)
-                .NotEmpty().WithMessage("RuleName is required")
-                .MaximumLength(100).WithMessage("RuleName must not exceed 100 characters");
+            RuleFor(x => x.VacationRuleName)
+                .NotEmpty().WithMessage("VacationRuleName is required")
+                .MaximumLength(100).WithMessage("VacationRuleName must not exceed 100 characters");
         }
     }
 }

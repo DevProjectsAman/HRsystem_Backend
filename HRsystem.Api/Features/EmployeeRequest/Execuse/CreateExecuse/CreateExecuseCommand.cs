@@ -108,7 +108,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
             //    .WithMessage("StatusId must be greater than 0");
 
             RuleFor(x => x.ExcuseDate)
-                    .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
+                    .GreaterThanOrEqualTo(DateTime.Now.Date)
                     .WithMessage("ExcuseDate cannot be in the past");
 
             RuleFor(x => x.StartTime)

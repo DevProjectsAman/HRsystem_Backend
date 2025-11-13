@@ -119,7 +119,7 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
                 PermissionCatagory = request.PermissionCatagory,
                 PermissionName = request.PermissionName,
                 PermissionDescription = request.PermissionDescription,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 CreatedBy = userService.UserId
             };
 

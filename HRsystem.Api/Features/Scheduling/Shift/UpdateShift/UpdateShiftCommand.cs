@@ -42,7 +42,7 @@ namespace HRsystem.Api.Features.Scheduling.Shift.UpdateShift
             shift.RequiredWorkingHours = request.RequiredWorkingHours;
             shift.Notes = request.Notes;
             shift.CompanyId = request.CompanyId;
-            shift.UpdatedAt = DateTime.UtcNow;
+            shift.UpdatedAt = DateTime.Now;
 
             await _db.SaveChangesAsync(ct);
             return true;

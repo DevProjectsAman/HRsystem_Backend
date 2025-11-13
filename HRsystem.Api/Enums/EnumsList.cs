@@ -11,9 +11,9 @@
         }
         public enum EnumReligionType
         {
-            All = 1,
-            Muslim = 2,
-            Christian = 3
+            Muslim = 1,
+            Christian = 2,
+            All = 3
         }
 
     }

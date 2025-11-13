@@ -1480,7 +1480,7 @@ namespace HRsystem.Api.Migrations
                         .IsRequired()
                         .HasColumnType("ENUM('All','Muslim','Christian')");
 
-                    b.Property<string>("RuleName")
+                    b.Property<string>("VacationRuleName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");

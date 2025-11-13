@@ -41,7 +41,7 @@ namespace HRsystem.Api.Features.Organization.Department.UpdateDepartment
             entity.DepartmentName = request.DepartmentName;
             entity.DepartmentCode = request.DepartmentCode;
             entity.CompanyId = request.CompanyId;
-            entity.UpdatedAt = DateTime.UtcNow;
+            entity.UpdatedAt = DateTime.Now;
             entity.UpdatedBy = _currentUserService.UserId;
 
             await _db.SaveChangesAsync(ct);

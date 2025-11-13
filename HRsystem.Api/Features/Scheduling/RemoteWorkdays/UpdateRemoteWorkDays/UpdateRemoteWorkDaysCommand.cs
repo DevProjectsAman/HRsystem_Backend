@@ -17,7 +17,7 @@ namespace HRsystem.Api.Features.Scheduling.RemoteWorkdays.UpdateRemoteWorkDays
             if (entity == null) return false;
 
             entity.RemoteWorkDaysNames = request.RemoteWorkDaysNames;
-            entity.CreatedAt = DateTime.UtcNow;
+            entity.CreatedAt = DateTime.Now;
 
             _db.TbRemoteWorkDays.Update(entity);
             await _db.SaveChangesAsync(ct);

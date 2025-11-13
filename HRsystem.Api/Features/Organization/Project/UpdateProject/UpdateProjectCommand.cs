@@ -42,7 +42,7 @@ namespace HRsystem.Api.Features.Organization.Project.UpdateProject
             //entity.WorkLocationId = request.WorkLocationId;
             entity.CompanyId = request.CompanyId;
             entity.UpdatedBy = request.UpdatedBy;
-            entity.UpdatedAt = DateTime.UtcNow;
+            entity.UpdatedAt = DateTime.Now;
 
             await db.SaveChangesAsync(ct);
 

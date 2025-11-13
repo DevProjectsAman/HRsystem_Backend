@@ -60,7 +60,7 @@ namespace HRsystem.Api.Database.DataSeeder
                     IsToChangePassword = false,
                     ForceLogout = false,
 
-                    LastPasswordChangedAt = DateTime.UtcNow,
+                    LastPasswordChangedAt = DateTime.Now,
                     LastLoginAt = null, // first login not happened yet
                     LastFailedLoginAt = null,
                     FailedLoginCount = 0,
