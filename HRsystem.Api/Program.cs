@@ -34,6 +34,7 @@ using HRsystem.Api.Features.Scheduling.Shift;
 using HRsystem.Api.Features.Scheduling.ShiftRule;
 using HRsystem.Api.Features.Scheduling.VacationRule;
 using HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule;
+using HRsystem.Api.Features.Scheduling.VacationRulesGroup;
 using HRsystem.Api.Features.ShiftEndpoints;
 using HRsystem.Api.Features.SystemAdmin.RolePermission;
 using HRsystem.Api.Features.WorkDaysRules;
@@ -315,6 +316,7 @@ app.MapEmployeeActivityApprovalEndpoints();
 
 app.MapAspRoleEndpoints();
 
+app.MapVacationRulesGroupEndpoints();
 
 app.MapEmployeeVacationsEndPoints();
 app.MapPendingActivitiesEndPoints();

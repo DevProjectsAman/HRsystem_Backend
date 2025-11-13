@@ -20,12 +20,14 @@ public class GlobalExceptionMiddleware
         }
         catch (ValidationException ex)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            var statusCode = HttpStatusCode.BadRequest; // ✨ NEW variable
+            context.Response.StatusCode = (int)statusCode;
             context.Response.ContentType = "application/json";
 
             var response = new ResponseResultDTO
             {
                 Success = false,
+                StatusCode = (int)statusCode, // ✨ NEW
                 Message = "Validation failed",
                 Errors = new List<ResponseErrorDTO>
                 {
@@ -36,7 +38,54 @@ public class GlobalExceptionMiddleware
                     }
                 }
             };
-                       
+
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        }
+        // ✨ NEW - Handle Unauthorized (401)
+        catch (UnauthorizedAccessException ex)
+        {
+            var statusCode = HttpStatusCode.Unauthorized;
+            context.Response.StatusCode = (int)statusCode;
+            context.Response.ContentType = "application/json";
+
+            var response = new ResponseResultDTO
+            {
+                Success = false,
+                StatusCode = (int)statusCode,
+                Message = "Unauthorized access",
+                Errors = new List<ResponseErrorDTO>
+                {
+                    new ResponseErrorDTO
+                    {
+                        Property = string.Empty,
+                        Error = ex.Message
+                    }
+                }
+            };
+
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        }
+        // ✨ NEW - Handle Not Found (404)
+        catch (KeyNotFoundException ex)
+        {
+            var statusCode = HttpStatusCode.NotFound;
+            context.Response.StatusCode = (int)statusCode;
+            context.Response.ContentType = "application/json";
+
+            var response = new ResponseResultDTO
+            {
+                Success = false,
+                StatusCode = (int)statusCode,
+                Message = "Resource not found",
+                Errors = new List<ResponseErrorDTO>
+                {
+                    new ResponseErrorDTO
+                    {
+                        Property = string.Empty,
+                        Error = ex.Message
+                    }
+                }
+            };
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
@@ -44,19 +93,35 @@ public class GlobalExceptionMiddleware
         {
             Console.WriteLine($"🔥 Unhandled exception: {ex}");
 
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            context.Response.ContentType = "application/json";
-
+            var statusCode = HttpStatusCode.InternalServerError; // ✨ NEW variable
             string friendlyMessage = "An unexpected error occurred.";
 
+            // Handle database-specific exceptions
             if (ex is Microsoft.EntityFrameworkCore.DbUpdateException dbUpdateEx && dbUpdateEx.InnerException != null)
             {
-                friendlyMessage = GetFriendlyMessage(dbUpdateEx.InnerException.Message);
+                var dbMessage = dbUpdateEx.InnerException.Message;
+                friendlyMessage = GetFriendlyMessage(dbMessage);
+
+                // ✨ NEW - Check constraint type and set appropriate status code
+                // Check if it's a foreign key constraint violation
+                if (dbMessage.Contains("FOREIGN KEY constraint fails", StringComparison.OrdinalIgnoreCase))
+                {
+                    statusCode = HttpStatusCode.Conflict; // 409
+                }
+                // Check if it's a duplicate entry
+                else if (dbMessage.Contains("Duplicate entry", StringComparison.OrdinalIgnoreCase))
+                {
+                    statusCode = HttpStatusCode.Conflict; // 409
+                }
             }
+
+            context.Response.StatusCode = (int)statusCode;
+            context.Response.ContentType = "application/json";
 
             var response = new ResponseResultDTO
             {
                 Success = false,
+                StatusCode = (int)statusCode, // ✨ NEW
                 Message = friendlyMessage,
                 Errors = new List<ResponseErrorDTO>
                 {

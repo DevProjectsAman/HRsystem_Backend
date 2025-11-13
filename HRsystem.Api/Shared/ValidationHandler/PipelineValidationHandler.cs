@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using System.Net; // ✨ NEW using
 
 namespace HRsystem.Api.Shared.ValidationHandler;
 
@@ -48,6 +49,7 @@ public class PipelineValidationHandler<TRequest, TResponse>
                     var errorResult = Activator.CreateInstance(errorResultType);
 
                     errorResultType.GetProperty("Success")?.SetValue(errorResult, false);
+                    errorResultType.GetProperty("StatusCode")?.SetValue(errorResult, (int)HttpStatusCode.BadRequest); // ✨ NEW
                     errorResultType.GetProperty("Message")?.SetValue(errorResult, string.Join(" | ", errorMessages));
                     errorResultType.GetProperty("Errors")?.SetValue(errorResult, errorDetails);
                     errorResultType.GetProperty("Data")?.SetValue(errorResult, default);
@@ -60,6 +62,7 @@ public class PipelineValidationHandler<TRequest, TResponse>
                     var errorResult = new ResponseResultDTO
                     {
                         Success = false,
+                        StatusCode = (int)HttpStatusCode.BadRequest, // ✨ NEW
                         Message = string.Join(" | ", errorMessages),
                         Errors = errorDetails
                     };
