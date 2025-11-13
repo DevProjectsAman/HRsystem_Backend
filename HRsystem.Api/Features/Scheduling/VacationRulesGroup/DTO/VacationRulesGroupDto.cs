@@ -16,7 +16,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRulesGroup.DTO
         public int? WorkingYearsAtCompany { get; set; }
 
         // List of vacation-type rules
-        public List<VacationRulesGroupDetailDto> Details { get; set; } = new();
+        public List<VacationRulesGroupDetailDto> VacationRuleDetails { get; set; } = new();
     }
 
     public class VacationRulesGroupDetailDto
