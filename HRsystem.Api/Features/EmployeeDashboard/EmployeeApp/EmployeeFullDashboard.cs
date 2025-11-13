@@ -5,9 +5,21 @@ using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.ExceptionHandling;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 {
+    public class CheckHistoryDto
+    {
+        public DateTime PunchDate { get; set; }
+
+        public statues AttStatues { get; set; } // for know if ontime or late
+
+        public DateTime? PunchTime { get; set; }
+
+        [MaxLength(25)]
+        public string PunchType { get; set; }
+    }
     public record EmployeeFullDashboardQuery() : IRequest<EmployeeFullDashboardDto>;
 
     public class EmployeeFullDashboardDto
@@ -23,6 +35,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
         // 📊 Activities Status
         public ActivitiesStatusCountDto ActivityStatus { get; set; }
 
+
+        public CheckHistoryDto  CheckHistory { get; set; }
         // 👨‍💼 Manager Info (if user manages others)
         public bool IsManager { get; set; }
         public RequestStatusesOfManagerDto? ManagerRequestsStatus { get; set; }
@@ -136,6 +150,25 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                 };
             }
 
+
+            var today = DateTime.Now.Date;
+            var activity = await _db.TbEmployeeActivities
+                .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today && a.ActivityTypeId == 1, ct);
+
+            var attendance = await _db.TbEmployeeAttendances
+                    .FirstOrDefaultAsync(a => a.ActivityId == activity.ActivityId && a.AttendanceDate == today, ct);
+            var checkhistory = new CheckHistoryDto
+            {
+                AttStatues = attendance.AttStatues ,
+                PunchDate = attendance.AttendanceDate,
+            };
+            var lastPunch = await _db.TbEmployeeAttendancePunches
+                .Where(p => p.AttendanceId == attendance.AttendanceId)
+                .OrderByDescending(p => p.PunchTime)
+                .FirstOrDefaultAsync(ct);
+            checkhistory.PunchTime = lastPunch?.PunchTime;
+            checkhistory.PunchType = lastPunch?.PunchType;
+
             // ✅ Final DTO
             return new EmployeeFullDashboardDto
             {
@@ -145,7 +178,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                 CasualBalance = casualBalanceDto,
                 ActivityStatus = activityDto,
                 IsManager = isManager,
-                ManagerRequestsStatus = managerRequests
+                ManagerRequestsStatus = managerRequests,
+                CheckHistory= checkhistory
             };
         }
     }

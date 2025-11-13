@@ -75,7 +75,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 
             var today = DateTime.Now.Date;
             var activity = await _db.TbEmployeeActivities
-                .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today, ct);
+                .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today && a.ActivityTypeId == 1, ct);
 
             if (activity == null)
             {
@@ -213,7 +213,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             var now = DateTime.Now;
 
             var activity = await _db.TbEmployeeActivities
-                .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today, ct);
+                .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today && a.ActivityTypeId == 1, ct);
 
             if (activity == null)
             {
@@ -231,7 +231,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             }
 
             var attendance = await _db.TbEmployeeAttendances
-                .FirstOrDefaultAsync(a => a.ActivityId == activity.ActivityId && a.AttendanceDate == today, ct);
+                .FirstOrDefaultAsync(a => a.ActivityId == activity.ActivityId && a.AttendanceDate == today , ct);
 
             if (attendance == null)
             {

@@ -56,6 +56,39 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 
                 return Results.Ok(new { Success = true, Data = result });
             });
+
+            group.MapGet("/GetEmployeeCheckInLog", async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetEmployeeCheckInLogQueury());
+                if (result == null)
+                    return Results.NotFound(new { Success = false, Message = "No Employee data found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+            group.MapGet("/GetEmployeeCheckOutLog", async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetEmployeeCheckOutLogQueury());
+                if (result == null)
+                    return Results.NotFound(new { Success = false, Message = "No Employee data found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+            group.MapGet("/GetEmployeeTotalWorkingHours", async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetEmployeeTotalWorkingHoursQueury());
+                if (result == null)
+                    return Results.NotFound(new { Success = false, Message = "No Employee data found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+            group.MapGet("/EmployeeGetShift", async (ISender mediator, [FromQuery] TimeOnly time) =>
+            {
+                var result = await mediator.Send(new EmployeeGetShiftQueury(time));
+                if (result == null)
+                    return Results.NotFound(new { Success = false, Message = "No Employee data found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
         }
     }
 }
