@@ -21,6 +21,8 @@ using HRsystem.Api.Features.Holiday;
 using HRsystem.Api.Features.HolidayType;
 using HRsystem.Api.Features.Lookups.ActivityStatus;
 using HRsystem.Api.Features.Lookups.ActivityTypeStatus;
+using HRsystem.Api.Features.Lookups.GeneralLookups;
+using HRsystem.Api.Features.Lookups.MaretialStatus;
 using HRsystem.Api.Features.Mission;
 using HRsystem.Api.Features.Organization.Company;
 using HRsystem.Api.Features.Organization.Department;
@@ -321,6 +323,11 @@ app.MapVacationRulesGroupEndpoints();
 app.MapEmployeeVacationsEndPoints();
 app.MapPendingActivitiesEndPoints();
 app.MapPendingStatuesForManager();
+
+app.MapMaritalStatusEndpoints();
+app.MapGetAllNationalitiesEndpoint();
+
+
 
 app.MapRemoteWorkDaysEndpoints();
 

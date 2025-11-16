@@ -57,8 +57,7 @@
 
 using HRsystem.Api.Features.Employee.Commands;
 using HRsystem.Api.Features.Employee.DTO;
-//using HRsystem.Api.Features.Employee.UpdateEmployee;
-using HRsystem.Api.Features.Employee.Commands;
+ 
 using MediatR;
 
 namespace HRsystem.Api.Features.Employee
