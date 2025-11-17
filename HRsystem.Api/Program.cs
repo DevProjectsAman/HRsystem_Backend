@@ -21,6 +21,8 @@ using HRsystem.Api.Features.Holiday;
 using HRsystem.Api.Features.HolidayType;
 using HRsystem.Api.Features.Lookups.ActivityStatus;
 using HRsystem.Api.Features.Lookups.ActivityTypeStatus;
+using HRsystem.Api.Features.Lookups.GeneralLookups;
+using HRsystem.Api.Features.Lookups.MaretialStatus;
 using HRsystem.Api.Features.Mission;
 using HRsystem.Api.Features.Organization.Company;
 using HRsystem.Api.Features.Organization.Department;
@@ -33,6 +35,8 @@ using HRsystem.Api.Features.Scheduling.RemoteWorkdays;
 using HRsystem.Api.Features.Scheduling.Shift;
 using HRsystem.Api.Features.Scheduling.ShiftRule;
 using HRsystem.Api.Features.Scheduling.VacationRule;
+using HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule;
+using HRsystem.Api.Features.Scheduling.VacationRulesGroup;
 using HRsystem.Api.Features.ShiftEndpoints;
 using HRsystem.Api.Features.SystemAdmin.RolePermission;
 using HRsystem.Api.Features.WorkDaysRules;
@@ -186,8 +190,16 @@ builder.Services.AddMediatR(cfg =>
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
+// Configure FluentValidation globally - affects ALL validators
+ValidatorOptions.Global.DefaultClassLevelCascadeMode = CascadeMode.Continue;
+ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Continue;
+
+
+
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PipelineValidationHandler<,>));
 
+
+ 
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -306,10 +318,16 @@ app.MapEmployeeActivityApprovalEndpoints();
 
 app.MapAspRoleEndpoints();
 
+app.MapVacationRulesGroupEndpoints();
 
 app.MapEmployeeVacationsEndPoints();
 app.MapPendingActivitiesEndPoints();
 app.MapPendingStatuesForManager();
+
+app.MapMaritalStatusEndpoints();
+app.MapGetAllNationalitiesEndpoint();
+
+
 
 app.MapRemoteWorkDaysEndpoints();
 

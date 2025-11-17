@@ -31,9 +31,9 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule
             });
 
             // Get all
-            group.MapGet("/Listofvacationrules", async (ISender mediator) =>
+            group.MapGet("/Listofvacationrules/{CompanyID}", async (int CompanyID,ISender mediator) =>
             {
-                var result = await mediator.Send(new GetAllVacationRulesQuery());
+                var result = await mediator.Send(new GetAllVacationRulesQuery(CompanyID));
                 return Results.Ok(new { Success = true, Data = result });
             });
 

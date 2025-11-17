@@ -91,6 +91,10 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
     public DbSet<TbHolidays> TbHolidays { get; set; }
     public DbSet<TbHolidayType> TbHolidayTypes { get; set; }
     public DbSet<TbActivityStatusWorkflow> TbActivityStatusWorkflow { get; set; }
+    public DbSet<TbVacationRulesGroup> TbVacationRulesGroups { get; set; }
+    public DbSet<TbVacationRulesGroupDetail> TbVacationRulesGroupDetails { get; set; }
+
+    public DbSet<TbMaritalStatus> TbMaritalStatuses { get; set; }
 
 
 

@@ -189,7 +189,7 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
             {
                 RoleId = request.RoleId,
                 PermissionId = request.PermissionId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 CreatedBy = userService.UserId
             };
 
@@ -250,7 +250,7 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
                 {
                     RoleId = roleId,
                     PermissionId = pid,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.Now,
                     CreatedBy = userService.UserId
                 });
             }

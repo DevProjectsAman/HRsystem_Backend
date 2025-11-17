@@ -20,6 +20,7 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
 
       public record ShiftRuleDto(
         int RuleId,
+        string? ShiftRuleName,
         int? GovId,
         int? CityId,
         int? JobLevelId,
@@ -96,6 +97,7 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
 
             var result = rules.Select(r => new ShiftRuleDto(
                 r.RuleId,
+                r.ShiftRuleName,
                 r.GovID,
                 r.CityID,
                 r.JobTitleId,

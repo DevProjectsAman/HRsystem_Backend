@@ -128,7 +128,7 @@ namespace HRsystem.Api.Migrations
                 .OldAnnotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.AddColumn<string>(
-                name: "RuleName",
+                name: "VacationRuleName",
                 table: "Tb_Vacation_Rule",
                 type: "varchar(100)",
                 maxLength: 100,
@@ -798,7 +798,7 @@ namespace HRsystem.Api.Migrations
                 table: "Tb_Employee");
 
             migrationBuilder.DropColumn(
-                name: "RuleName",
+                name: "VacationRuleName",
                 table: "Tb_Vacation_Rule");
 
             migrationBuilder.DropColumn(

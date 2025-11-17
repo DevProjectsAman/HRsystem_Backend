@@ -75,7 +75,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 
             var today = DateTime.Now.Date;
             var activity = await _db.TbEmployeeActivities
-                .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today, ct);
+                .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today && a.ActivityTypeId == 1, ct);
 
             if (activity == null)
             {
@@ -213,7 +213,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             var now = DateTime.Now;
 
             var activity = await _db.TbEmployeeActivities
-                .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today, ct);
+                .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today && a.ActivityTypeId == 1, ct);
 
             if (activity == null)
             {
@@ -231,7 +231,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             }
 
             var attendance = await _db.TbEmployeeAttendances
-                .FirstOrDefaultAsync(a => a.ActivityId == activity.ActivityId && a.AttendanceDate == today, ct);
+                .FirstOrDefaultAsync(a => a.ActivityId == activity.ActivityId && a.AttendanceDate == today , ct);
 
             if (attendance == null)
             {
@@ -369,7 +369,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 
     //        public async Task<long> Handle(PunchInCommand request, CancellationToken ct)
     //        {
-    //            var now = DateTime.UtcNow;
+    //            var now = DateTime.Now;
 
     //            // 1️⃣ Check WorkLocation
     //            var locations = await _db.TbWorkLocations.ToListAsync(ct);
@@ -417,7 +417,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 
     //        public async Task<long> Handle(PunchOutCommand request, CancellationToken ct)
     //        {
-    //            var now = DateTime.UtcNow;
+    //            var now = DateTime.Now;
 
     //            // 1️⃣ Check WorkLocation
     //            var locations = await _db.TbWorkLocations.ToListAsync(ct);
@@ -485,7 +485,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 
 //    public async Task<EmployeeAttendanceDto> Handle(PunchInCommand request, CancellationToken ct)
 //    {
-//        var today = DateTime.UtcNow.Date;
+//        var today = DateTime.Now.Date;
 
 //        // 1️⃣ تحقق من وجود Activity اليوم
 //        var activity = await _db.TbEmployeeActivities
@@ -496,7 +496,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 //            activity = new TbEmployeeActivity
 //            {
 //                EmployeeId = request.EmployeeId,
-//                RequestDate = DateTime.UtcNow
+//                RequestDate = DateTime.Now
 //            };
 //            _db.TbEmployeeActivities.Add(activity);
 //            await _db.SaveChangesAsync(ct);
@@ -512,7 +512,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 //            {
 //                EmployeeId = request.EmployeeId,
 //                ActivityId = activity.ActivityId,
-//                FirstPunchIn = DateTime.UtcNow,
+//                FirstPunchIn = DateTime.Now,
 //                StatusId = 1
 //            };
 //            _db.TbEmployeeAttendances.Add(attendance);
@@ -523,7 +523,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 //        var log = new TbAttendanceLog
 //        {
 //            AttendanceId = attendance.AttendanceId,
-//            PunchTime = DateTime.UtcNow,
+//            PunchTime = DateTime.Now,
 //            Type = "In"
 //        };
 //        _db.TbAttendanceLogs.Add(log);

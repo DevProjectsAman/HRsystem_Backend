@@ -12,9 +12,11 @@ public partial class TbVacationRule
 {
     [Key]
     public int RuleId { get; set; }
+    [Required]
+    public int CompanyId { get; set; }
 
     [MaxLength(100)]
-    public string RuleName { get; set; }
+    public string? VacationRuleName { get; set; }
 
     public int VacationTypeId { get; set; }
 

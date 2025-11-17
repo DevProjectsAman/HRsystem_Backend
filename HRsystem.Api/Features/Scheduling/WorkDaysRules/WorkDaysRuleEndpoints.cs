@@ -11,9 +11,9 @@ namespace HRsystem.Api.Features.WorkDaysRules
             var group = app.MapGroup("/api/Scheduling/workdaysrules").WithTags("WorkDaysRules");
 
             // Get All
-            group.MapGet("/GetListOfWorkDaysRule", async (ISender mediator) =>
+            group.MapGet("/GetListOfWorkDaysRule/{CompanyId}", async (ISender mediator,int CompanyId) =>
             {
-                var result = await mediator.Send(new GetAllWorkDaysRulesQuery());
+                var result = await mediator.Send(new GetAllWorkDaysRulesQuery(CompanyId));
                 return Results.Ok(new { Success = true, Data = result });
             });
 
@@ -34,14 +34,13 @@ namespace HRsystem.Api.Features.WorkDaysRules
             });
 
             // Update
-            group.MapPut("/UpdateOneOfWorkDaysRule/{id}", async (int id, UpdateWorkDaysRuleCommand cmd, ISender mediator) =>
+            group.MapPut("/UpdateOneOfWorkDaysRule", async ( UpdateWorkDaysRuleCommand cmd, ISender mediator) =>
             {
-                if (id != cmd.WorkDaysRuleId)
-                    return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
+                 
 
                 var result = await mediator.Send(cmd);
                 return result == null
-                    ? Results.NotFound(new { Success = false, Message = $"WorkDaysRule {id} not found" })
+                    ? Results.NotFound(new { Success = false, Message = $"WorkDaysRule {cmd.WorkDaysRuleId} not found" })
                     : Results.Ok(new { Success = true, Data = result });
             });
 

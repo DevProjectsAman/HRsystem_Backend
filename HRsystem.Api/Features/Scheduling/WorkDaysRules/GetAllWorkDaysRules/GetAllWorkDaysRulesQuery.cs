@@ -1,5 +1,6 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
+using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,49 +9,70 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
     public class WorkDaysRuleDto
     {
         public int WorkDaysRuleId { get; set; }
+        public string? WorkDaysRuleName { get; set; }
         public int? GovID { get; set; }
+        public string? GovName { get; set; }
         public int? CityID { get; set; }
+        public string? CityName { get; set; }
         public int? JobTitleId { get; set; }
+        public string? JobTitleName { get; set; }
+
         public int? WorkingLocationId { get; set; }
+        public string? WorkingLocationName { get; set; }
+
         public int? ProjectId { get; set; }
+        public string? ProjectName { get; set; }
         public int WorkDaysId { get; set; }
+        public string? WorkDaysName { get; set; }
+
         public int? Priority { get; set; }
         public int CompanyId { get; set; }
-        public int? CreatedBy { get; set; }
+        public int? DepartmentId { get; set; }
+        public string? DepartmentName { get; set; }
+
+        public int? JobLevelId { get; set; }
+        public string? JobLevelName { get; set; }
+
         public DateTime? CreatedAt { get; set; }
     }
 
     // Get All
-    public record GetAllWorkDaysRulesQuery() : IRequest<List<WorkDaysRuleDto>>;
+    public record GetAllWorkDaysRulesQuery(int CompanyId) : IRequest<List<WorkDaysRuleDto>>;
 
     // Get One
     public record GetWorkDaysRuleByIdQuery(int Id) : IRequest<WorkDaysRuleDto?>;
 
     // Create
     public record CreateWorkDaysRuleCommand(
+        string? WorkDaysRuleName,
         int? GovID,
         int? CityID,
+        int? JobLevelId,
         int? JobTitleId,
         int? WorkingLocationId,
         int? ProjectId,
         int WorkDaysId,
         int? Priority,
-        int CompanyId,
-        int? CreatedBy
+         int? Department,
+        int CompanyId
+      
     ) : IRequest<WorkDaysRuleDto>;
 
     // Update
     public record UpdateWorkDaysRuleCommand(
         int WorkDaysRuleId,
+        string? WorkDaysRuleName,
         int? GovID,
         int? CityID,
+         int? JobLevelId,
         int? JobTitleId,
         int? WorkingLocationId,
         int? ProjectId,
         int WorkDaysId,
         int? Priority,
-        int CompanyId,
-        int? CreatedBy
+        int? Department,
+        int CompanyId
+        
     ) : IRequest<WorkDaysRuleDto?>;
 
     // Delete
@@ -66,19 +88,41 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
         public async Task<List<WorkDaysRuleDto>> Handle(GetAllWorkDaysRulesQuery request, CancellationToken ct)
         {
             return await _db.TbWorkDaysRules
+                .Include(r => r.WorkingLocation)
+                .Include(r => r.Project)
+                .Include(r => r.JobLevel)
+                .Include(r => r.JobTitle)
+                .Include(r => r.Gov)
+                .Include(r => r.City)
+                .Include(r => r.Department)
+                .Include(r => r.WorkDays)
+                 .OrderBy(r => r.WorkDaysRuleId)   // ✅ Sort here in SQL
+
                 .Select(r => new WorkDaysRuleDto
                 {
                     WorkDaysRuleId = r.WorkDaysRuleId,
+                    WorkDaysRuleName = r.WorkDaysRuleName,
                     GovID = r.GovID,
+                    GovName = r.Gov.GovName,
                     CityID = r.CityID,
+                    CityName = r.City.CityName,
                     JobTitleId = r.JobTitleId,
+                    JobTitleName = r.JobTitle.TitleName.ar,
                     WorkingLocationId = r.WorkingLocationId,
+                    WorkingLocationName = r.WorkingLocation.LocationName.ar,
                     ProjectId = r.ProjectId,
+                    ProjectName = r.Project.ProjectName.ar,
                     WorkDaysId = r.WorkDaysId,
+                    WorkDaysName =                     string.Join(", ", r.WorkDays.WorkDaysNames),
                     Priority = r.Priority,
                     CompanyId = r.CompanyId,
                     CreatedAt = r.CreatedAt,
-                    CreatedBy = r.CreatedBy
+                    DepartmentId = r.DepartmentId,
+                    DepartmentName = r.Department.DepartmentName.ar,
+                    JobLevelId = r.JobLevelId,
+                    JobLevelName = r.JobLevel.JobLevelDesc
+
+
                 })
                 .ToListAsync(ct);
         }
@@ -98,6 +142,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
                 .Select(r => new WorkDaysRuleDto
                 {
                     WorkDaysRuleId = r.WorkDaysRuleId,
+                    WorkDaysRuleName = r.WorkDaysRuleName,
                     GovID = r.GovID,
                     CityID = r.CityID,
                     JobTitleId = r.JobTitleId,
@@ -107,7 +152,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
                     Priority = r.Priority,
                     CompanyId = r.CompanyId,
                     CreatedAt = r.CreatedAt,
-                    CreatedBy = r.CreatedBy
+
                 })
                 .FirstOrDefaultAsync(ct);
         }
@@ -118,13 +163,22 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
         : IRequestHandler<CreateWorkDaysRuleCommand, WorkDaysRuleDto>
     {
         private readonly DBContextHRsystem _db;
-        public CreateWorkDaysRuleHandler(DBContextHRsystem db) => _db = db;
+        private readonly ICurrentUserService _currentUser;
+
+        public CreateWorkDaysRuleHandler(DBContextHRsystem db, ICurrentUserService currentUserService)
+        {
+            _db = db;
+            _currentUser = currentUserService;
+
+        }
 
         public async Task<WorkDaysRuleDto> Handle(CreateWorkDaysRuleCommand request, CancellationToken ct)
         {
             var entity = new TbWorkDaysRule
             {
+                
                 GovID = request.GovID,
+                WorkDaysRuleName = request.WorkDaysRuleName,
                 CityID = request.CityID,
                 JobTitleId = request.JobTitleId,
                 WorkingLocationId = request.WorkingLocationId,
@@ -132,8 +186,9 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
                 WorkDaysId = request.WorkDaysId,
                 Priority = request.Priority,
                 CompanyId = request.CompanyId,
-                CreatedBy = request.CreatedBy,
-                CreatedAt = DateTime.UtcNow
+                CreatedBy = _currentUser.UserId,
+                CreatedAt = DateTime.Now
+
             };
 
             _db.TbWorkDaysRules.Add(entity);
@@ -142,6 +197,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
             return new WorkDaysRuleDto
             {
                 WorkDaysRuleId = entity.WorkDaysRuleId,
+                WorkDaysRuleName = entity.WorkDaysRuleName,
                 GovID = entity.GovID,
                 CityID = entity.CityID,
                 JobTitleId = entity.JobTitleId,
@@ -151,7 +207,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
                 Priority = entity.Priority,
                 CompanyId = entity.CompanyId,
                 CreatedAt = entity.CreatedAt,
-                CreatedBy = entity.CreatedBy
+
             };
         }
     }
@@ -161,7 +217,14 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
         : IRequestHandler<UpdateWorkDaysRuleCommand, WorkDaysRuleDto?>
     {
         private readonly DBContextHRsystem _db;
-        public UpdateWorkDaysRuleHandler(DBContextHRsystem db) => _db = db;
+        private readonly ICurrentUserService _currentUser;
+
+        public UpdateWorkDaysRuleHandler(DBContextHRsystem db, ICurrentUserService currentUserService)
+        {
+            _db = db;
+
+            _currentUser = currentUserService;
+        }
 
         public async Task<WorkDaysRuleDto?> Handle(UpdateWorkDaysRuleCommand request, CancellationToken ct)
         {
@@ -169,6 +232,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
             if (entity == null) return null;
 
             entity.GovID = request.GovID;
+            entity.WorkDaysRuleName = request.WorkDaysRuleName;
             entity.CityID = request.CityID;
             entity.JobTitleId = request.JobTitleId;
             entity.WorkingLocationId = request.WorkingLocationId;
@@ -176,7 +240,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
             entity.WorkDaysId = request.WorkDaysId;
             entity.Priority = request.Priority;
             entity.CompanyId = request.CompanyId;
-            entity.CreatedBy = request.CreatedBy;
+            entity.CreatedBy = _currentUser.UserId;
 
             await _db.SaveChangesAsync(ct);
 
@@ -192,7 +256,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
                 Priority = entity.Priority,
                 CompanyId = entity.CompanyId,
                 CreatedAt = entity.CreatedAt,
-                CreatedBy = entity.CreatedBy
+                
             };
         }
     }

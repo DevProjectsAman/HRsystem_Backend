@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
@@ -10,7 +11,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             var group = app.MapGroup("/api/employee-App").WithTags("Employee App");
 
             // Get pending activities for current user
-            group.MapGet("/EmployeeInfo", async (ISender mediator) =>
+            group.MapGet("/EmployeeInfo", [Authorize] async ( ISender mediator) =>
             {
                 var result = await mediator.Send(new EmployeeInfoQueury());
                 if (result == null)
@@ -19,7 +20,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                 return Results.Ok(new { Success = true, Data = result });
             });
 
-            group.MapGet("/AnnualBalance", async (ISender mediator) =>
+            group.MapGet("/AnnualBalance", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new EmployeeAnnualBalance());
                 if (result == null)
@@ -28,7 +29,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                 return Results.Ok(new { Success = true, Data = result });
             });
 
-            group.MapGet("/CasualBalance", async (ISender mediator) =>
+            group.MapGet("/CasualBalance", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new EmployeeCasualBalance());
                 if (result == null)
@@ -38,7 +39,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             });
 
             //  Get Employee Days History by Date Filter
-            group.MapPost("/EmployeeDaysHistory", async (ISender mediator, [FromBody] GetEmployeeDaysHistoryByFilterQueury query) =>
+            group.MapPost("/EmployeeDaysHistory", [Authorize] async (ISender mediator, [FromBody] GetEmployeeDaysHistoryByFilterQueury query) =>
             {
                 var result = await mediator.Send(query);
 
@@ -48,9 +49,42 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                 return Results.Ok(new { Success = true, Data = result });
             });
 
-            group.MapGet("/FullDashboard", async (ISender mediator) =>
+            group.MapGet("/FullDashboard", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new EmployeeFullDashboardQuery());
+                if (result == null)
+                    return Results.NotFound(new { Success = false, Message = "No Employee data found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
+            group.MapGet("/GetEmployeeCheckInLog", [Authorize] async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetEmployeeCheckInLogQueury());
+                if (result == null)
+                    return Results.NotFound(new { Success = false, Message = "No Employee data found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+            group.MapGet("/GetEmployeeCheckOutLog", [Authorize] async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetEmployeeCheckOutLogQueury());
+                if (result == null)
+                    return Results.NotFound(new { Success = false, Message = "No Employee data found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+            group.MapGet("/GetEmployeeTotalWorkingHours", [Authorize] async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetEmployeeTotalWorkingHoursQueury());
+                if (result == null)
+                    return Results.NotFound(new { Success = false, Message = "No Employee data found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+            group.MapGet("/EmployeeGetShift", [Authorize] async (ISender mediator, [FromQuery] TimeOnly time) =>
+            {
+                var result = await mediator.Send(new EmployeeGetShiftQueury(time));
                 if (result == null)
                     return Results.NotFound(new { Success = false, Message = "No Employee data found" });
 

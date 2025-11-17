@@ -10,6 +10,7 @@ namespace HRsystem.Api.Features.ShiftRule.UpdateShiftRule
 {
     public record UpdateShiftRuleCommand(
         int RuleId,
+        string? ShiftRuleName,
         int? JobLevelId,
         int? JobTitleId,
         int? GovId,
@@ -42,6 +43,7 @@ namespace HRsystem.Api.Features.ShiftRule.UpdateShiftRule
             
 
             entity.JobTitleId = request.JobTitleId;
+            entity.ShiftRuleName = request.ShiftRuleName;
             entity.WorkingLocationId = request.WorkingLocationId;
             entity.ProjectId = request.ProjectId;
             entity.GovID = request.GovId;
@@ -50,7 +52,7 @@ namespace HRsystem.Api.Features.ShiftRule.UpdateShiftRule
             entity.Priority = request.Priority;
             entity.CompanyId = request.CompanyId;
             entity.UpdatedBy = _currentUserService.UserId;
-            entity.UpdatedAt = DateTime.UtcNow;
+            entity.UpdatedAt = DateTime.Now;
 
             await _db.SaveChangesAsync(ct);
             return entity;

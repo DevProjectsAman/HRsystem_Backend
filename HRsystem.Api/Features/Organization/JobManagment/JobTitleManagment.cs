@@ -189,7 +189,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
                 TitleName = request.TitleName,
                 JobLevelId = request.JobLevelId,
                 CompanyId = request.CompanyId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 CreatedBy = userService.UserId
             };
 
@@ -241,7 +241,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             entity.TitleName = request.TitleName;
             entity.JobLevelId = request.JobLevelId;
             entity.CompanyId = request.CompanyId;
-            entity.UpdatedAt = DateTime.UtcNow;
+            entity.UpdatedAt = DateTime.Now;
             entity.UpdatedBy = userService.UserId;
 
             await db.SaveChangesAsync(ct);

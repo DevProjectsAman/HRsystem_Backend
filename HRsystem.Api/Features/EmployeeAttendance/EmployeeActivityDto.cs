@@ -83,7 +83,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt
     //    //            throw new InvalidOperationException("Company not found for this employee");
 
 
-    //    //        var now = DateTime.UtcNow;
+    //    //        var now = DateTime.Now;
     //    //        var date = now.Date;
 
     //    //        var statuses = await _db.TbEmployeeActivities.ToListAsync(ct);
@@ -111,7 +111,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt
     //                ActivityTypeId = request.ActionId, // ActionId → ActivityTypeId
     //                StatusId = 1, // Pending
     //                RequestBy = employee.EmployeeId,
-    //                RequestDate = DateTime.UtcNow,
+    //                RequestDate = DateTime.Now,
     //                CompanyId = employee.CompanyId
     //            };
 
@@ -148,7 +148,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt
     //            if (activity == null) throw new Exception("Activity not found");
 
     //            activity.StatusId = 2; // Completed
-    //            //activity.EndDate = DateTime.UtcNow;
+    //            //activity.EndDate = DateTime.Now;
 
     //            await _db.SaveChangesAsync(ct);
 
