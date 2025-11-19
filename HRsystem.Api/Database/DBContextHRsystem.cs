@@ -95,6 +95,7 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
     public DbSet<TbVacationRulesGroupDetail> TbVacationRulesGroupDetails { get; set; }
 
     public DbSet<TbMaritalStatus> TbMaritalStatuses { get; set; }
+    public DbSet<TbContractType> TbContractTypes { get; set; }
 
 
 

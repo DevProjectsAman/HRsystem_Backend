@@ -22,6 +22,7 @@ using HRsystem.Api.Features.Holiday;
 using HRsystem.Api.Features.HolidayType;
 using HRsystem.Api.Features.Lookups.ActivityStatus;
 using HRsystem.Api.Features.Lookups.ActivityTypeStatus;
+using HRsystem.Api.Features.Lookups.ContractTypes;
 using HRsystem.Api.Features.Lookups.GeneralLookups;
 using HRsystem.Api.Features.Lookups.MaretialStatus;
 using HRsystem.Api.Features.Mission;
@@ -327,6 +328,8 @@ app.MapPendingStatuesForManager();
 
 app.MapMaritalStatusEndpoints();
 app.MapGetAllNationalitiesEndpoint();
+app.MapContractTypeEndpoints();
+
 
 
 

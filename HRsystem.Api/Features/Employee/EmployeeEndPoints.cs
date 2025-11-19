@@ -68,6 +68,19 @@ namespace HRsystem.Api.Features.Employee
         {
             var group = app.MapGroup("/api/employees").WithTags("Employees");
 
+
+            group.MapGet("/GetAvailableManagers",
+            async (int companyId, int departmentId, int jobLevelId, bool sameDepartmentOnly, IMediator mediator) =>
+            {
+                var result = await mediator.Send(new GetAvailableManagersQuery(
+                    companyId, departmentId, jobLevelId, sameDepartmentOnly
+                ));
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
+
+
             // ✅ Get All
             group.MapGet("/GetListOFEmployees", async (ISender mediator) =>
             {
