@@ -27,6 +27,7 @@ public partial class TbWorkLocation
 
     public int? AllowedRadiusM { get; set; }
 
+    public int? GovId { get; set; }
     public int? CityId { get; set; }
 
     public int? CreatedBy { get; set; }
@@ -37,6 +38,7 @@ public partial class TbWorkLocation
 
     public DateTime? UpdatedAt { get; set; }
 
+    public virtual TbGov? Gov { get; set; }
     public virtual TbCity? City { get; set; }
 
     public virtual TbCompany Company { get; set; } = null!;

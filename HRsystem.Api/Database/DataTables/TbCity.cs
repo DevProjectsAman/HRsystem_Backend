@@ -28,4 +28,9 @@ public partial class TbCity
     
 
     public virtual ICollection<TbWorkLocation> TbWorkLocations { get; set; } = new List<TbWorkLocation>();
+
+    internal string GetLocalizedName(string lang)
+    {
+        throw new NotImplementedException();
+    }
 }
