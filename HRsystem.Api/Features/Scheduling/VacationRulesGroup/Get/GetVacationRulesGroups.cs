@@ -24,8 +24,9 @@ namespace HRsystem.Api.Features.Scheduling.VacationRulesGroup.Get
                   .Include(g => g.VacationRuleDetails)
                   .ToListAsync(ct);
 
-            return _mapper.Map<List<VacationRulesGroupDto>>(vacatGroup);
+          var grp = _mapper.Map<List<VacationRulesGroupDto>>(vacatGroup);
 
+            return grp;
 
         }
 

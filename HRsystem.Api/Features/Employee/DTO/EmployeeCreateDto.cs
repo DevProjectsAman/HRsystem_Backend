@@ -1,4 +1,5 @@
 ﻿using HRsystem.Api.Shared.DTO;
+using Microsoft.AspNetCore.Components.Forms;
 using System.ComponentModel.DataAnnotations;
 using static HRsystem.Api.Enums.EnumsList;
 
@@ -60,6 +61,7 @@ namespace HRsystem.Api.Features.Employee.DTO
         public string? Address { get; set; }
 
         public string? EmployeePhotoPath { get; set; }
+        public IBrowserFile? EmployeePhoto { get; set; }
 
         public string? Note { get; set; }
     }
@@ -302,4 +304,6 @@ namespace HRsystem.Api.Features.Employee.DTO
     {
         public int EmployeeId { get; set; }
     }
+
+
 }

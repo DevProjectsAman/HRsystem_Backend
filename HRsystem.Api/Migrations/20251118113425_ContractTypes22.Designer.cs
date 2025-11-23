@@ -4,6 +4,7 @@ using HRsystem.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    partial class DBContextHRsystemModelSnapshot : ModelSnapshot
+    [Migration("20251118113425_ContractTypes22")]
+    partial class ContractTypes22
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1785,6 +1788,9 @@ namespace HRsystem.Api.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
+                    b.Property<int?>("JobTitleId")
+                        .HasColumnType("int");
+
                     b.Property<decimal?>("Latitude")
                         .HasPrecision(9, 6)
                         .HasColumnType("decimal(9,6)");
@@ -1815,6 +1821,8 @@ namespace HRsystem.Api.Migrations
                     b.HasIndex("CityId");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("JobTitleId");
 
                     b.HasIndex("WorkingLocationWorkLocationId");
 
@@ -1980,7 +1988,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 11, 20, 13, 4, 55, 372, DateTimeKind.Local).AddTicks(8636),
+                            CreatedAt = new DateTime(2025, 11, 18, 13, 34, 24, 648, DateTimeKind.Local).AddTicks(2601),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -1988,7 +1996,7 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2025, 11, 20, 13, 4, 55, 373, DateTimeKind.Local).AddTicks(2133),
+                            LastPasswordChangedAt = new DateTime(2025, 11, 18, 13, 34, 24, 648, DateTimeKind.Local).AddTicks(9266),
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
@@ -1997,7 +2005,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("b7921b20-58d0-4d9f-b854-00d6ea56d23b"),
+                            RowGuid = new Guid("8b16709e-33da-4c95-b169-41e8fea18ea9"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",
@@ -2760,6 +2768,10 @@ namespace HRsystem.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("HRsystem.Api.Database.DataTables.TbJobTitle", "JobTitle")
+                        .WithMany()
+                        .HasForeignKey("JobTitleId");
+
                     b.HasOne("HRsystem.Api.Database.DataTables.TbWorkLocation", "WorkingLocation")
                         .WithMany()
                         .HasForeignKey("WorkingLocationWorkLocationId");
@@ -2767,6 +2779,8 @@ namespace HRsystem.Api.Migrations
                     b.Navigation("City");
 
                     b.Navigation("Company");
+
+                    b.Navigation("JobTitle");
 
                     b.Navigation("WorkingLocation");
                 });

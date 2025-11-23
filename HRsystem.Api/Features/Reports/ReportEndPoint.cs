@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace HRsystem.Api.Features.Reports
@@ -14,11 +15,39 @@ namespace HRsystem.Api.Features.Reports
                 .WithOpenApi();
 
             // GET: api/reports/home-dashboard
-            group.MapGet("/home-dashboard", async (ISender mediator, CancellationToken cancellationToken) =>
-            {
-                var result = await mediator.Send(new HomeDashboardReport.GetDashboardReportQuery(), cancellationToken);
+            //group.MapGet("/home-dashboard", async (ISender mediator, CancellationToken cancellationToken) =>
+            //{
+            //    var result = await mediator.Send(new HomeDashboardReport.GetDashboardReportQuery(), cancellationToken);
 
-            
+
+            //    return Results.Ok(new
+            //    {
+            //        Success = result.Success,
+            //        Message = result.Message,
+            //        Data = result.Data
+            //    });
+            //})
+            //.WithName("GetHomeDashboardReport")
+            //.WithSummary("Get summarized statistics for Home Dashboard")
+            //.WithDescription("Retrieves total employees, departments, requests, and other dashboard metrics.");
+
+            group.MapGet("/home-dashboard", async (
+                  ISender mediator,
+                  [FromQuery] int? departmentId,
+                  [FromQuery] string? fromDay,
+                  [FromQuery] string? toDay,
+                  [FromQuery] int? topEmployeesCount,
+                  CancellationToken cancellationToken) =>
+            {
+                var query = new HomeDashboardReport.GetDashboardReportQuery(
+                    DepartmentId: departmentId,
+                    FromDay: fromDay,
+                    ToDay: toDay,
+                    TopEmployeesCount: topEmployeesCount ?? 5
+                );
+
+                var result = await mediator.Send(query, cancellationToken);
+
                 return Results.Ok(new
                 {
                     Success = result.Success,
@@ -26,9 +55,9 @@ namespace HRsystem.Api.Features.Reports
                     Data = result.Data
                 });
             })
-            .WithName("GetHomeDashboardReport")
-            .WithSummary("Get summarized statistics for Home Dashboard")
-            .WithDescription("Retrieves total employees, departments, requests, and other dashboard metrics.");
+              .WithName("GetHomeDashboardReport")
+              .WithSummary("Get summarized statistics for Home Dashboard")
+              .WithDescription("Retrieves total employees, departments, requests, and other dashboard metrics.");
         }
     }
 }

@@ -57,8 +57,7 @@
 
 using HRsystem.Api.Features.Employee.Commands;
 using HRsystem.Api.Features.Employee.DTO;
-//using HRsystem.Api.Features.Employee.UpdateEmployee;
-using HRsystem.Api.Features.Employee.Commands;
+ 
 using MediatR;
 
 namespace HRsystem.Api.Features.Employee
@@ -68,6 +67,19 @@ namespace HRsystem.Api.Features.Employee
         public static void MapEmployeeEndpoints(this IEndpointRouteBuilder app)
         {
             var group = app.MapGroup("/api/employees").WithTags("Employees");
+
+
+            group.MapGet("/GetAvailableManagers",
+            async (int companyId, int departmentId, int jobLevelId, bool sameDepartmentOnly, IMediator mediator) =>
+            {
+                var result = await mediator.Send(new GetAvailableManagersQuery(
+                    companyId, departmentId, jobLevelId, sameDepartmentOnly
+                ));
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
+
 
             // ✅ Get All
             group.MapGet("/GetListOFEmployees", async (ISender mediator) =>

@@ -94,6 +94,9 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
     public DbSet<TbVacationRulesGroup> TbVacationRulesGroups { get; set; }
     public DbSet<TbVacationRulesGroupDetail> TbVacationRulesGroupDetails { get; set; }
 
+    public DbSet<TbMaritalStatus> TbMaritalStatuses { get; set; }
+    public DbSet<TbContractType> TbContractTypes { get; set; }
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

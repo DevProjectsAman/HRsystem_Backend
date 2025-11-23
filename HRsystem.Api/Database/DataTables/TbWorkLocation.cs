@@ -40,10 +40,7 @@ public partial class TbWorkLocation
     public virtual TbCity? City { get; set; }
 
     public virtual TbCompany Company { get; set; } = null!;
+       
 
-    public virtual TbJobTitle? JobTitle { get; set; }
-
-    
-
-    public virtual TbWorkLocation? WorkingLocation { get; set; }
+ 
 }
