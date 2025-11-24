@@ -38,7 +38,7 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule
                 ISender mediator) =>
             {
                 var result = await mediator.Send(query);
-                return result.Success
+                return  result.Success
                     ? Results.Ok(result)
                     : Results.NotFound(result);
             });

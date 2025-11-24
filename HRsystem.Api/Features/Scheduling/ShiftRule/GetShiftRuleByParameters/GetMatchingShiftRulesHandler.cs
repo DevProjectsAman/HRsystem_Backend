@@ -14,11 +14,12 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
         int CompanyId,
         int? GovId,
         int? CityId,
+        int? DepartmentId,
         int? JobLevelId,
         int? JobTitleId,
         int? WorkingLocationId,
         int? ProjectId
-    ) : IRequest<ResponseResultDTO<List<ShiftRuleDto>>>;
+    ) : IRequest<List<ShiftRuleDto>>;
 
     public record ShiftRuleDto(
       int RuleId,
@@ -42,82 +43,100 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
 
 
     public class GetMatchingShiftRulesHandler
-        : IRequestHandler<GetMatchingShiftRulesQuery, ResponseResultDTO<List<ShiftRuleDto>>>
+        : IRequestHandler<GetMatchingShiftRulesQuery, List<ShiftRuleDto>>
     {
         private readonly DBContextHRsystem _db;
         private readonly IMapper _mapper;
 
-        public GetMatchingShiftRulesHandler(DBContextHRsystem db ,IMapper mapper)
+        public GetMatchingShiftRulesHandler(DBContextHRsystem db, IMapper mapper)
         {
             _db = db;
             _mapper = mapper;
         }
 
-        public async Task<ResponseResultDTO<List<ShiftRuleDto>>> Handle(
-            GetMatchingShiftRulesQuery request,
-            CancellationToken cancellationToken)
+        public async Task<List<ShiftRuleDto>> Handle(
+     GetMatchingShiftRulesQuery request,
+     CancellationToken cancellationToken)
         {
-            var baseQuery = _db.TbShiftRules
+            var query = _db.TbShiftRules
                 .Include(r => r.Shift)
                 .Include(r => r.Gov)
                 .Include(r => r.City)
+                .Include(r => r.JobLevel)
                 .Include(r => r.JobTitle)
                 .Include(r => r.WorkingLocation)
                 .Include(r => r.Project)
-
+                .Include(r => r.Department)
                 .Where(r => r.CompanyId == request.CompanyId);
 
-            // define progressive filter steps
-            var attempts = new List<Func<IQueryable<TbShiftRule>, IQueryable<TbShiftRule>>>
-        {
-            // all params
-            q => q.Where(r => r.GovID == request.GovId
-                           && r.CityID == request.CityId
-                           && r.JobTitleId == request.JobTitleId
-                           && r.WorkingLocationId == request.WorkingLocationId
-                           && r.ProjectId == request.ProjectId),
-            // drop ProjectId
-            q => q.Where(r => r.GovID == request.GovId
-                           && r.CityID == request.CityId
-                           && r.JobTitleId == request.JobTitleId
-                           && r.WorkingLocationId == request.WorkingLocationId),
-            // drop WorkingLocationId
-            q => q.Where(r => r.GovID == request.GovId
-                           && r.CityID == request.CityId
-                           && r.JobTitleId == request.JobTitleId),
-            // drop JobTitleId
-            q => q.Where(r => r.GovID == request.GovId
-                           && r.CityID == request.CityId),
-            // drop CityId
-            q => q.Where(r => r.GovID == request.GovId)
-        };
-
-            List<TbShiftRule>? rules = null;
-
-            foreach (var filter in attempts)
-            {
-                rules = await filter(baseQuery)
-                    .OrderBy(r => r.Priority)
-                    .ToListAsync(cancellationToken);
-
-                if (rules.Any())
-                    break;
-            }
-
-            if (rules == null || rules.Count == 0)
-            {
-                return new ResponseResultDTO<List<ShiftRuleDto>>
+            // 1️⃣ Score each rule
+            var scored = await query
+                .Select(r => new
                 {
-                    Success = false,
-                    Message = "No matching shift rules found",
-                    StatusCode = 409
-                };
+                    Rule = r,
+                    Score =
+                        (request.GovId != null && r.GovID == request.GovId ? 1 : 0) +
+                        (request.CityId != null && r.CityID == request.CityId ? 1 : 0) +
+                        (request.JobLevelId != null && r.JobLevelId == request.JobLevelId ? 1 : 0) +
+                        (request.JobTitleId != null && r.JobTitleId == request.JobTitleId ? 1 : 0) +
+                        (request.WorkingLocationId != null && r.WorkingLocationId == request.WorkingLocationId ? 1 : 0) +
+                        (request.ProjectId != null && r.ProjectId == request.ProjectId ? 1 : 0) +
+                        (request.DepartmentId != null && r.DepartmentId == request.DepartmentId ? 1 : 0)
+                })
+                .ToListAsync(cancellationToken);
+
+            if (!scored.Any())
+            {
+                throw new Exception("No shift rules found for this company");
+                
             }
 
-            var siftdto = _mapper.Map<List<ShiftDto>>(rules.Select(r => r.Shift).ToList());
+            // 2️⃣ Find highest score
+            var maxScore = scored.Max(x => x.Score);
+
+            // 3️⃣ If the best score is > 0, return those rules
+            if (maxScore > 0)
+            {
+                var best = scored
+                    .Where(x => x.Score == maxScore)
+                    .OrderBy(x => x.Rule.Priority)
+                    .Take(1)                                     // RETURN ONLY ONE RECORD
+                    .Select(x => x.Rule)
+                    .ToList();
+
+                return MapResult(best, "Best matching shift rule found");
+            }
+
+            // 4️⃣ Otherwise, try to return the DEFAULT rule (all nullable filters = null)
+            var defaultRule = await query
+                .Where(r =>
+                    r.GovID == null &&
+                    r.CityID == null &&
+                    r.JobLevelId == null &&
+                    r.JobTitleId == null &&
+                    r.WorkingLocationId == null &&
+                    r.ProjectId == null &&
+                    r.DepartmentId == null
+                )
+                .OrderBy(r => r.Priority)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (defaultRule != null)
+            {
+                return MapResult(new List<TbShiftRule> { defaultRule }, "Default shift rule returned");
+            }
 
 
-            var result = rules.Select(r => new ShiftRuleDto(
+            throw new  Exception("No shift rule matches the parameters and no default rule exists");
+            // No matching rule + No default rule
+            
+        }
+
+
+        // Helper to map DTOs cleanly
+        private List<ShiftRuleDto> MapResult(List<TbShiftRule> rules, string msg)
+        {
+            var data = rules.Select(r => new ShiftRuleDto(
                 r.RuleId,
                 r.ShiftRuleName,
                 r.GovID,
@@ -132,19 +151,17 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
                 r.WorkingLocation?.LocationName,
                 r.ProjectId,
                 r.Project?.ProjectName,
-                 _mapper.Map<ShiftDto>( r.Shift),
-            r.Priority
+                _mapper.Map<ShiftDto>(r.Shift),
+                r.Priority
             )).ToList();
 
-
-
-            return new ResponseResultDTO<List<ShiftRuleDto>>
-            {
-                Success = true,
-                Data = result,
-                Message = "Matching shift rules found"
-            };
+            return  data ;
         }
+
+
+
+
+
     }
 
 }
