@@ -5,6 +5,7 @@ using HRsystem.Api.Features.ShiftRule.DeleteShiftRule;
 using HRsystem.Api.Features.ShiftRule.GetShiftRuleById;
 using HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters;
 using HRsystem.Api.Features.ShiftRule.UpdateShiftRule;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 
 namespace HRsystem.Api.Features.Scheduling.ShiftRule
@@ -37,10 +38,18 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule
                 GetMatchingShiftRulesQuery query,
                 ISender mediator) =>
             {
-                var result = await mediator.Send(query);
-                return  result.Success
-                    ? Results.Ok(result)
-                    : Results.NotFound(result);
+                try
+                {
+                    var result = await mediator.Send(query);
+                    return result.Success
+                        ? Results.Ok(result)
+                        : Results.NotFound(result);
+                }
+                catch (Exception ex)
+                {
+                    return new ResponseResultDTO() { Success = false, Message = ex.Message, StatusCode = 409 };
+                }
+
             });
             // Create
             group.MapPost("/CreateShiftRule", async (CreateShiftRuleCommand command, ISender mediator, IValidator<CreateShiftRuleCommand> validator) =>
