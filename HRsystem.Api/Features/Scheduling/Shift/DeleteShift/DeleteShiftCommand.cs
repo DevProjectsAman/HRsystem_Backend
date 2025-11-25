@@ -17,6 +17,13 @@ namespace HRsystem.Api.Features.Scheduling.Shift.DeleteShift
             var shift = await _db.TbShifts.FirstOrDefaultAsync(s => s.ShiftId == request.ShiftId, ct);
             if (shift == null) return false;
 
+
+            if(shift.IsDefault)
+            {
+                throw new Exception("Cannot delete a default shift.");
+            }
+
+
             _db.TbShifts.Remove(shift);
             await _db.SaveChangesAsync(ct);
             return true;
