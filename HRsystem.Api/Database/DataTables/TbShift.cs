@@ -42,6 +42,9 @@ public partial class TbShift
 
     public DateTime? UpdatedAt { get; set; }
 
+    public bool IsDefault { get; set; } = false;
+
+
     public virtual TbCompany Company { get; set; } = null!;
 
     public virtual ICollection<TbEmployeeShift> TbEmployeeShifts { get; set; } = new List<TbEmployeeShift>();

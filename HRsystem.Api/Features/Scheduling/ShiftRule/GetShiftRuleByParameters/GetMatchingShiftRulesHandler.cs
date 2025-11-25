@@ -5,6 +5,7 @@ using HRsystem.Api.Features.Scheduling.Shift.GetAllShifts;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
 {
@@ -100,7 +101,7 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
                 var best = scored
                     .Where(x => x.Score == maxScore)
                     .OrderBy(x => x.Rule.Priority)
-                    .Take(1)                                     // RETURN ONLY ONE RECORD
+                   // .Take(1)                                     // RETURN ONLY ONE RECORD
                     .Select(x => x.Rule)
                     .ToList();
 
@@ -123,7 +124,20 @@ namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
 
             if (defaultRule != null)
             {
-                return MapResult(new List<TbShiftRule> { defaultRule }, "Default shift rule returned");
+                List<TbShiftRule> defaultRuleList = new List<TbShiftRule> { defaultRule };
+
+
+                var shift = await _db.TbShifts.FirstOrDefaultAsync(s => s.IsDefault == true);
+                if (shift != null)
+                {
+                    defaultRuleList.FirstOrDefault().Shift = shift;
+                }
+
+ 
+
+
+
+                return MapResult(defaultRuleList, "Default shift rule returned");
             }
 
 
