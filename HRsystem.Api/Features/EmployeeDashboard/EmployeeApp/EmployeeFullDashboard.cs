@@ -17,6 +17,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 
         public DateTime? PunchTime { get; set; }
 
+        public decimal? TotalHours { get; set; }
+
         [MaxLength(25)]
         public string PunchType { get; set; }
     }
@@ -167,7 +169,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                     {
                         AttStatues = attendance.AttStatues ,
                         PunchDate = attendance.AttendanceDate,
-                    };
+                        TotalHours = attendance.TotalHours,
+                     };
                     var lastPunch = await _db.TbEmployeeAttendancePunches
                         .Where(p => p.AttendanceId == attendance.AttendanceId)
                         .OrderByDescending(p => p.PunchTime)

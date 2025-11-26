@@ -24,8 +24,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt
         public DateTime? FirstPunchIn { get; set; }
         public DateTime? LastPunchOut { get; set; }
         public decimal? TotalHours { get; set; }
-
-        public statues Statues { get; set; }
+       public statues AttStatues { get; set; }
         public decimal? ActualWorkingHours { get; set; }
 
     }
