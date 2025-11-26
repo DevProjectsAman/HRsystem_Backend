@@ -19,6 +19,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 
         public decimal? TotalHours { get; set; }
 
+
         [MaxLength(25)]
         public string PunchType { get; set; }
     }
