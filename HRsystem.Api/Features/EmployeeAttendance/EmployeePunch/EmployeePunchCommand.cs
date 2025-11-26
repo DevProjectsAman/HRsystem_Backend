@@ -151,7 +151,8 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 AttendanceId = attendance.AttendanceId,
                 EmployeeId = employee.EmployeeId,
                 ActivityId = activity.ActivityId,
-                FirstPunchIn = attendance.FirstPuchin
+                FirstPunchIn = attendance.FirstPuchin,
+                AttStatues = attendance.AttStatues
             };
         }
     }
@@ -245,7 +246,40 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 };
                 _db.TbEmployeeAttendances.Add(attendance);
                 await _db.SaveChangesAsync(ct);
+
+                var Shift = await _db.TbShifts
+                .FirstOrDefaultAsync(b => b.ShiftId == employee.ShiftId, ct);
+
+                var ShiftINfo = new EmployeeGetShiftDto
+                {
+                    EndTime = Shift.EndTime,
+                    StartTime = Shift.StartTime,
+                    GracePeriodMinutes = Shift.GracePeriodMinutes,
+                    IsFlexible = Shift.IsFlexible,
+                    MaxStartTime = Shift.MaxStartTime,
+                };
+
+                switch (Shift.IsFlexible)
+                {
+                    case true:
+                        if ((ShiftINfo.MaxStartTime ?? new TimeOnly(0, 0)).AddMinutes(ShiftINfo.GracePeriodMinutes) < TimeOnly.FromDateTime(DateTime.Now)
+                            )
+                            attendance.AttStatues = statues.Late;
+                        else
+                            attendance.AttStatues = statues.OnTime;
+                        break;
+                    case false:
+                        if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(DateTime.Now))
+                            attendance.AttStatues = statues.Late;
+                        else
+                            attendance.AttStatues = statues.OnTime;
+                        break;
+                }
+
+                _db.TbEmployeeAttendances.Add(attendance);
+                await _db.SaveChangesAsync(ct);
             }
+        
             else
             {
                 attendance.LastPuchout = now;
@@ -304,6 +338,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 FirstPunchIn = attendance.FirstPuchin,
                 LastPunchOut = attendance.LastPuchout,
                 TotalHours = attendance.TotalHours,
+                AttStatues = attendance.AttStatues,
                 ActualWorkingHours = attendance.ActualWorkingHours
             };
         }
