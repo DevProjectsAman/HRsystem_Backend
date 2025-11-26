@@ -96,6 +96,7 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
 
     public DbSet<TbMaritalStatus> TbMaritalStatuses { get; set; }
     public DbSet<TbContractType> TbContractTypes { get; set; }
+    public DbSet<TbShiftRuleMappng> TbShiftRuleMappngs { get; set; }
 
 
 
