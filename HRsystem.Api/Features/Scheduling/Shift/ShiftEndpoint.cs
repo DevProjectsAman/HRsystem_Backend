@@ -66,10 +66,20 @@ namespace HRsystem.Api.Features.Scheduling.Shift
             // Delete
             group.MapDelete("/DeleteShift/{id}", async (int id, ISender mediator) =>
             {
+                try
+                {
+
                 var result = await mediator.Send(new DeleteShiftCommand(id));
                 return !result
                     ? Results.NotFound(new { Success = false, Message = $"Shift {id} not found" })
                     : Results.Ok(new { Success = true, Message = $"Shift {id} deleted successfully" });
+
+                }
+                catch (Exception ex)
+                {
+
+                    return Results.Ok(new ResponseResultDTO() { Success = false, Message = ex.Message });
+                }
             });
         }
     }

@@ -54,12 +54,12 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule
                 {
                     var result = await mediator.Send(query);
                     return result != null
-                        ? Results.Ok(result)
-                        : Results.NotFound(result);
+                        ? Results.Ok( new ResponseResultDTO<object> { Success = true, Data = result })
+                        : Results.NotFound(new ResponseResultDTO() { Success = false, Message = "not Found" });
                 }
                 catch (Exception ex)
                 {
-                    return Results.Ok(new { Success = false, Message = ex.Message, Data = (object)null });
+                    return Results.Ok(new ResponseResultDTO { Success = false, Message = ex.Message });
                 }
             });
 

@@ -16,6 +16,8 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule.DeleteVacationRule
             var entity = await _db.TbVacationRules.FirstOrDefaultAsync(r => r.RuleId == request.RuleId, ct);
             if (entity == null) return false;
 
+          
+
             _db.TbVacationRules.Remove(entity);
             await _db.SaveChangesAsync(ct);
             return true;
