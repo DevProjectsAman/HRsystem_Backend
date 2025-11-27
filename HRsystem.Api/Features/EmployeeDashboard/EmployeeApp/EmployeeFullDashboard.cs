@@ -17,7 +17,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 
         public DateTime? PunchTime { get; set; }
 
-        public decimal? TotalHours { get; set; }
+        public string? TotalHours { get; set; }
 
 
         [MaxLength(25)]
@@ -166,13 +166,28 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             {
                         var attendance = await _db.TbEmployeeAttendances
                                 .FirstOrDefaultAsync(a => a.ActivityId == activity.ActivityId && a.AttendanceDate == today, ct);
-                     checkhistory = new CheckHistoryDto
-                    {
-                        AttStatues = attendance.AttStatues ,
-                        PunchDate = attendance.AttendanceDate,
-                        TotalHours = attendance.TotalHours,
-                     };
-                    var lastPunch = await _db.TbEmployeeAttendancePunches
+                // checkhistory = new CheckHistoryDto
+                //{
+                //    AttStatues = attendance.AttStatues ,
+                //    PunchDate = attendance.AttendanceDate,
+                //    TotalHours = attendance.TotalHours,
+                // };
+                string formattedTotal = "00:00";
+
+                if (attendance.TotalHours.HasValue)
+                {
+                    var span = TimeSpan.FromHours((double)attendance.TotalHours.Value);
+                    formattedTotal = span.ToString(@"hh\:mm");
+                }
+
+                checkhistory = new CheckHistoryDto
+                {
+                    AttStatues = attendance.AttStatues,
+                    PunchDate = attendance.AttendanceDate,
+                    TotalHours = formattedTotal
+                };
+
+                var lastPunch = await _db.TbEmployeeAttendancePunches
                         .Where(p => p.AttendanceId == attendance.AttendanceId)
                         .OrderByDescending(p => p.PunchTime)
                         .FirstOrDefaultAsync(ct);
