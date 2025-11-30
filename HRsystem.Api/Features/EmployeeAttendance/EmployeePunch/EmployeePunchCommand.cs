@@ -152,7 +152,8 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 EmployeeId = employee.EmployeeId,
                 ActivityId = activity.ActivityId,
                 FirstPunchIn = attendance.FirstPuchin,
-                AttStatues = attendance.AttStatues
+                AttStatues = attendance.AttStatues,
+                PunchType = "PunchIn"
             };
         }
     }
@@ -330,6 +331,21 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             attendance.ActualWorkingHours = (decimal)(totalMinutes / 60.0);
             await _db.SaveChangesAsync(ct);
 
+            // 🔹 Format hours to hh:mm
+            string formattedTotalHours = "00:00";
+            if (attendance.TotalHours.HasValue)
+            {
+                var span = TimeSpan.FromHours((double)attendance.TotalHours.Value);
+                formattedTotalHours = span.ToString(@"hh\:mm");
+            }
+
+            string formattedActualHours = "00:00";
+            if (attendance.ActualWorkingHours.HasValue)
+            {
+                var spanActual = TimeSpan.FromHours((double)attendance.ActualWorkingHours.Value);
+                formattedActualHours = spanActual.ToString(@"hh\:mm");
+            }
+
             return new EmployeeAttendanceDto
             {
                 AttendanceId = attendance.AttendanceId,
@@ -337,9 +353,10 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 ActivityId = activity.ActivityId,
                 FirstPunchIn = attendance.FirstPuchin,
                 LastPunchOut = attendance.LastPuchout,
-                TotalHours = attendance.TotalHours,
+                TotalHours = formattedTotalHours,
                 AttStatues = attendance.AttStatues,
-                ActualWorkingHours = attendance.ActualWorkingHours
+                PunchType = "PunchOut",
+                ActualWorkingHours = formattedActualHours
             };
         }
     }
