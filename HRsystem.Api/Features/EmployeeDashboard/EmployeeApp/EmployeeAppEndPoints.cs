@@ -90,6 +90,16 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 
                 return Results.Ok(new { Success = true, Data = result });
             });
+            group.MapGet("/EmployeeRequests", [Authorize] async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new EmployeeRequestsDashboardQuery());
+                if (result == null)
+                    return Results.NotFound(new { Success = false, Message = "No Employee data found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
+            
         }
     }
 }
