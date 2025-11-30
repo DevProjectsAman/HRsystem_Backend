@@ -19,10 +19,10 @@ public partial class TbWorkLocation
     //[MaxLength(100)]
     public LocalizedData LocationName { get; set; } = null!;
 
-    [Precision(9, 6)]
+    [Precision(11, 8)]
     public decimal? Latitude { get; set; }
 
-    [Precision(9, 6)]
+    [Precision(11, 8)]
     public decimal? Longitude { get; set; }
 
     public int? AllowedRadiusM { get; set; }
