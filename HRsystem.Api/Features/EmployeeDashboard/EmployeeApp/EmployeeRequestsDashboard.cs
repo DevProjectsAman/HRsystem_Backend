@@ -12,7 +12,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
         public int StatusId { get; set; }
         public DateTime RequestDate { get; set; }
     };
-    public class EmployeeLastPermissionDto : EmployeeLastActivityDto
+    public class EmployeeLastExcusesDto : EmployeeLastActivityDto
     {
         public int ActivityTypeId { get; set; } = 4;
         public string ActivityTypeName { get; set; }
@@ -33,7 +33,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
     };
     public class EmployeeRequestsDashboardDto
     {
-        public List<EmployeeLastPermissionDto> Permissions { get; set; }
+        public List<EmployeeLastExcusesDto> Excuses { get; set; }
         public List<EmployeeLastMissionDto> Missions { get; set; }
         public List<EmployeeLastVacationDto> Vacations { get; set; }
     };
@@ -57,14 +57,14 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             var employeeId = _currentUser.EmployeeID;
 
             // -----------------------------------------
-            // 1️⃣ Permissions — ActivityType = 4
+            // 1️⃣ Excuses — ActivityType = 4
             // -----------------------------------------
-            var permissions = await _db.TbEmployeeActivities
-                .Where(a => a.EmployeeId == employeeId && a.ActivityTypeId == 4)
+            var Excuses = await _db.TbEmployeeActivities
+                .Where(a => a.EmployeeId == employeeId && a.ActivityTypeId == 6)
                 .Include(a => a.ActivityType) // هنا ترجع جدول ActivityType كامل
                 .OrderByDescending(a => a.RequestDate)
                 .Take(2)
-                .Select(a => new EmployeeLastPermissionDto
+                .Select(a => new EmployeeLastExcusesDto
                 {
                     ActivityId = a.ActivityId,
                     StatusId = a.StatusId,
@@ -81,7 +81,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             // 2️⃣ Missions — ActivityType = 5
             // -----------------------------------------
             var missions = await _db.TbEmployeeActivities
-                .Where(a => a.EmployeeId == employeeId && a.ActivityTypeId == 5)
+                .Where(a => a.EmployeeId == employeeId && a.ActivityTypeId == 4)
                 .Include(a => a.ActivityType) // هنا ترجع جدول ActivityType كامل
                 .OrderByDescending(a => a.RequestDate)
                 .Take(2)
@@ -137,7 +137,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 
             return new EmployeeRequestsDashboardDto
             {
-                Permissions = permissions,
+                Excuses = Excuses,
                 Missions = missions,
                 Vacations = vacations
             };

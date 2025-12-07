@@ -22,7 +22,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
         long ExcuseId,
         int EmployeeId,
         int ActivityTypeId,
-        int StatusId,
+       // int StatusId,
         DateTime ExcuseDate,
         TimeSpan StartTime,
         TimeSpan EndTime,
@@ -89,7 +89,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
                 excuse.ExcuseId,
                 activity.EmployeeId,
                 activity.ActivityTypeId,
-                activity.StatusId,
+               // activity.StatusId,
                 excuse.ExcuseDate.ToDateTime(TimeOnly.MinValue),
                 // ✅ نحول TimeOnly -> TimeSpan
                 excuse.StartTime.ToTimeSpan(),

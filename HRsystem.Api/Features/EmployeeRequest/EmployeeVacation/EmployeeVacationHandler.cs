@@ -35,7 +35,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
                 .FirstOrDefaultAsync(b => b.EmployeeId == employee.EmployeeId && b.VacationTypeId == dto.VacationTypeId, ct);
 
             if (balance == null)
-                throw new NotFoundException("VacationTypeId not found", dto.VacationTypeId);
+                throw new NotFoundException("Don't Have Vacation Balance From This Type", dto.VacationTypeId);
 
             if (balance.RemainingDays < dto.DaysCount)
                 throw new NotFoundException("Balance not enough", dto.DaysCount);
@@ -123,7 +123,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
             var balance = await _db.TbEmployeeVacationBalances
                 .FirstOrDefaultAsync(b => b.EmployeeId == employee.EmployeeId && b.VacationTypeId == request.VacationTypeId, ct);
 
-            if (balance == null) throw new NotFoundException("VacationTypeId not found", request.VacationTypeId);
+            if (balance == null) throw new NotFoundException(" Don't Have Vacation Balance From This Type ", request.VacationTypeId);
 
             return new EmployeeVacationBalanceDto
             {

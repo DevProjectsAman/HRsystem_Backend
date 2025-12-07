@@ -11,7 +11,7 @@ namespace HRsystem.Api.Features.Mission
         {
             //var group = app.MapGroup("/api/missionRequest").WithTags("requests");
 
-            var group = app.MapGroup("/api/employee-requests").WithTags("Employee Dashboard");
+            var group = app.MapGroup("/api/employee-requests").WithTags("Employee Requests");
 
             // ✅ Use CreateMissionCommand instead of CreateProjectCommand
             group.MapPost("/CreateMission", [Authorize]async (CreateMissionCommand command, ISender mediator) =>
