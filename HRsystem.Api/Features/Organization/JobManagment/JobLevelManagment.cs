@@ -225,7 +225,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
                     CompanyId = request.companyId,
                     JobLevelDesc = request.JobLevelDesc,
                     JobLevelCode = request.JobLevelCode,
-                    CreatedAt = DateTime.Now,
+                    CreatedAt = DateTime.UtcNow,
                     CreatedBy = userService.UserId // Uncomment if you want to track who created the record
 
                 };
@@ -297,7 +297,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
 
             entity.JobLevelDesc = request.JobLevelDesc;
             entity.JobLevelCode = request.JobLevelCode;
-            entity.UpdatedAt = DateTime.Now;
+            entity.UpdatedAt = DateTime.UtcNow;
             entity.UpdatedBy = userService.UserId; // Uncomment if you want to track who updated the record
 
             await db.SaveChangesAsync(ct);

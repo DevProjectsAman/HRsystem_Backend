@@ -118,7 +118,7 @@ namespace HRsystem.Api.Features.Mission.CreateMission
            // RuleFor(x => x.CompanyId).GreaterThan(0);
 
             RuleFor(x => x.RequestDate)
-             .LessThanOrEqualTo(DateTime.Now)
+             .LessThanOrEqualTo(DateTime.UtcNow)
              .WithMessage("RequestDate cannot be in the future");
 
             // Mission validation

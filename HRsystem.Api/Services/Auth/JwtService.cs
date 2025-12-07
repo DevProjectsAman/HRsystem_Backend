@@ -78,7 +78,7 @@ namespace HRsystem.Api.Services
                 issuer: issuer,
                 audience: audience,
                 claims: claims,
-                expires: DateTime.Now.AddHours(10),
+                expires: DateTime.UtcNow.AddHours(10),
                 signingCredentials: credentials
             );
 

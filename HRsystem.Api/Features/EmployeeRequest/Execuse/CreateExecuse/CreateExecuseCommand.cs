@@ -59,7 +59,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
                 ActivityTypeId = activityType.ActivityTypeId,
                 StatusId = 10,// when create status automate to pending status
                 RequestBy = employeeId,
-                RequestDate = DateTime.Now,
+                RequestDate = DateTime.UtcNow,
                 CompanyId = companyId
             };
 
@@ -108,7 +108,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
             //    .WithMessage("StatusId must be greater than 0");
 
             RuleFor(x => x.ExcuseDate)
-                    .GreaterThanOrEqualTo(DateTime.Now.Date)
+                    .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
                     .WithMessage("ExcuseDate cannot be in the past");
 
             RuleFor(x => x.StartTime)

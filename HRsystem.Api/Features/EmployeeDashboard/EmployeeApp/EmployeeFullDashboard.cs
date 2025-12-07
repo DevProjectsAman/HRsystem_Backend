@@ -82,7 +82,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             //if (shift == null)
             //    throw new NotFoundException("Shift not found", employee.ShiftId ?? 0);
 
-            var now = TimeOnly.FromDateTime(DateTime.Now);
+            var now = TimeOnly.FromDateTime(DateTime.UtcNow);
             var shiftInfo = new EmployeeGetShiftDto
             {
                 StartTime = shift.StartTime,
@@ -154,7 +154,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             }
 
             var checkhistory = new CheckHistoryDto ();
-            var today = DateTime.Now.Date;
+            var today = DateTime.UtcNow.Date;
             var activity = await _db.TbEmployeeActivities
                 .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today && a.ActivityTypeId == 1, ct);
 

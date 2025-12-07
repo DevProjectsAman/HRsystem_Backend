@@ -252,7 +252,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
                 PermissionCatagory = request.PermissionCatagory,
                 PermissionName = request.PermissionName,
                 PermissionDescription = request.PermissionDescription,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 CreatedBy = userService.UserId // Assumes UserId is available
             };
 
@@ -291,7 +291,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
             entity.PermissionCatagory = request.PermissionCatagory;
             entity.PermissionName = request.PermissionName;
             entity.PermissionDescription = request.PermissionDescription;
-           // entity.CreatedAt = DateTime.Now;
+           // entity.CreatedAt = DateTime.UtcNow;
            // entity.UpdatedBy = userService.UserId; // Assuming you have UpdatedBy field/logic
 
             await db.SaveChangesAsync(ct);

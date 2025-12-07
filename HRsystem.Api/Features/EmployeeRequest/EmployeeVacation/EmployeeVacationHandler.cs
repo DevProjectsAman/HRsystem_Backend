@@ -49,7 +49,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
                     ActivityTypeId = dto.VacationTypeId,
                     StatusId = 7, // Pending
                     RequestBy = employee.EmployeeId,
-                    RequestDate = DateTime.Now,
+                    RequestDate = DateTime.UtcNow,
                     CompanyId = employee.CompanyId
                 };
                 _db.TbEmployeeActivities.Add(activity);

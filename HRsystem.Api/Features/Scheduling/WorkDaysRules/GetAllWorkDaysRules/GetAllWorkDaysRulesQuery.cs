@@ -187,7 +187,7 @@ namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
                 Priority = request.Priority,
                 CompanyId = request.CompanyId,
                 CreatedBy = _currentUser.UserId,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
 
             };
 
