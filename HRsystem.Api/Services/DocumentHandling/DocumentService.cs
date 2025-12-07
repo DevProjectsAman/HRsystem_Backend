@@ -113,7 +113,7 @@ namespace HRsystem.Api.Services.DocumentHandling
                 DocFullPath = virtualFilePath,
                 FileSizeBytes = size,
                 FileSizeReadable = FormatFileSize(size),
-                UploadedAt = DateTime.Now
+                UploadedAt = DateTime.UtcNow
             };
         }
 
@@ -130,7 +130,7 @@ namespace HRsystem.Api.Services.DocumentHandling
         // 🔹 Folder creation (physical)
         private string GetStaticFolder(string employeeCode)
         {
-            string folderDate = $"{DateTime.Now:yyyy-MM-dd}";
+            string folderDate = $"{DateTime.UtcNow:yyyy-MM-dd}";
             string basePath = Path.Combine(_settings.StaticFilesFolder, employeeCode, folderDate);
 
             if (!Directory.Exists(basePath))
@@ -142,7 +142,7 @@ namespace HRsystem.Api.Services.DocumentHandling
         // 🔹 Folder (virtual)
         private string GetVirtualFolder(string employeeCode)
         {
-            string folderDate = $"{DateTime.Now:yyyy-MM-dd}";
+            string folderDate = $"{DateTime.UtcNow:yyyy-MM-dd}";
             string basePath = Path.Combine(_settings.VirtualURL, employeeCode, folderDate);
             return basePath.Replace("\\", "/");
         }

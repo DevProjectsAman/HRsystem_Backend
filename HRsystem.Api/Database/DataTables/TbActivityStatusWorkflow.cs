@@ -31,7 +31,7 @@ namespace HRsystem.Api.Database.DataTables
         [Required]
         public int CompanyId { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public int? CreatedBy { get; set; }
     }

@@ -35,7 +35,7 @@ namespace HRsystem.Api.Database.Entities
 
 
         public int? CreatedBy { get; set; }
-        public DateTime? CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
     }
 }

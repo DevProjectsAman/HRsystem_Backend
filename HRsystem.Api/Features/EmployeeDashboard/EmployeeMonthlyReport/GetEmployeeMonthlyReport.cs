@@ -105,7 +105,7 @@
 //        public async Task<EmployeeAnnualBalanceDto> Handle(EmployeeAnnualBalance request, CancellationToken ct)
 //        {
 
-//            DateTime Today = DateTime.Now.Date;
+//            DateTime Today = DateTime.UtcNow.Date;
 //            //string dayName = Today.DayOfWeek.ToString();
 //            // Output: "Monday"
 
@@ -159,7 +159,7 @@
 //                var remoteworkDays = JsonSerializer.Deserialize<List<string>>(employeeDetails.RemoteWorkDayS.RemoteWorkDaysNames);
 
 //                // 2️⃣ Get today's name
-//                string todayName = DateTime.Now.ToString("dddd", new CultureInfo("en-US"));
+//                string todayName = DateTime.UtcNow.ToString("dddd", new CultureInfo("en-US"));
 
 //                // 3️⃣ Compare (case-insensitive)
 //                dayReport.IsRemoteWorkday = remoteworkDays.Any(day =>
@@ -423,11 +423,11 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
 
         public async Task<string> Handle(GetEmployeeMonthlyReport request, CancellationToken ct)
         {
-            //var today = DateTime.Now.Date;
-            var today = DateTime.Now.Date.AddDays(2);
+            //var today = DateTime.UtcNow.Date;
+            var today = DateTime.UtcNow.Date.AddDays(2);
 
 
-            string todayName = DateTime.Now.ToString("dddd", new CultureInfo("en-US"));
+            string todayName = DateTime.UtcNow.ToString("dddd", new CultureInfo("en-US"));
 
             var employees = await _db.TbEmployees
                 .Include(e => e.JobTitle).ThenInclude(j => j.JobLevel)
@@ -679,8 +679,8 @@ namespace HRsystem.Api.Services.Reports
 
         public async Task<string> GenerateMonthlyReportAsync(CancellationToken ct)
         {
-            var Today = DateTime.Now.Date;
-            string todayName = DateTime.Now.ToString("dddd", new CultureInfo("en-US"));
+            var Today = DateTime.UtcNow.Date;
+            string todayName = DateTime.UtcNow.ToString("dddd", new CultureInfo("en-US"));
 
             var employees = await _db.TbEmployees
                 .Include(e => e.JobTitle).ThenInclude(j => j.JobLevel)

@@ -21,7 +21,7 @@ namespace HRsystem.Api.Features.City.UpdateCity
             entity.CityName = request.CityName;
             entity.GovId = request.GovId;
             entity.UpdatedBy = request.UpdatedBy;
-            entity.UpdatedAt = DateTime.Now;
+            entity.UpdatedAt = DateTime.UtcNow;
 
             await db.SaveChangesAsync(ct);
             return entity;

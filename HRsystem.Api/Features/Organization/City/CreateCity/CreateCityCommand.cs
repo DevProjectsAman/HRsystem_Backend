@@ -16,7 +16,7 @@ namespace HRsystem.Api.Features.City.CreateCity
                 CityName = request.CityName,
                 GovId = request.GovId,
                 CreatedBy = request.CreatedBy,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             db.TbCities.Add(entity);

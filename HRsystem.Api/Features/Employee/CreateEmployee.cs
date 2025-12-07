@@ -66,10 +66,10 @@ public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, NewE
                 WorkDaysId = dto.EmployeeWorkConditions.WorkDaysId,
 
                 // ✅ Meta
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 CreatedBy = (int)currentEmployeeId,
                 UpdatedBy = (int)currentEmployeeId,
-                UpdatedAt = DateTime.Now,
+                UpdatedAt = DateTime.UtcNow,
             };
 
             _db.TbEmployees.Add(employee);
@@ -84,7 +84,7 @@ public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, NewE
                     CityId = loc.CityId,
                     WorkLocationId = loc.WorkLocationId,
                     CompanyId = loc.CompanyId,
-                    CreatedAt = DateTime.Now,
+                    CreatedAt = DateTime.UtcNow,
                     CreatedBy = (int)currentEmployeeId
                 }).ToList();
 

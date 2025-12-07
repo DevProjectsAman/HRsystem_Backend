@@ -47,7 +47,7 @@ namespace HRsystem.Api.Features.Organization.Company.UpdateCompany
             company.GroupId = request.GroupId;
             company.UpdatedBy = _currentUser.UserId; // optional
             company.CompanyLogo = request.CompanyLogo;
-            company.UpdatedAt = DateTime.Now;
+            company.UpdatedAt = DateTime.UtcNow;
 
             try
             {

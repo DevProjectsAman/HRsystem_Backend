@@ -41,7 +41,7 @@ namespace HRsystem.Api.Features.Scheduling.Shift.CreateShift
                 RequiredWorkingHours = request.RequiredWorkingHours,
                 Notes = request.Notes,
                 CompanyId = request.CompanyId,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             _db.TbShifts.Add(shift);

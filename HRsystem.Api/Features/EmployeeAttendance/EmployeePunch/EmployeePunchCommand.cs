@@ -73,7 +73,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             }
             if (WorkLOC == null) throw new Exception("Not In Allowed Radius");
 
-            var today = DateTime.Now.Date;
+            var today = DateTime.UtcNow.Date;
             var activity = await _db.TbEmployeeActivities
                 .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today && a.ActivityTypeId == 1, ct);
 
@@ -85,7 +85,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                     EmployeeId = employee.EmployeeId,
                     StatusId = 16,
                     RequestBy = employee.EmployeeId,
-                    RequestDate = DateTime.Now,
+                    RequestDate = DateTime.UtcNow,
                     CompanyId = employee.CompanyId
                 };
                 _db.TbEmployeeActivities.Add(activity);
@@ -101,7 +101,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 {
                     ActivityId = activity.ActivityId,
                     AttendanceDate = today,
-                    FirstPuchin = DateTime.Now
+                    FirstPuchin = DateTime.UtcNow
                 };
                 var Shift = await _db.TbShifts
                 .FirstOrDefaultAsync(b => b.ShiftId == employee.ShiftId, ct);
@@ -118,14 +118,14 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 switch (Shift.IsFlexible)
                 {
                     case true:
-                        if ((ShiftINfo.MaxStartTime ?? new TimeOnly(0, 0)).AddMinutes(ShiftINfo.GracePeriodMinutes) < TimeOnly.FromDateTime(DateTime.Now)
+                        if ((ShiftINfo.MaxStartTime ?? new TimeOnly(0, 0)).AddMinutes(ShiftINfo.GracePeriodMinutes) < TimeOnly.FromDateTime(DateTime.UtcNow)
                             )
                             attendance.AttStatues = statues.Late;
                         else
                             attendance.AttStatues = statues.OnTime;
                         break;
                     case false:
-                        if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(DateTime.Now))
+                        if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(DateTime.UtcNow))
                             attendance.AttStatues = statues.Late;
                         else
                             attendance.AttStatues = statues.OnTime;
@@ -139,7 +139,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             var punch = new TbEmployeeAttendancePunch
             {
                 AttendanceId = attendance.AttendanceId,
-                PunchTime = DateTime.Now,
+                PunchTime = DateTime.UtcNow,
                 PunchType = "PunchIn",
                 LocationId = WorkLOC.Value
             };
@@ -211,8 +211,8 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             }
             if (WorkLOC == null) throw new Exception("Not In Allowed Radius");
 
-            var today = DateTime.Now.Date;
-            var now = DateTime.Now;
+            var today = DateTime.UtcNow.Date;
+            var now = DateTime.UtcNow;
 
             var activity = await _db.TbEmployeeActivities
                 .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today && a.ActivityTypeId == 1, ct);
@@ -263,14 +263,14 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 switch (Shift.IsFlexible)
                 {
                     case true:
-                        if ((ShiftINfo.MaxStartTime ?? new TimeOnly(0, 0)).AddMinutes(ShiftINfo.GracePeriodMinutes) < TimeOnly.FromDateTime(DateTime.Now)
+                        if ((ShiftINfo.MaxStartTime ?? new TimeOnly(0, 0)).AddMinutes(ShiftINfo.GracePeriodMinutes) < TimeOnly.FromDateTime(DateTime.UtcNow)
                             )
                             attendance.AttStatues = statues.Late;
                         else
                             attendance.AttStatues = statues.OnTime;
                         break;
                     case false:
-                        if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(DateTime.Now))
+                        if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(DateTime.UtcNow))
                             attendance.AttStatues = statues.Late;
                         else
                             attendance.AttStatues = statues.OnTime;
@@ -421,7 +421,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 
     //        public async Task<long> Handle(PunchInCommand request, CancellationToken ct)
     //        {
-    //            var now = DateTime.Now;
+    //            var now = DateTime.UtcNow;
 
     //            // 1️⃣ Check WorkLocation
     //            var locations = await _db.TbWorkLocations.ToListAsync(ct);
@@ -469,7 +469,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 
     //        public async Task<long> Handle(PunchOutCommand request, CancellationToken ct)
     //        {
-    //            var now = DateTime.Now;
+    //            var now = DateTime.UtcNow;
 
     //            // 1️⃣ Check WorkLocation
     //            var locations = await _db.TbWorkLocations.ToListAsync(ct);
@@ -537,7 +537,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 
 //    public async Task<EmployeeAttendanceDto> Handle(PunchInCommand request, CancellationToken ct)
 //    {
-//        var today = DateTime.Now.Date;
+//        var today = DateTime.UtcNow.Date;
 
 //        // 1️⃣ تحقق من وجود Activity اليوم
 //        var activity = await _db.TbEmployeeActivities
@@ -548,7 +548,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 //            activity = new TbEmployeeActivity
 //            {
 //                EmployeeId = request.EmployeeId,
-//                RequestDate = DateTime.Now
+//                RequestDate = DateTime.UtcNow
 //            };
 //            _db.TbEmployeeActivities.Add(activity);
 //            await _db.SaveChangesAsync(ct);
@@ -564,7 +564,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 //            {
 //                EmployeeId = request.EmployeeId,
 //                ActivityId = activity.ActivityId,
-//                FirstPunchIn = DateTime.Now,
+//                FirstPunchIn = DateTime.UtcNow,
 //                StatusId = 1
 //            };
 //            _db.TbEmployeeAttendances.Add(attendance);
@@ -575,7 +575,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 //        var log = new TbAttendanceLog
 //        {
 //            AttendanceId = attendance.AttendanceId,
-//            PunchTime = DateTime.Now,
+//            PunchTime = DateTime.UtcNow,
 //            Type = "In"
 //        };
 //        _db.TbAttendanceLogs.Add(log);

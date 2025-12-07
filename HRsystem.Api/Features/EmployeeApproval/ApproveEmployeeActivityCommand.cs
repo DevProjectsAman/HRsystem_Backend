@@ -46,7 +46,7 @@ namespace HRsystem.Api.Features.EmployeeApproval
                 ActivityId = activity.ActivityId,
                 StatusId = request.StatusId,
                 ChangedBy = _currentUser.EmployeeID,
-                ChangedDate = DateTime.Now,
+                ChangedDate = DateTime.UtcNow,
                 Notes = request.Notes
             };
             _db.TbEmployeeActivityApprovals.Add(approval);

@@ -65,14 +65,14 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             switch(Shift.IsFlexible)
             {
                 case true:
-                    if ((ShiftINfo.MaxStartTime ?? new TimeOnly(0, 0)).AddMinutes(ShiftINfo.GracePeriodMinutes) < TimeOnly.FromDateTime(DateTime.Now)
+                    if ((ShiftINfo.MaxStartTime ?? new TimeOnly(0, 0)).AddMinutes(ShiftINfo.GracePeriodMinutes) < TimeOnly.FromDateTime(DateTime.UtcNow)
                         ) 
                         ShiftINfo.Statues = statues.Late;
                     else
                         ShiftINfo.Statues = statues.OnTime;
                     break;
                 case false:
-                    if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(DateTime.Now))
+                    if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(DateTime.UtcNow))
                         ShiftINfo.Statues = statues.Late;
                     else
                         ShiftINfo.Statues = statues.OnTime;
