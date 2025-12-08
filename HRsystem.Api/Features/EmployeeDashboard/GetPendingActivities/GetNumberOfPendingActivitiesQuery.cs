@@ -37,7 +37,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
             var lastMonthDate = DateTime.UtcNow.AddDays(-30);
 
             var activities = await _db.TbEmployeeActivities
-                .Where(a => a.EmployeeId == employeeId && a.RequestDate >= lastMonthDate)
+                .Where(a => a.EmployeeId == employeeId && a.RequestDate >= lastMonthDate && a.ActivityTypeId != 1)
                 .Select(a => a.StatusId)
                 .ToListAsync(ct);
 
