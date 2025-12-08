@@ -1,4 +1,5 @@
-﻿using HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites;
+﻿using HRsystem.Api.Features.EmployeeDashboard.GetAllActivities;
+using HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites;
 using HRsystem.Api.Features.EmployeeDashboard.GetRejectedActivities;
 using MediatR;
 
@@ -38,11 +39,20 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
                 return Results.Ok(new { Success = true, Data = result });
             });
 
-            group.MapGet("/R", async (ISender mediator) =>
+            group.MapGet("/Rejected", async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetRejectedActivitiesQueury());
                 if (result == null || !result.Any())
                     return Results.NotFound(new { Success = false, Message = "No Rejected activities found" });
+
+                return Results.Ok(new { Success = true, Data = result });
+            });
+
+            group.MapGet("/AllActivities", async (ISender mediator) =>
+            {
+                var result = await mediator.Send(new GetAllActivitiesQuery());
+                if (result == null || !result.Any())
+                    return Results.NotFound(new { Success = false, Message = "No  activities found" });
 
                 return Results.Ok(new { Success = true, Data = result });
             });
