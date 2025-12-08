@@ -64,11 +64,19 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             foreach (var loc in locations)
             {
                 var WID = await _db.TbWorkLocations.FirstOrDefaultAsync(e => e.WorkLocationId == loc.WorkLocationId, ct);
-                var distance = GetDistanceInMeters(request.Latitude, request.Longitude, (double)WID.Latitude, (double)WID.Longitude);
-                if (distance <= WID.AllowedRadiusM)
+                if (WID != null && WID.Latitude.HasValue && WID.Longitude.HasValue && WID.AllowedRadiusM.HasValue)
                 {
-                    WorkLOC = WID.WorkLocationId;
-                    break;
+                    var distance = GetDistanceInMeters(
+                        request.Latitude,
+                        request.Longitude,
+                        (double)WID.Latitude.Value,
+                        (double)WID.Longitude.Value
+                    );
+                    if (distance <= WID.AllowedRadiusM.Value)
+                    {
+                        WorkLOC = WID.WorkLocationId;
+                        break;
+                    }
                 }
             }
             if (WorkLOC == null) throw new Exception("Not In Allowed Radius");
@@ -106,14 +114,24 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 var Shift = await _db.TbShifts
                 .FirstOrDefaultAsync(b => b.ShiftId == employee.ShiftId, ct);
 
-                var ShiftINfo = new EmployeeGetShiftDto
+                EmployeeGetShiftDto? ShiftINfo = null;
+
+                if (Shift != null)
                 {
-                    EndTime = Shift.EndTime,
-                    StartTime = Shift.StartTime,
-                    GracePeriodMinutes = Shift.GracePeriodMinutes,
-                    IsFlexible = Shift.IsFlexible,
-                    MaxStartTime = Shift.MaxStartTime,
-                };
+                    ShiftINfo = new EmployeeGetShiftDto
+                    {
+                        EndTime = Shift.EndTime,
+                        StartTime = Shift.StartTime,
+                        GracePeriodMinutes = Shift.GracePeriodMinutes,
+                        IsFlexible = Shift.IsFlexible,
+                        MaxStartTime = Shift.MaxStartTime,
+                    };
+                }
+                else
+                {
+                    // Handle the case where Shift is null, e.g. throw or set defaults
+                    throw new Exception("Shift not found for employee.");
+                }
 
                 switch (Shift.IsFlexible)
                 {
@@ -202,11 +220,19 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             foreach (var loc in locations)
             {
                 var WID = await _db.TbWorkLocations.FirstOrDefaultAsync(e => e.WorkLocationId == loc.WorkLocationId, ct);
-                var distance = GetDistanceInMeters(request.Latitude, request.Longitude, (double)WID.Latitude, (double)WID.Longitude);
-                if (distance <= WID.AllowedRadiusM)
+                if (WID != null && WID.Latitude.HasValue && WID.Longitude.HasValue && WID.AllowedRadiusM.HasValue)
                 {
-                    WorkLOC = WID.WorkLocationId;
-                    break;
+                    var distance = GetDistanceInMeters(
+                        request.Latitude,
+                        request.Longitude,
+                        (double)WID.Latitude.Value,
+                        (double)WID.Longitude.Value
+                    );
+                    if (distance <= WID.AllowedRadiusM.Value)
+                    {
+                        WorkLOC = WID.WorkLocationId;
+                        break;
+                    }
                 }
             }
             if (WorkLOC == null) throw new Exception("Not In Allowed Radius");
@@ -251,14 +277,24 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 var Shift = await _db.TbShifts
                 .FirstOrDefaultAsync(b => b.ShiftId == employee.ShiftId, ct);
 
-                var ShiftINfo = new EmployeeGetShiftDto
+                EmployeeGetShiftDto? ShiftINfo = null;
+
+                if (Shift != null)
                 {
-                    EndTime = Shift.EndTime,
-                    StartTime = Shift.StartTime,
-                    GracePeriodMinutes = Shift.GracePeriodMinutes,
-                    IsFlexible = Shift.IsFlexible,
-                    MaxStartTime = Shift.MaxStartTime,
-                };
+                    ShiftINfo = new EmployeeGetShiftDto
+                    {
+                        EndTime = Shift.EndTime,
+                        StartTime = Shift.StartTime,
+                        GracePeriodMinutes = Shift.GracePeriodMinutes,
+                        IsFlexible = Shift.IsFlexible,
+                        MaxStartTime = Shift.MaxStartTime,
+                    };
+                }
+                else
+                {
+                    // Handle the case where Shift is null, e.g. throw or set defaults
+                    throw new Exception("Shift not found for employee.");
+                }
 
                 switch (Shift.IsFlexible)
                 {
@@ -323,8 +359,11 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 }
                 else if (p.PunchType == "PunchOut" && lastIn.HasValue)
                 {
-                    totalMinutes += (p.PunchTime.Value - lastIn.Value).TotalMinutes;
-                    lastIn = null;
+                    if (p.PunchTime.HasValue && lastIn.HasValue)
+                    {
+                        totalMinutes += (p.PunchTime.Value - lastIn.Value).TotalMinutes;
+                        lastIn = null;
+                    }
                 }
             }
 

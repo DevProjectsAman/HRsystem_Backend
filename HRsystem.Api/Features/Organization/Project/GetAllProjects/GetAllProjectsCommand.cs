@@ -13,9 +13,9 @@ namespace HRsystem.Api.Features.Organization.Project.GetAllProjects
     public class ProjectResponse
     {
        public int ProjectId { get; set; }
-        public string ProjectCode { get; set; }
-        public LocalizedData ProjectName { get; set; }
-       
+        public string ProjectCode { get; set; } = string.Empty;
+        public LocalizedData ProjectName { get; set; } = new();
+
         public int CompanyId { get; set; }
         }
 
@@ -39,7 +39,7 @@ namespace HRsystem.Api.Features.Organization.Project.GetAllProjects
             return statues.Select(p => new ProjectResponse
             {
                   ProjectId = p.ProjectId,
-                  ProjectCode = p.ProjectCode,
+                  ProjectCode = p.ProjectCode?? string.Empty,
                   ProjectName = p.ProjectName,
                   //CityId = p.CityId,
                   //WorkLocationId = p.WorkLocationId,
