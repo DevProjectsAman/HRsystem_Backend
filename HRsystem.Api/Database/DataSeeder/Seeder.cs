@@ -34,7 +34,7 @@ namespace HRsystem.Api.Database.DataSeeder
                 {
                     // Id = Guid.Parse("08dd03ec-aff2-4d24-89cf-738fd51097a9"),
                     Id = 1,
-                    CreatedAt = DateTime.Now,
+                    CreatedAt = DateTime.UtcNow,
                     Email = "systemadmin@example.com",
                     NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                     PhoneNumber = "01200000000",
@@ -60,7 +60,7 @@ namespace HRsystem.Api.Database.DataSeeder
                     IsToChangePassword = false,
                     ForceLogout = false,
 
-                    LastPasswordChangedAt = DateTime.Now,
+                    LastPasswordChangedAt = DateTime.UtcNow,
                     LastLoginAt = null, // first login not happened yet
                     LastFailedLoginAt = null,
                     FailedLoginCount = 0,

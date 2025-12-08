@@ -1,5 +1,6 @@
 ﻿using HRsystem.Api.Features.EmployeeRequest.EmployeeVacation;
 using MediatR;
+using Microsoft.AspNetCore.Components.Forms;
 //using static HRsystem.Api.Features.employeevacations.EmployeeVacations;
 
 namespace HRsystem.Api.Features.employeevacations
@@ -27,14 +28,30 @@ namespace HRsystem.Api.Features.employeevacations
                 RequestVacationCommand command,
                 ISender mediator) =>
             {
-                var result = await mediator.Send(command);
-                return Results.Ok(new
+                //var result = await mediator.Send(command);
+                //return Results.Ok(new
+                //{
+                //    Success = true,
+                //    Message = "Vacation requested successfully",
+                //    Data = result
+                //});
+                try
                 {
-                    Success = true,
-                    Message = "Vacation requested successfully",
-                    Data = result
-                });
+                    var result = await mediator.Send(command);
+
+                    return Results.Ok(new { Success = true, Message = "Vacation requested successfully", Data = result });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Ok(new
+                    {
+                        success = false,
+                        message = ex.Message,
+                        data = (object)null
+                    });
+                }
             });
+
 
             // ✅ Get Vacation Balance by Type
             group.MapGet("/get-balance/{vacationTypeId}", async (int vacationTypeId, ISender mediator) =>

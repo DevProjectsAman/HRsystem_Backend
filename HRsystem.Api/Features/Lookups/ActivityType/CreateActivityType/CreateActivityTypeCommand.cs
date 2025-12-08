@@ -28,7 +28,7 @@ namespace HRsystem.Api.Features.ActivityType.CreateActivityType
                 ActivityDescription = request.ActivityDescription,
                 CompanyId = request.CompanyId,
                 CreatedBy = request.CreatedBy,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             _db.TbActivityTypes.Add(entity);

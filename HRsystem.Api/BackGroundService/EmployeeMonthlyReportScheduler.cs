@@ -15,7 +15,7 @@ public class EmployeeMonthlyReportScheduler : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
 
             // تحديد وقت التشغيل: 11:05 صباحًا
             var nextRun = DateTime.Today.AddHours(13).AddMinutes(10);
@@ -36,7 +36,7 @@ public class EmployeeMonthlyReportScheduler : BackgroundService
 
             try
             {
-                Console.WriteLine($"[Scheduler] Running Employee Monthly Report at {DateTime.Now}");
+                Console.WriteLine($"[Scheduler] Running Employee Monthly Report at {DateTime.UtcNow}");
                 var result = await reportService.GenerateMonthlyReportAsync(stoppingToken);
                 Console.WriteLine($"[Scheduler] {result}");
             }

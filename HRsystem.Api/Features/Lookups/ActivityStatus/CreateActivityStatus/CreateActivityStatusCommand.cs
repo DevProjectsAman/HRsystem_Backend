@@ -27,7 +27,7 @@ namespace HRsystem.Api.Features.Lookups.ActivityStatus.CreateActivityStatus
                 StatusCode = request.StatusCode,
                 StatusName = request.StatusName,
                 IsFinal = request.IsFinal,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 CreatedBy = request.CreatedBy,
                 CompanyId = request.CompanyId
             };

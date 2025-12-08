@@ -22,7 +22,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
         long ExcuseId,
         int EmployeeId,
         int ActivityTypeId,
-        int StatusId,
+       // int StatusId,
         DateTime ExcuseDate,
         TimeSpan StartTime,
         TimeSpan EndTime,
@@ -59,7 +59,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
                 ActivityTypeId = activityType.ActivityTypeId,
                 StatusId = 10,// when create status automate to pending status
                 RequestBy = employeeId,
-                RequestDate = DateTime.Now,
+                RequestDate = DateTime.UtcNow,
                 CompanyId = companyId
             };
 
@@ -89,7 +89,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
                 excuse.ExcuseId,
                 activity.EmployeeId,
                 activity.ActivityTypeId,
-                activity.StatusId,
+               // activity.StatusId,
                 excuse.ExcuseDate.ToDateTime(TimeOnly.MinValue),
                 // ✅ نحول TimeOnly -> TimeSpan
                 excuse.StartTime.ToTimeSpan(),
@@ -108,7 +108,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
             //    .WithMessage("StatusId must be greater than 0");
 
             RuleFor(x => x.ExcuseDate)
-                    .GreaterThanOrEqualTo(DateTime.Now.Date)
+                    .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
                     .WithMessage("ExcuseDate cannot be in the past");
 
             RuleFor(x => x.StartTime)

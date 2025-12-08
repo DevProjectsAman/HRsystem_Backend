@@ -28,7 +28,7 @@ namespace HRsystem.Api.Features.Mission.CreateMission
         long MissionId,
         int EmployeeId,
         int ActivityTypeId,
-        int StatusId,
+        //int StatusId,
         DateTime StartDatetime,
         DateTime EndDatetime,
         string MissionLocation,
@@ -96,7 +96,7 @@ namespace HRsystem.Api.Features.Mission.CreateMission
                 mission.MissionId,
                 activity.EmployeeId,
                 activity.ActivityTypeId,
-                activity.StatusId,
+               // activity.StatusId,
                 mission.StartDatetime,
                 mission.EndDatetime,
                 mission.MissionLocation,
@@ -118,7 +118,7 @@ namespace HRsystem.Api.Features.Mission.CreateMission
            // RuleFor(x => x.CompanyId).GreaterThan(0);
 
             RuleFor(x => x.RequestDate)
-             .LessThanOrEqualTo(DateTime.Now)
+             .LessThanOrEqualTo(DateTime.UtcNow)
              .WithMessage("RequestDate cannot be in the future");
 
             // Mission validation

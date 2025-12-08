@@ -34,9 +34,10 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
             const int ApprovedStatusId = 7;
             const int RejectedStatusId = 8;
             const int PendingStatusId = 10;
+            var lastMonthDate = DateTime.UtcNow.AddDays(-30);
 
             var activities = await _db.TbEmployeeActivities
-                .Where(a => a.EmployeeId == employeeId)
+                .Where(a => a.EmployeeId == employeeId && a.RequestDate >= lastMonthDate)
                 .Select(a => a.StatusId)
                 .ToListAsync(ct);
 

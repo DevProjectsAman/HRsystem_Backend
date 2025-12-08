@@ -25,7 +25,7 @@ namespace HRsystem.Api.Features.Organization.Company.CreateCompany
                 GroupId = request.GroupId,
                 CompanyName = request.CompanyName,
                 CompanyLogo = request.CompanyLogo,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             _db.TbCompanies.Add(company);

@@ -36,7 +36,7 @@ namespace HRsystem.Api.Features.Organization.Project.CreateProject
                 //WorkLocationId = request.WorkLocationId,
                 CompanyId = request.CompanyId,
                 CreatedBy = request.CreatedBy,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             db.TbProjects.Add(entity);

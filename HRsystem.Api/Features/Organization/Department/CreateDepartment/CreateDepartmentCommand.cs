@@ -39,7 +39,7 @@ namespace HRsystem.Api.Features.Organization.Department.CreateDepartment
                 DepartmentName = request.DepartmentName,
                 CompanyId = request.CompanyId,
                 //CompanyLogo = request.CompanyLogo,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 CreatedBy = _currentUser.UserId
 
             };

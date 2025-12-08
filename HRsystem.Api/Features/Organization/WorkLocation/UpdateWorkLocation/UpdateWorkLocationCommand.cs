@@ -40,7 +40,7 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.UpdateWorkLocation
             entity.Longitude = request.Longitude;
             entity.AllowedRadiusM = request.AllowedRadiusM;
             entity.CityId = request.CityId;
-            entity.UpdatedAt = DateTime.Now;
+            entity.UpdatedAt = DateTime.UtcNow;
 
             await _db.SaveChangesAsync(ct);
             return entity.WorkLocationId;

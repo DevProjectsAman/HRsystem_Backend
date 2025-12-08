@@ -13,6 +13,6 @@ namespace HRsystem.Api.Database.Entities
         {
         }
         //public Guid? AddUserID { get; set; }
-        //public DateTime? CreatedDate { get; set; } = DateTime.Now;
+        //public DateTime? CreatedDate { get; set; } = DateTime.UtcNow;
     }
 }

@@ -19,14 +19,15 @@ public partial class TbWorkLocation
     //[MaxLength(100)]
     public LocalizedData LocationName { get; set; } = null!;
 
-    [Precision(9, 6)]
+    [Precision(11, 8)]
     public decimal? Latitude { get; set; }
 
-    [Precision(9, 6)]
+    [Precision(11, 8)]
     public decimal? Longitude { get; set; }
 
     public int? AllowedRadiusM { get; set; }
 
+    public int? GovId { get; set; }
     public int? CityId { get; set; }
 
     public int? CreatedBy { get; set; }
@@ -37,13 +38,11 @@ public partial class TbWorkLocation
 
     public DateTime? UpdatedAt { get; set; }
 
+    public virtual TbGov? Gov { get; set; }
     public virtual TbCity? City { get; set; }
 
     public virtual TbCompany Company { get; set; } = null!;
+       
 
-    public virtual TbJobTitle? JobTitle { get; set; }
-
-    
-
-    public virtual TbWorkLocation? WorkingLocation { get; set; }
+ 
 }

@@ -1,4 +1,5 @@
 ﻿using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
+using System.ComponentModel.DataAnnotations;
 
 namespace HRsystem.Api.Features.EmployeeActivityDt
 {
@@ -23,10 +24,16 @@ namespace HRsystem.Api.Features.EmployeeActivityDt
         public long ActivityId { get; set; }
         public DateTime? FirstPunchIn { get; set; }
         public DateTime? LastPunchOut { get; set; }
-        public decimal? TotalHours { get; set; }
+        //public decimal? TotalHours { get; set; }
+        public statues AttStatues { get; set; }
+        public string? ActualWorkingHours { get; set; }
 
-        public statues Statues { get; set; }
-        public decimal? ActualWorkingHours { get; set; }
+
+        public string? TotalHours { get; set; }
+
+
+        [MaxLength(25)]
+        public string PunchType { get; set; }
 
     }
 
@@ -83,7 +90,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt
     //    //            throw new InvalidOperationException("Company not found for this employee");
 
 
-    //    //        var now = DateTime.Now;
+    //    //        var now = DateTime.UtcNow;
     //    //        var date = now.Date;
 
     //    //        var statuses = await _db.TbEmployeeActivities.ToListAsync(ct);
@@ -111,7 +118,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt
     //                ActivityTypeId = request.ActionId, // ActionId → ActivityTypeId
     //                StatusId = 1, // Pending
     //                RequestBy = employee.EmployeeId,
-    //                RequestDate = DateTime.Now,
+    //                RequestDate = DateTime.UtcNow,
     //                CompanyId = employee.CompanyId
     //            };
 
@@ -148,7 +155,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt
     //            if (activity == null) throw new Exception("Activity not found");
 
     //            activity.StatusId = 2; // Completed
-    //            //activity.EndDate = DateTime.Now;
+    //            //activity.EndDate = DateTime.UtcNow;
 
     //            await _db.SaveChangesAsync(ct);
 

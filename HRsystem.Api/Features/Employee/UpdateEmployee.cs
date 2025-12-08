@@ -101,7 +101,7 @@ namespace HRsystem.Api.Features.Employee.Commands
                                 CityId = loc.CityId ?? 0,
                                 WorkLocationId = loc.WorkLocationId ?? 0,
                                 CompanyId = loc.CompanyId ?? 0,
-                                CreatedAt = DateTime.Now,
+                                CreatedAt = DateTime.UtcNow,
                                 CreatedBy = (int)currentEmployeeId
                             }).ToList();
 
@@ -119,7 +119,7 @@ namespace HRsystem.Api.Features.Employee.Commands
                     {
                         EmployeeId = employee.EmployeeId,
                         VacationTypeId = bal.VacationTypeId,
-                        Year = bal.Year ?? DateTime.Now.Year,
+                        Year = bal.Year ?? DateTime.UtcNow.Year,
                         TotalDays = bal.TotalDays ?? 0,
                         UsedDays = bal.UsedDays ?? 0,
                         RemainingDays = bal.RemainingDays ?? 0
@@ -130,7 +130,7 @@ namespace HRsystem.Api.Features.Employee.Commands
                 }
 
                 // Meta
-                employee.UpdatedAt = DateTime.Now;
+                employee.UpdatedAt = DateTime.UtcNow;
                 employee.UpdatedBy = (int)currentEmployeeId;
 
                 await _db.SaveChangesAsync(cancellationToken);

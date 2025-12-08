@@ -21,7 +21,11 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.GetAllWorkLocations
 
         public int? AllowedRadiusM { get; set; }
         
+        public int? GovId { get; set; }
+        public string? GovName { get; set; }
         public int? CityId { get; set; }
+        public string? CityName { get; set; }
+
     }
 
     public class Handler : IRequestHandler<GetAllWorkLocationsQuery, List<WorkLocationDto>>
@@ -36,16 +40,24 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.GetAllWorkLocations
 
         public async Task<List<WorkLocationDto>> Handle(GetAllWorkLocationsQuery request, CancellationToken ct)
         {
-            var statuses = await _db.TbWorkLocations.ToListAsync(ct);
+            var statuses = await _db.TbWorkLocations
+                .Include(r=>r.City)
+                .Include(r=>r.Gov)
+                .ToListAsync(ct);
 
             var lang = _CurrentUser.UserLanguage ?? "en";
 
-            return statuses.Select(s => new WorkLocationDto
+
+            var res =  statuses.Select(s => new WorkLocationDto
             {
                 WorkLocationId = s.WorkLocationId,
                 CompanyId = s.CompanyId,
                 LocationName = s.LocationName,// ✅ translated here
                 CityId = s.CityId,
+                CityName = s.City.CityName,
+                GovId = s.GovId,
+                GovName = s.Gov.GovName,
+
                 WorkLocationCode = s.WorkLocationCode,
                 Latitude = s.Latitude,
                 Longitude = s.Longitude,
@@ -53,6 +65,8 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.GetAllWorkLocations
 
             }).ToList();
 
+
+            return res;
         }
 
     }

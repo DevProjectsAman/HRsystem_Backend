@@ -8,9 +8,9 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse
     {
         public static void MapExcuseEndPoint(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/employee-requests").WithTags("Employee Dashboard");
+            var group = app.MapGroup("/api/employee-requests").WithTags("Employee Requests");
 
-           // var group = app.MapGroup("/api/excuseRequest").WithTags("requests");
+            // var group = app.MapGroup("/api/excuseRequest").WithTags("requests");
 
             group.MapPost("/CreateExcuse", [Authorize] async (CreateExcuseCommand command, ISender mediator) =>
             {

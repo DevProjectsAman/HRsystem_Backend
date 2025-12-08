@@ -3,6 +3,7 @@ using FluentValidation;
 using HRsystem.Api.Features.Organization.WorkLocation.CreateWorkLocation;
 using HRsystem.Api.Features.Organization.WorkLocation.DeleteWorkLocation;
 using HRsystem.Api.Features.Organization.WorkLocation.GetAllWorkLocations;
+using HRsystem.Api.Features.Organization.WorkLocation.GetSpecificWorkLocations;
 using HRsystem.Api.Features.Organization.WorkLocation.GetWorkLocationById;
 using HRsystem.Api.Features.Organization.WorkLocation.UpdateWorkLocation;
 using HRsystem.Api.Shared.DTO;
@@ -23,6 +24,12 @@ namespace HRsystem.Api.Features.Organization.WorkLocation
                 return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
+            // Get all
+            group.MapGet("/ListSpecific", async (ISender mediator,int companyId, int cityId) =>
+            {
+                var result = await mediator.Send(new GetSpecificWorkLocationsQuery( companyId , cityId));
+                return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
+            });
             // Get by Id
             group.MapGet("/GetOne", async (int id, ISender mediator) =>
             {

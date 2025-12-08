@@ -121,7 +121,7 @@ builder.Services.AddCors(options =>
         });
 });
 
- 
+
 
 
 // Add services to the container
@@ -201,7 +201,7 @@ ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Continue;
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PipelineValidationHandler<,>));
 
 
- 
+
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -238,8 +238,11 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 // Enable Swagger UI in development
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
+app.UseSwagger();
+// Redirect root "/" to "/swagger"
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
+app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "HRsystem API v1");
 
@@ -287,9 +290,9 @@ app.UseAuthorization();
 
 
 app.MapUserManagementEndpoints();
- 
+
 //app.MapRoleAssignmentEndpoints();
- 
+
 app.MapJobLevelEndpoints();
 app.MapJobTitleEndpoints();
 
@@ -358,4 +361,4 @@ app.Run();
 
 
 
- 
+
