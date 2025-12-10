@@ -1,7 +1,9 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.Scheduling.VacationRulesGroup.Create;
+using HRsystem.Api.Features.Scheduling.VacationRulesGroup.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using static HRsystem.Api.Enums.EnumsList;
@@ -18,14 +20,16 @@ namespace HRsystem.Api.Features.Scheduling.VacationRulesGroup.Update
         int? MaxServiceYears,
         int? WorkingYearsAtCompany,
         List<CreateVacationRulesGroupDetailDto> Details
-    ) : IRequest<TbVacationRulesGroup?>;
+    ) : IRequest<VacationRulesGroupDto?>;
 
-    public class UpdateVacationRulesGroupHandler : IRequestHandler<UpdateVacationRulesGroupCommand, TbVacationRulesGroup?>
+    public class UpdateVacationRulesGroupHandler : IRequestHandler<UpdateVacationRulesGroupCommand, VacationRulesGroupDto?>
     {
         private readonly DBContextHRsystem _db;
-        public UpdateVacationRulesGroupHandler(DBContextHRsystem db) => _db = db;
+        private readonly IMapper _mapper;
+        public UpdateVacationRulesGroupHandler(DBContextHRsystem db, IMapper mapper)
+        { _db = db; _mapper = mapper; }
 
-        public async Task<TbVacationRulesGroup?> Handle(UpdateVacationRulesGroupCommand request, CancellationToken ct)
+        public async Task<VacationRulesGroupDto?> Handle(UpdateVacationRulesGroupCommand request, CancellationToken ct)
         {
             var entity = await _db.TbVacationRulesGroups
                 .Include(g => g.VacationRuleDetails)
@@ -53,7 +57,9 @@ namespace HRsystem.Api.Features.Scheduling.VacationRulesGroup.Update
             }).ToList();
 
             await _db.SaveChangesAsync(ct);
-            return entity;
+
+
+            return _mapper.Map<VacationRulesGroupDto>(  entity);
         }
     }
 

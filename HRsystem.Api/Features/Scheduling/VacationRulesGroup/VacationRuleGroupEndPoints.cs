@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using HRsystem.Api.Features.Scheduling.VacationRulesGroup.DTO;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
@@ -23,7 +24,8 @@ namespace HRsystem.Api.Features.Scheduling.VacationRulesGroup
             {
                 var result = await mediator.Send(cmd);
                 // Return 201 Created with the location of the new resource
-                return Results.Created($"/api/vacationrulesgroup/{result.GroupId}", new { Success = true, Data = result });
+               // return Results.Created($"/api/vacationrulesgroup/{result.GroupId}", new { Success = true, Data = result });
+ return Results.Ok(new { Success = true, Message = "Vacation Rules Group created successfully", Data = result });
             });
 
             // Get All (GET)
@@ -52,18 +54,25 @@ namespace HRsystem.Api.Features.Scheduling.VacationRulesGroup
                     : Results.Ok(new { Success = true, Data = result });
             });
 
-            // Update (PUT)
-            group.MapPut("/Update/{id:int}", async (int id, Update.UpdateVacationRulesGroupCommand cmd, ISender mediator) =>
+            group.MapPost("/GetBestVacationRulesMatch/", async (GetMatchingVacationRulesQuery request, ISender mediator) =>
             {
-                // Optional: Check for Id mismatch if the command class contains the Id
-                if (id != cmd.GroupId)
-                    return Results.BadRequest(new { Success = false, Message = "Id mismatch between route and request body" });
-
-                var result = await mediator.Send(cmd with { GroupId = id });
+                var result = await mediator.Send(request);
 
                 return result == null
-                    ? Results.NotFound(new { Success = false, Message = $"Vacation Rules Group {id} not found or update failed" })
-                    : Results.Ok(new { Success = true, Message = $"Vacation Rules Group {id} updated successfully", Data = result });
+                    ? Results.NotFound(new { Success = false, Message = $"Vacation Rules Group for company  {request.CompanyId} not found" })
+                    : Results.Ok(new { Success = true, Data = result });
+            });
+
+            // Update (PUT)
+            group.MapPut("/Update/", async ( Update.UpdateVacationRulesGroupCommand cmd, ISender mediator) =>
+            {
+                // Optional: Check for Id mismatch if the command class contains the Id
+                
+                var result = await mediator.Send(cmd );
+
+                return result == null
+                    ? Results.NotFound(new { Success = false, Message = $"Vacation Rules Group {cmd.GroupId} not found or update failed" })
+                    : Results.Ok(new { Success = true, Message = $"Vacation Rules Group {cmd.GroupId} updated successfully", Data = result });
             });
 
             // Delete (DELETE)
