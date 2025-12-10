@@ -13,8 +13,9 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.GetAllWorkLocations
     {
         public int WorkLocationId { get; set; }
         public int CompanyId { get; set; }
-        public string WorkLocationCode { get; set; }
-        public LocalizedData LocationName { get; set; }
+        public string WorkLocationCode { get; set; } = string.Empty;
+
+        public LocalizedData LocationName { get; set; } = new();
 
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
@@ -41,30 +42,28 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.GetAllWorkLocations
         public async Task<List<WorkLocationDto>> Handle(GetAllWorkLocationsQuery request, CancellationToken ct)
         {
             var statuses = await _db.TbWorkLocations
-                .Include(r=>r.City)
-                .Include(r=>r.Gov)
+                .Include(r => r.City)
+                .Include(r => r.Gov)
                 .ToListAsync(ct);
 
             var lang = _CurrentUser.UserLanguage ?? "en";
 
-
-            var res =  statuses.Select(s => new WorkLocationDto
+            var res = statuses.Select(s => new WorkLocationDto
             {
                 WorkLocationId = s.WorkLocationId,
                 CompanyId = s.CompanyId,
-                LocationName = s.LocationName,// ✅ translated here
+                LocationName = s.LocationName, // ✅ translated here
                 CityId = s.CityId,
-                CityName = s.City.CityName,
+                CityName = s.City?.CityName ?? " ",
                 GovId = s.GovId,
-                GovName = s.Gov.GovName,
+                GovName = s.Gov?.GovName,
 
-                WorkLocationCode = s.WorkLocationCode,
+                WorkLocationCode = s.WorkLocationCode ?? string.Empty,
                 Latitude = s.Latitude,
                 Longitude = s.Longitude,
                 AllowedRadiusM = s.AllowedRadiusM,
 
             }).ToList();
-
 
             return res;
         }
