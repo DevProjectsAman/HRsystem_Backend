@@ -1,4 +1,5 @@
-﻿using static HRsystem.Api.Enums.EnumsList;
+﻿using MediatR;
+using static HRsystem.Api.Enums.EnumsList;
 
 namespace HRsystem.Api.Features.Scheduling.VacationRulesGroup.DTO
 {
@@ -35,4 +36,17 @@ namespace HRsystem.Api.Features.Scheduling.VacationRulesGroup.DTO
         public EnumGenderType Gender { get; set; } = EnumGenderType.All;
         public EnumReligionType Religion { get; set; } = EnumReligionType.All;
     }
+
+
+
+    public record GetMatchingVacationRulesQuery(
+    int CompanyId,
+    int? EmployeeAge,
+    int? ServiceYears,
+    int? WorkingYearsAtCompany
+) : IRequest<List<VacationRulesGroupDto>>;
+
+
+  
+
 }

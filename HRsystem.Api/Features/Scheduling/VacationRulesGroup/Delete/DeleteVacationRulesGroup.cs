@@ -23,6 +23,8 @@ namespace HRsystem.Api.Features.Scheduling.VacationRulesGroup.Delete
             _db.TbVacationRulesGroupDetails.RemoveRange(entity.VacationRuleDetails);
             _db.TbVacationRulesGroups.Remove(entity);
 
+
+
             await _db.SaveChangesAsync(ct);
             return true;
         }
