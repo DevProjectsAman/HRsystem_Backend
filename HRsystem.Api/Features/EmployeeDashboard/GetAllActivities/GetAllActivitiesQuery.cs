@@ -2,6 +2,7 @@
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using static Azure.Core.HttpHeader;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.GetAllActivities
 {
@@ -9,14 +10,20 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetAllActivities
 
     public class AllActivityDto
     {
-        public string EmployeeName { get; set; } = string.Empty;
         public long ActivityId { get; set; }
-        public string ActivityName { get; set; } = string.Empty;
-        public string StatusName { get; set; } = string.Empty;
-        public string StatusType { get; set; } = string.Empty; // Pending / Approved / Rejected
+        public int StatusId { get; set; }
+        public string StatusName { get; set; }
+        public string StatusType { get; set; }
+        public string RequestType { get; set; }   // vacation | mission | excuse
+        public string ActivityName { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
         public DateTime CreatedAt { get; set; }
-        public string From { get; set; } // days from creation
+        public string EmployeeName { get; set; }
+        public string? Location { get; set; }     // missions only
+        public string ?Notes { get; set; }
     }
+
 
     public class GetAllActivitiesQueryHandler :
         IRequestHandler<GetAllActivitiesQuery, List<AllActivityDto>>
@@ -39,57 +46,100 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetAllActivities
             var language = _currentUserService.UserLanguage;
             var lastMonthDate = DateTime.UtcNow.AddDays(-30);
 
-            // Status IDs
             const int Pending = 10;
             const int Approved = 7;
             const int Rejected = 8;
 
             var activities = await _db.TbEmployeeActivities
-                                     .Include(a => a.Status)
-                                     .Include(a => a.Employee)
-                                     .Include(a => a.ActivityType)
-                                     .Where(a =>
-                                         a.EmployeeId == employeeId &&
-                                         a.RequestDate >= lastMonthDate &&
-                                         (a.StatusId == Pending || a.StatusId == Approved || a.StatusId == Rejected) &&
-                                         a.ActivityTypeId != 1
-                                     )
-                                     .Select(a => new
-                                     {
-                                         a.ActivityId,
-                                         EmployeeName = a.Employee.EnglishFullName,
-                                         ActivityName = language == "ar"
-                                             ? a.ActivityType.ActivityName.ar
-                                             : a.ActivityType.ActivityName.en,
-                                         StatusName = language == "ar"
-                                             ? a.Status.StatusName.ar
-                                             : a.Status.StatusName.en,
-                                         StatusId = a.StatusId,
-                                         CreatedAt = a.RequestDate
-                                     })
-                                     .ToListAsync(ct);
+                .Include(a => a.Status)
+                .Include(a => a.Employee)
+                .Include(a => a.ActivityType)
+                .Include(a => a.TbEmployeeVacations)
+                .Include(a => a.TbEmployeeMissions)
+                .Include(a => a.TbEmployeeExcuses)
+                .Where(a =>
+                    a.EmployeeId == employeeId &&
+                    a.RequestDate >= lastMonthDate &&
+                    (a.StatusId == Pending || a.StatusId == Approved || a.StatusId == Rejected) &&
+                    a.ActivityTypeId != 1
+                )
+                .Select(a => new
+                {
+                    a.ActivityId,
+                    a.ActivityTypeId,
+                    EmployeeName = a.Employee.EnglishFullName,
+                    ActivityName = language == "ar"
+                        ? a.ActivityType.ActivityName.ar
+                        : a.ActivityType.ActivityName.en,
+                    StatusName = language == "ar"
+                        ? a.Status.StatusName.ar
+                        : a.Status.StatusName.en,
+                    StatusId = a.StatusId,
+                    CreatedAt = a.RequestDate,
+                    Vacations = a.TbEmployeeVacations,
+                    Missions = a.TbEmployeeMissions,
+                    Excuses = a.TbEmployeeExcuses
+                })
+                .ToListAsync(ct);
 
-            // Now compute 'From' in C# after EF query
-            var result = activities.Select(a => new AllActivityDto
+            var result = activities.Select(a =>
             {
-                ActivityId = a.ActivityId,
-                EmployeeName = a.EmployeeName,
-                ActivityName = a.ActivityName,
-                StatusName = a.StatusName,
-                StatusType = a.StatusId == Pending ? "Pending" :
-                             a.StatusId == Approved ? "Approved" : "Rejected",
-                CreatedAt = a.CreatedAt,
-                From = (int)(DateTime.UtcNow - a.CreatedAt).TotalDays == 0
-                    ? "Today"
-                    : (int)(DateTime.UtcNow - a.CreatedAt).TotalDays == 1
-                        ? "1 day"
-                        : ((int)(DateTime.UtcNow - a.CreatedAt).TotalDays) + " days"
+                DateTime from = default;
+                DateTime to = default;
+                string requestType = "";
+                string? location = null;
+                string? Notes = null;
+
+                switch (a.ActivityTypeId)
+                {
+                    case 5: // Vacation
+                        var v = a.Vacations.FirstOrDefault();
+                        requestType = "vacation";
+                        from = v.StartDate.ToDateTime(TimeOnly.MinValue);
+                        to = v.EndDate.ToDateTime(TimeOnly.MinValue);
+                        Notes = v.Notes;
+                        break;
+
+                    case 4: // Mission
+                        var m = a.Missions.FirstOrDefault();
+                        requestType = "mission";
+                        from = m.StartDatetime.Date;
+                        to = m.EndDatetime.Date;
+                        location = m.MissionLocation;
+                        Notes = m.MissionReason;
+                        break;
+
+                    case 6: // Excuse
+                        var e = a.Excuses.FirstOrDefault();
+                        requestType = "excuse";
+                        from = DateTime.Today.Add(e.StartTime.ToTimeSpan());
+                        to = DateTime.Today.Add(e.EndTime.ToTimeSpan());
+                        Notes = e.ExcuseReason;
+                        break;
+                }
+
+                return new AllActivityDto
+                {
+                    ActivityId = a.ActivityId,
+                    StatusId = a.StatusId,
+                    StatusName = a.StatusName,
+                    StatusType = a.StatusId == Pending ? "Pending" :
+                                 a.StatusId == Approved ? "Approved" : "Rejected",
+                    RequestType = requestType,
+                    ActivityName = a.ActivityName,
+                    From = from,
+                    To = to,
+                    CreatedAt = a.CreatedAt,
+                    EmployeeName = a.EmployeeName,
+                    Location = location,
+                    Notes = Notes
+                };
             })
             .OrderByDescending(x => x.CreatedAt)
             .ToList();
 
-            return result;
-
+            return result; // <-- this was missing
         }
+
     }
 }

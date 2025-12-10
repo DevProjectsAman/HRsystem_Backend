@@ -10,6 +10,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
     {
         public long ActivityId { get; set; }
         public int StatusId { get; set; }
+
+        public string statusName { get; set; }
         public DateTime RequestDate { get; set; }
     };
     public class EmployeeLastExcusesDto : EmployeeLastActivityDto
@@ -68,6 +70,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                 {
                     ActivityId = a.ActivityId,
                     StatusId = a.StatusId,
+                    statusName = a.StatusId == 10 ? "Pending" : a.StatusId == 7 ? "Approved" : "Rejected",
                     RequestDate = a.RequestDate,
                     ActivityTypeName = _currentUser.UserLanguage == "ar"
                                                     ? a.ActivityType.ActivityName.ar
@@ -89,6 +92,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                 {
                     ActivityId = a.ActivityId,
                     StatusId = a.StatusId,
+                    statusName = a.StatusId == 10 ? "Pending" : a.StatusId == 7 ? "Approved" : "Rejected",
                     RequestDate = a.RequestDate,
                     ActivityTypeName = _currentUser.UserLanguage == "ar"
                                                     ? a.ActivityType.ActivityName.ar
@@ -128,6 +132,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                                    {
                                        ActivityId = a.ActivityId,
                                        StatusId = a.StatusId,
+                                       statusName = a.StatusId == 10 ? "Pending" : a.StatusId == 7 ? "Approved" : "Rejected",
                                        VacationTypeId = v.VacationTypeId,
                                        VacationTypeName = _currentUser.UserLanguage == "ar"
                                            ? t.VacationName.ar
