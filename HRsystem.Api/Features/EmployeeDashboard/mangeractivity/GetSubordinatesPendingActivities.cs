@@ -70,7 +70,5 @@ namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
             }).ToList();
         }
 
-
-
     }
 }

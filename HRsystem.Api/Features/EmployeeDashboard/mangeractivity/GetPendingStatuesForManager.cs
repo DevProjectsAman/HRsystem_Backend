@@ -42,6 +42,7 @@
 //        }
 //    }
 //}using MediatR;
+using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
 using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
@@ -140,6 +141,26 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
                     return BuildResponse(result,
                         "Employee is not a manager",
                         "Manager status loaded");
+                }
+                catch (Exception ex)
+                {
+                    return BuildError(ex);
+                }
+            });
+
+            group.MapPost("/change-status", async (ISender mediator, ChangeActivityRequestStatuesDto dto) =>
+            {
+                try
+                {
+                    var result = await mediator.Send(new ChangeActivityRequestStatues(dto));
+
+                    return result
+                        ? BuildResponse(true,
+                            "Activity not found",
+                            "Activity status updated successfully")
+                        : BuildResponse(false,
+                            "Activity not found",
+                            "Activity status Not updated ");
                 }
                 catch (Exception ex)
                 {
