@@ -47,7 +47,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                 .Include(a => a.Status)
                 .Where(a => a.EmployeeId == employeeId &&
                             a.RequestDate >= request.From &&
-                            a.RequestDate <= request.To)
+                            a.RequestDate <= request.To )
                 .ToListAsync(ct);
 
             // 2️⃣ هات كل الـ ActivityIds
@@ -76,6 +76,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                     var act = activities.FirstOrDefault(a => a.ActivityId == att.ActivityId);
                     return act != null && act.RequestDate.Date == day;
                 });
+
 
                 // لو attendance موجود خد منه المعلومات
                 var dto = new EmployeeDaysHistoryDto

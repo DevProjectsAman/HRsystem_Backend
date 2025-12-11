@@ -48,6 +48,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
                     .ThenInclude(a => a.ActivityType)
                 .Include(e => e.TbEmployeeActivities)
                     .ThenInclude(a => a.Status)
+                .Include(e => e.TbEmployeeActivities)
+                    .ThenInclude(a => a.Status)
                 .ToListAsync(ct);
 
             // Step 2: map + apply translation in memory

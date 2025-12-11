@@ -13,6 +13,7 @@ using HRsystem.Api.Features.EmployeeAttendance;
 using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
 using HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport;
 using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
+using HRsystem.Api.Features.EmployeeDashboard.ManagerActivity;
 using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
 using HRsystem.Api.Features.EmployeeRequest.EmployeeVacation;
 using HRsystem.Api.Features.EmployeeRequest.Execuse;
