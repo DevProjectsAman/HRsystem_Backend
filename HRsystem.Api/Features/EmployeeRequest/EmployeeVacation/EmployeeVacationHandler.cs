@@ -46,7 +46,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
                 var activity = new TbEmployeeActivity
                 {
                     EmployeeId = employee.EmployeeId,
-                    ActivityTypeId = dto.VacationTypeId,
+                    ActivityTypeId = 5,
                     StatusId = 7, // Pending
                     RequestBy = employee.EmployeeId,
                     RequestDate = DateTime.UtcNow,

@@ -25,7 +25,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
             // Check if this employee manages at least one employee
             var isManager = await _db.TbEmployees
                 .AnyAsync(e => e.ManagerId == managerId, ct);
-
+            
             return isManager;
         }
     }
