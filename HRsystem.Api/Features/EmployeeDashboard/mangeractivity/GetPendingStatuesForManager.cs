@@ -43,6 +43,10 @@
 //    }
 //}using MediatR;
 using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
+using HRsystem.Api.Features.EmployeeDashboard.GetAllActivities;
+using HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites;
+using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
+using HRsystem.Api.Features.EmployeeDashboard.GetRejectedActivities;
 using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
@@ -161,6 +165,65 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
                         : BuildResponse(false,
                             "Activity not found",
                             "Activity status Not updated ");
+                }
+                catch (Exception ex)
+                {
+                    return BuildError(ex);
+                }
+            });
+            // ============================================
+            // Pending activities
+            // ============================================
+            group.MapGet("/Manager/pending", async (ISender mediator) =>
+            {
+                try
+                {
+                    var result = await mediator.Send(new GetMangerPendingActivitiesQuery());
+                    return BuildResponse(result,
+                        "No pending activities found",
+                        "Pending activities loaded successfully");
+                }
+                catch (Exception ex)
+                {
+                    return BuildError(ex);
+                }
+            });
+            group.MapGet("/Manager/Rejected", async (ISender mediator) =>
+            {
+                try
+                {
+                    var result = await mediator.Send(new GetMangerRejectedActivitiesQueury ());
+                    return BuildResponse(result,
+                        "No pending activities found",
+                        "Pending activities loaded successfully");
+                }
+                catch (Exception ex)
+                {
+                    return BuildError(ex);
+                }
+            });
+            group.MapGet("/Manager/Approved", async (ISender mediator) =>
+            {
+                try
+                {
+                    var result = await mediator.Send(new GetMangerApprovedActivitiesQueury());
+                    return BuildResponse(result,
+                        "No pending activities found",
+                        "Pending activities loaded successfully");
+                }
+                catch (Exception ex)
+                {
+                    return BuildError(ex);
+                }
+            });
+            group.MapGet("/Manager/All-Activites", async (ISender mediator) =>
+            {
+                try
+                {
+                    var result = await mediator.Send(new GetMangerAllActivitiesQuery());
+                    return BuildResponse(result,
+                        "No pending activities found",
+                        "Pending activities loaded successfully");
                 }
                 catch (Exception ex)
                 {
