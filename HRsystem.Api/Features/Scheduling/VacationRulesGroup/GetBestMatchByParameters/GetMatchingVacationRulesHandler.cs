@@ -54,6 +54,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRulesGroup.GetBestMatchByPara
                     .Where(x => x.Score == maxScore)
                     .OrderBy(x => x.Rule.GroupId) // optional tie-breaker
                     .Select(x => x.Rule)
+                    .Take(1)
                     .ToList();
 
                 return best.Select(MapResult).ToList();
