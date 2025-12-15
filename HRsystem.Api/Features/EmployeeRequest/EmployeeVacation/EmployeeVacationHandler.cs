@@ -1,6 +1,7 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Services.LookupCashing;
 using HRsystem.Api.Shared.ExceptionHandling;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,16 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
     {
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUser;
+        private readonly IActivityTypeLookupCache _activityTypeCache; 
+        private readonly IActivityStatusLookupCache _activityStatusLookupCache;
 
-        public RequestVacationHandler(DBContextHRsystem db, ICurrentUserService currentUser)
+        public RequestVacationHandler(DBContextHRsystem db, ICurrentUserService currentUser
+            , IActivityTypeLookupCache activityTypeLookupCache , IActivityStatusLookupCache activityStatusLookupCache)
         {
             _db = db;
             _currentUser = currentUser;
+            _activityTypeCache = activityTypeLookupCache;
+            _activityStatusLookupCache = activityStatusLookupCache;
         }
 
         public async Task<EpmloyeeVacationDto> Handle(RequestVacationCommand request, CancellationToken ct)
@@ -46,8 +52,13 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
                 var activity = new TbEmployeeActivity
                 {
                     EmployeeId = employee.EmployeeId,
-                    ActivityTypeId = 5,
-                    StatusId = 7, // Pending
+                  //  ActivityTypeId = 5,
+                    ActivityTypeId = _activityTypeCache.GetIdByCode(ActivityCodes.Attendance),
+
+                  //  StatusId = 7, // Pending
+
+                    StatusId = _activityStatusLookupCache.GetIdByCode(ActivityStatusCodes.Pending),
+
                     RequestBy = employee.EmployeeId,
                     RequestDate = DateTime.UtcNow,
                     CompanyId = employee.CompanyId

@@ -28,6 +28,11 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.GetSpecificWorkLocatio
 
            // var lang = _CurrentUser.UserLanguage ?? "en";
 
+            // get city name and gov name 
+                var citi = await _db.TbCities.Where(c=>c.CityId==request.cityId)
+                .Include(g=>g.Gov).FirstOrDefaultAsync();
+
+
             return statuses.Select(s => new WorkLocationDto
             {
                 WorkLocationId = s.WorkLocationId,
@@ -38,6 +43,10 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.GetSpecificWorkLocatio
                 Latitude = s.Latitude,
                 Longitude = s.Longitude,
                 AllowedRadiusM = s.AllowedRadiusM,
+                GovId = s.GovId,
+                GovName= citi?.Gov?.GovName,
+                CityName= citi?.CityName,
+
 
             }).ToList();
 

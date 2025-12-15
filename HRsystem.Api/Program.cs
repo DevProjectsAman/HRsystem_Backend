@@ -48,6 +48,7 @@ using HRsystem.Api.Services.AuditLog;
 using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.Chatbot;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Services.LookupCashing;
 using HRsystem.Api.Services.Reports;
 using HRsystem.Api.Shared.EncryptText;
 using HRsystem.Api.Shared.ExceptionHandling;
@@ -214,6 +215,43 @@ builder.Services.AddScoped<JwtService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+builder.Services.AddSingleton<IActivityTypeLookupCache>(sp =>
+{
+    using var scope = sp.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<DBContextHRsystem>();
+
+    var data = db.TbActivityTypes
+        .Select(x => new ActivityTypeLookup
+        {
+            Id = x.ActivityTypeId,
+            Code = x.ActivityCode,
+            NameAr = x.ActivityName.ar,
+            NameEn = x.ActivityName.en
+        })
+        .ToList();
+
+    return new ActivityTypeLookupCache(data);
+});
+
+builder.Services.AddSingleton<IActivityStatusLookupCache>(sp =>
+{
+    using var scope = sp.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<DBContextHRsystem>();
+
+    var data = db.TbActivityStatuses
+        .Select(x => new ActivityStatusLookup
+        {
+            Id = x.StatusId,
+            Code = x.StatusCode,
+            NameAr = x.StatusName.ar,
+            NameEn = x.StatusName.en,
+            IsFinal = x.IsFinal
+        })
+        .ToList();
+
+    return new ActivityStatusLookupCache(data);
+});
 
 
 // builder.Services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
