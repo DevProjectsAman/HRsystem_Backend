@@ -1,8 +1,9 @@
 ﻿using FluentValidation;
+using HRsystem.Api.Features.EmployeeHandler.Create;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using HRsystem.Api.Features.EmployeeHandler.Create;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace HRsystem.Api.Features.EmployeeHandler
@@ -17,9 +18,7 @@ namespace HRsystem.Api.Features.EmployeeHandler
 
             // ✅ Create Employee
             group.MapPost("/CreateEmployee", [Authorize] async (
-   IMediator mediator,
-   IValidator<CreateEmployeeCommand> validator,
-   CreateEmployeeCommand cmd) =>
+   IMediator mediator, [FromServices] IValidator<CreateEmployeeCommandNew> validator, [FromBody] CreateEmployeeCommandNew cmd) =>
             {
                 var validationResult = await validator.ValidateAsync(cmd);
 

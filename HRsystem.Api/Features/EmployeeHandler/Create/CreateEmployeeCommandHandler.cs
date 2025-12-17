@@ -8,11 +8,11 @@ using MediatR;
 
 namespace HRsystem.Api.Features.EmployeeHandler.Create
 {
-  
 
-     
+
+
     public sealed class CreateEmployeeCommandHandler
-        : IRequestHandler<CreateEmployeeCommand, int>
+        : IRequestHandler<CreateEmployeeCommandNew, int>
     {
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUser;
@@ -26,7 +26,7 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
         }
 
         public async Task<int> Handle(
-            CreateEmployeeCommand request,
+            CreateEmployeeCommandNew request,
             CancellationToken cancellationToken)
         {
             using var tx = await _db.Database.BeginTransactionAsync(cancellationToken);
@@ -97,7 +97,7 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
 
                 #region Work Locations
 
-                foreach (var loc in request.EmployeeWorkLocations.Locations)
+                foreach (var loc in request.EmployeeWorkLocations.EmployeeWorkLocations)
                 {
                     _db.TbEmployeeWorkLocations.Add(new TbEmployeeWorkLocation
                     {
@@ -128,9 +128,27 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
 
                 #endregion
 
+                #region Shift (Single)
+
+                if (request.EmployeeShiftWorkDays.ShiftId > 0)
+                {
+                    _db.TbEmployeeShifts.Add(new TbEmployeeShift
+                    {
+                        EmployeeId = employeeId,
+                        ShiftId = request.EmployeeShiftWorkDays.ShiftId,
+                        CompanyId = request.EmployeeOrganization.CompanyId,
+                        CreatedBy = userId,
+                        CreatedAt = now,
+                        EffectiveDate = DateOnly.FromDateTime(now)
+                    });
+                }
+
+                #endregion
+
+
                 #region Vacation Balances
 
-                foreach (var vb in request.EmployeeVacationsBalance.Balances)
+                foreach (var vb in request.EmployeeVacationsBalance.EmployeeVacationBalances)
                 {
                     _db.TbEmployeeVacationBalances.Add(new TbEmployeeVacationBalance
                     {

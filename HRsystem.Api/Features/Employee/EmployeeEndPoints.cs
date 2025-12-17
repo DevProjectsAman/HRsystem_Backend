@@ -14,7 +14,7 @@
 //            var group = app.MapGroup("/api/Employees").WithTags("Employee Management");
 
 //            group.MapPost("AddNewEmployee/", async (EmployeeCreateDto dto, IMediator mediator) =>
-//                Results.Ok(await mediator.Send(new CreateEmployeeCommand(dto))));
+//                Results.Ok(await mediator.Send(new CreateEmployeeCommandNew(dto))));
 
 //            group.MapPut("UpdateEmployee/{id:int}", async (int id, EmployeeUpdateDto dto, IMediator mediator) =>
 //            {
