@@ -5,7 +5,7 @@ using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.ExceptionHandling;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-
+using HRsystem.Api.Services.LookupCashing;
 
 namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
 {
@@ -33,13 +33,16 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
     {
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUser;
+        private readonly IActivityTypeLookupCache _activityTypeCache;
+        private readonly IActivityStatusLookupCache _activityStatusLookupCache;
 
-        public Handler(DBContextHRsystem db, ICurrentUserService currentUser)
+        public Handler(DBContextHRsystem db, ICurrentUserService currentUser, IActivityTypeLookupCache activityTypeCache, IActivityStatusLookupCache activityStatusLookupCache  )
         {
             _db = db;
             _currentUser = currentUser;
+            _activityTypeCache = activityTypeCache;
+            _activityStatusLookupCache = activityStatusLookupCache;
         }
-
         public async Task<CreateExcuseResponse> Handle(CreateExcuseCommand request, CancellationToken ct)
         {
             var employeeId = _currentUser.EmployeeID ?? 0;
@@ -56,8 +59,13 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
             var activity = new TbEmployeeActivity
             {
                 EmployeeId = employeeId,
-                ActivityTypeId = activityType.ActivityTypeId,
-                StatusId = 10,// when create status automate to pending status
+                // ActivityTypeId = activityType.ActivityTypeId,
+                // StatusId = 10,// when create status automate to pending status
+                ActivityTypeId = _activityTypeCache.GetIdByCode(ActivityCodes.Attendance),
+
+                //  StatusId = 7, // Pending
+
+                StatusId = _activityStatusLookupCache.GetIdByCode(ActivityStatusCodes.Pending),
                 RequestBy = employeeId,
                 RequestDate = DateTime.UtcNow,
                 CompanyId = companyId
