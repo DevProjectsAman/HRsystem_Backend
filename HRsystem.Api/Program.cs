@@ -262,6 +262,7 @@ builder.Services.AddSingleton<IActivityStatusLookupCache>(sp =>
 builder.Services.AddScoped<IEmployeeMonthlyReportService, EmployeeMonthlyReportService>();
 builder.Services.AddHostedService<EmployeeMonthlyReportScheduler>();
 
+
 //chatbot
 builder.Services.AddScoped<ChatbotService>();
 builder.Services.AddScoped<IntentExecutorService>();
@@ -390,7 +391,7 @@ app.MapHolidayEndpoints();
 
 app.MapEmployeeAppEndPoints();
 
-app.MapEmployeeHandlerEndpoints();
+ app.MapEmployeeHandlerEndpoints();
 
 
 

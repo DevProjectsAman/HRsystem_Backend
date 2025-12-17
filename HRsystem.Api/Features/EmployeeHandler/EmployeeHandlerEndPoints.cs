@@ -1,6 +1,9 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using HRsystem.Api.Features.EmployeeHandler.Create;
+
 
 namespace HRsystem.Api.Features.EmployeeHandler
 {
@@ -13,15 +16,14 @@ namespace HRsystem.Api.Features.EmployeeHandler
                            .WithTags("Employees");
 
             // ✅ Create Employee
-            group.MapPost("/CreateEmployee", async (
-                CreateEmployeeCommand cmd,
-                ISender mediator,
-                IValidator<CreateEmployeeCommand> validator) =>
+            group.MapPost("/CreateEmployee", [Authorize] async (
+   IMediator mediator,
+   IValidator<CreateEmployeeCommand> validator,
+   CreateEmployeeCommand cmd) =>
             {
                 var validationResult = await validator.ValidateAsync(cmd);
 
                 if (!validationResult.IsValid)
-                {
                     return Results.BadRequest(new ResponseResultDTO
                     {
                         Success = false,
@@ -32,7 +34,6 @@ namespace HRsystem.Api.Features.EmployeeHandler
                             Error = e.ErrorMessage
                         }).ToList()
                     });
-                }
 
                 var employeeId = await mediator.Send(cmd);
 
@@ -42,12 +43,10 @@ namespace HRsystem.Api.Features.EmployeeHandler
                     {
                         Success = true,
                         Message = "Employee created successfully",
-                        Data = new
-                        {
-                            EmployeeId = employeeId
-                        }
+                        Data = new { EmployeeId = employeeId }
                     });
             });
+
         }
     }
 }

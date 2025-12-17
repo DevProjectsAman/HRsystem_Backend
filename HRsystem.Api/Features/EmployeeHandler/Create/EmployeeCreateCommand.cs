@@ -130,8 +130,7 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
 
     #region Validator
 
-    public sealed class CreateEmployeeCommandValidator
-        : AbstractValidator<CreateEmployeeCommand>
+    public  class CreateEmployeeCommandValidator        : AbstractValidator<CreateEmployeeCommand>
     {
         public CreateEmployeeCommandValidator()
         {
