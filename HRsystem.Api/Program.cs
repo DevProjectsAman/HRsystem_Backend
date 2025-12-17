@@ -15,6 +15,7 @@ using HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport;
 using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
 using HRsystem.Api.Features.EmployeeDashboard.ManagerActivity;
 using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
+using HRsystem.Api.Features.EmployeeHandler;
 using HRsystem.Api.Features.EmployeeRequest.EmployeeVacation;
 using HRsystem.Api.Features.EmployeeRequest.Execuse;
 using HRsystem.Api.Features.employeevacations;
@@ -388,6 +389,8 @@ app.MapWorkDaysEndpoints();
 app.MapHolidayEndpoints();
 
 app.MapEmployeeAppEndPoints();
+
+app.MapEmployeeHandlerEndpoints();
 
 
 
