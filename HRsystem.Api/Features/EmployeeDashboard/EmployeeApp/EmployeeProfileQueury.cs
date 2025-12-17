@@ -48,6 +48,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                                     .Include(e => e.Nationality)
                                     .Include(e => e.Department)
                                     .Include(e => e.JobLevel)
+                                    .Include (e => e.JobTitle)
                                     .Include(e => e.Shifts)
                                     .Include(e => e.TbWorkDays)
                                     .Include(e => e.Manager)
@@ -62,6 +63,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             var workLocRelation = employee.TbEmployeeWorkLocations.FirstOrDefault();
             var manager = employee.Manager;
             var jobLevel = employee.JobLevel;
+            var jobtittle = employee.JobTitle;
             var shift = employee.Shifts;
             var workDays = employee.TbWorkDays;
             var workLocation = workLocRelation?.WorkLocation;
@@ -78,7 +80,10 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                 ArabicFullName = employee.ArabicFullName,
                 EmployeeCodeHr = employee.EmployeeCodeHr,
                 StartDate = employee.StartDate,
-                EmployeePhotoPath = employee.EmployeePhotoPath
+                EmployeePhotoPath = employee.EmployeePhotoPath,
+                JobTittle = language == "ar"
+                ? jobtittle.TitleName.ar
+                : jobtittle.TitleName.en
             };
 
             var personalInformation = new EmployeePresonalInformation
@@ -102,6 +107,10 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                 AnnualUsedBalance = vacation.FirstOrDefault(v => v.VacationTypeId == 1)?.UsedDays,
                 CasualRemainBalance = vacation.FirstOrDefault(v => v.VacationTypeId == 5)?.RemainingDays,
                 CasualUsedBalance = vacation.FirstOrDefault(v => v.VacationTypeId == 5)?.UsedDays,
+                SickRemainBalance = vacation.FirstOrDefault(v => v.VacationTypeId == 2)?.RemainingDays,
+                SickUsedBalance = vacation.FirstOrDefault(v => v.VacationTypeId == 2)?.UsedDays,
+                UnPaidRemainBalance = vacation.FirstOrDefault(v => v.VacationTypeId == 3)?.RemainingDays,
+                UnPaidUsedBalance = vacation.FirstOrDefault(v => v.VacationTypeId == 3)?.UsedDays,
                 EmergencyRemainBalance = vacation.FirstOrDefault(v => v.VacationTypeId == 4)?.RemainingDays,
                 EmergencyUsedBalance = vacation.FirstOrDefault(v => v.VacationTypeId == 4)?.UsedDays,
             };
@@ -168,6 +177,9 @@ public class EmployeeInfoScreenDto
     [MaxLength(500)]
     public string? EmployeePhotoPath { get; set; } // صورة الموظف (path أو url)
 
+    public string JobTittle { get; set; }
+    
+
 };
 public class EmployeePresonalInformation
 {
@@ -185,6 +197,12 @@ public class EmployeeVacationBalanceDto
 
     public decimal? EmergencyUsedBalance { get; set; }
     public decimal? EmergencyRemainBalance { get; set; }
+
+    public decimal? SickUsedBalance { get; set; }
+    public decimal? SickRemainBalance { get; set; }
+
+    public decimal? UnPaidUsedBalance { get; set; }
+    public decimal? UnPaidRemainBalance { get; set; }
 
 
 };
