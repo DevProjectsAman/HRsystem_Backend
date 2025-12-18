@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using HRsystem.Api.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.EmployeeHandler.Create
 {
@@ -8,11 +10,14 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
 
     public class CreateEmployeeCommandValidator : AbstractValidator<CreateEmployeeCommandNew>
     {
-        public CreateEmployeeCommandValidator()
+        private readonly DBContextHRsystem _db;
+        public CreateEmployeeCommandValidator(DBContextHRsystem db)
         {
+            _db = db;
+
             RuleFor(x => x.EmployeeBasicData)
                 .NotNull()
-                .SetValidator(new EmployeeBasicDataValidator());
+                .SetValidator(new EmployeeBasicDataValidator(_db));
 
             RuleFor(x => x.EmployeeExtraData)
                 .NotNull()
@@ -24,7 +29,7 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
 
             RuleFor(x => x.EmployeeOrganizationHiring)
                 .NotNull()
-                .SetValidator(new EmployeeOrganizationHiringValidator());
+                .SetValidator(new EmployeeOrganizationHiringValidator(_db));
 
             RuleFor(x => x.EmployeeWorkLocations)
                 .NotNull()
@@ -37,15 +42,20 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
             RuleFor(x => x.EmployeeVacationsBalance)
                 .NotNull()
                 .SetValidator(new EmployeeVacationsBalanceListValidator());
+
         }
     }
 
 
     public sealed class EmployeeBasicDataValidator
-     : AbstractValidator<EmployeeBasicDataCommand>
+      : AbstractValidator<EmployeeBasicDataCommand>
     {
-        public EmployeeBasicDataValidator()
+        private readonly DBContextHRsystem _db;
+
+        public EmployeeBasicDataValidator(DBContextHRsystem db)
         {
+            _db = db;
+
             RuleFor(x => x.EnglishFullName)
                 .NotEmpty()
                 .MaximumLength(100);
@@ -55,7 +65,9 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
                 .MaximumLength(100);
 
             RuleFor(x => x.NationalId)
-                .NotEmpty();
+                .NotEmpty()
+                .MustAsync(BeUniqueNationalId)
+                .WithMessage("National ID already exists.");
 
             RuleFor(x => x.Birthdate)
                 .NotEmpty();
@@ -63,7 +75,17 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
             RuleFor(x => x.Gender)
                 .IsInEnum();
         }
+
+        private async Task<bool> BeUniqueNationalId(
+            string nationalId,
+            CancellationToken ct)
+        {
+            return !await _db.TbEmployees
+                .AsNoTracking()
+                .AnyAsync(e => e.NationalId == nationalId, ct);
+        }
     }
+
 
     public sealed class EmployeeExtraDataValidator
     : AbstractValidator<EmployeeExtraDataCommand>
@@ -103,14 +125,30 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
     public sealed class EmployeeOrganizationHiringValidator
     : AbstractValidator<EmployeeOrganizationHiringCommand>
     {
-        public EmployeeOrganizationHiringValidator()
+        private readonly DBContextHRsystem _db;
+        public EmployeeOrganizationHiringValidator(DBContextHRsystem db)
+
         {
+
+            _db = db;
+
             RuleFor(x => x.ContractTypeId)
                 .GreaterThan(0);
 
-            RuleFor(x => x.SerialMobile)
-                .NotEmpty()
-                .MaximumLength(25);
+            //RuleFor(x => x.SerialMobile)
+            //    .NotEmpty()
+            //    .MaximumLength(25);
+
+
+            RuleFor(x => x.EmployeeCodeHr)
+                .MustAsync(BeUniqHRCode)
+                .WithMessage("This HR Code Already Exist");
+
+
+            RuleFor(x => x.EmployeeCodeFinance)
+              .MustAsync(BeUniqFinanceCode)
+              .WithMessage("This Finance Code Already Exist");
+
 
             RuleFor(x => x.HireDate)
                 .NotEmpty();
@@ -121,6 +159,29 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
             RuleFor(x => x.Status)
                 .NotEmpty()
                 .MaximumLength(25);
+        }
+
+
+        private async Task<bool> BeUniqFinanceCode(string? Code, CancellationToken ct)
+        {
+            if (string.IsNullOrEmpty(Code))
+                return true;   // allow empty code
+
+
+            return !await _db.TbEmployees
+                .AsNoTracking()
+                .AnyAsync(e => e.EmployeeCodeFinance == Code, ct);
+        }
+
+        private async Task<bool> BeUniqHRCode(string? Code, CancellationToken ct)
+        {
+            if (string.IsNullOrEmpty(Code))
+                return true;   // allow empty code
+
+
+            return !await _db.TbEmployees
+                .AsNoTracking()
+                .AnyAsync(e => e.EmployeeCodeHr == Code, ct);
         }
     }
 
