@@ -35,9 +35,11 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
             const int ApprovedStatusId = 7;
             const int RejectedStatusId = 8;
 
+            var lastMonthDate = DateTime.UtcNow.AddDays(-30);
             // Get all activities for employees managed by this manager
             var activities = await _db.TbEmployeeActivities
-                .Where(a => a.Employee.ManagerId == managerId)
+                .Where(a => a.Employee.ManagerId == managerId &&
+                            a.RequestDate >= lastMonthDate) 
                 .Select(a => a.StatusId)
                 .ToListAsync(ct);
 

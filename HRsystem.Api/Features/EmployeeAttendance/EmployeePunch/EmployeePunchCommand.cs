@@ -82,6 +82,9 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
             if (WorkLOC == null) throw new Exception("Not In Allowed Radius");
 
             var today = DateTime.UtcNow.Date;
+
+            var egyptTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
+                TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time"));
             var activity = await _db.TbEmployeeActivities
                 .FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.RequestDate.Date == today && a.ActivityTypeId == 1, ct);
 
@@ -136,14 +139,14 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                 switch (Shift.IsFlexible)
                 {
                     case true:
-                        if ((ShiftINfo.MaxStartTime ?? new TimeOnly(0, 0)).AddMinutes(ShiftINfo.GracePeriodMinutes) < TimeOnly.FromDateTime(DateTime.UtcNow)
+                        if ((ShiftINfo.MaxStartTime ?? new TimeOnly(0, 0)).AddMinutes(ShiftINfo.GracePeriodMinutes) < TimeOnly.FromDateTime(egyptTime)
                             )
                             attendance.AttStatues = statues.Late;
                         else
                             attendance.AttStatues = statues.OnTime;
                         break;
                     case false:
-                        if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(DateTime.UtcNow))
+                        if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(egyptTime))
                             attendance.AttStatues = statues.Late;
                         else
                             attendance.AttStatues = statues.OnTime;

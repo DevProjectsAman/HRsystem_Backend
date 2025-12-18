@@ -53,7 +53,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
                 {
                     EmployeeId = employee.EmployeeId,
                   //  ActivityTypeId = 5,
-                    ActivityTypeId = _activityTypeCache.GetIdByCode(ActivityCodes.Attendance),
+                    ActivityTypeId = _activityTypeCache.GetIdByCode(ActivityCodes.VacationRequest),
 
                   //  StatusId = 7, // Pending
 

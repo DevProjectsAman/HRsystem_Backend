@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
-using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Database;
-using MediatR;
+using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Services.CurrentUser;
-using Microsoft.EntityFrameworkCore;
+using HRsystem.Api.Services.LookupCashing;
 using HRsystem.Api.Shared.ExceptionHandling;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.Mission.CreateMission
 {
@@ -42,11 +43,15 @@ namespace HRsystem.Api.Features.Mission.CreateMission
 
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUser;
+        private readonly IActivityTypeLookupCache _activityTypeCache;
+        private readonly IActivityStatusLookupCache _activityStatusLookupCache;
 
-        public Handler(DBContextHRsystem db, ICurrentUserService currentUser)
+        public Handler(DBContextHRsystem db, ICurrentUserService currentUser, IActivityTypeLookupCache activityTypeCache, IActivityStatusLookupCache activityStatusLookupCache)
         {
             _db = db;
             _currentUser = currentUser;
+            _activityTypeCache = activityTypeCache;
+            _activityStatusLookupCache = activityStatusLookupCache;
         }
 
 
@@ -66,8 +71,13 @@ namespace HRsystem.Api.Features.Mission.CreateMission
             var activity = new TbEmployeeActivity
             {
                 EmployeeId = employeeId,
-                ActivityTypeId = activityType.ActivityTypeId,
-                StatusId = 10, //asign automate to pending status when just created
+                //ActivityTypeId = activityType.ActivityTypeId,
+                //StatusId = 10, //asign automate to pending status when just created
+                ActivityTypeId = _activityTypeCache.GetIdByCode(ActivityCodes.MissionRequest),
+
+                //  StatusId = 7, // Pending
+
+                StatusId = _activityStatusLookupCache.GetIdByCode(ActivityStatusCodes.Pending),
                 RequestBy = employeeId,
               //  ApprovedBy = request.ApprovedBy,
                 RequestDate = request.RequestDate,
@@ -117,9 +127,9 @@ namespace HRsystem.Api.Features.Mission.CreateMission
             //RuleFor(x => x.ApprovedBy).GreaterThan(0);
            // RuleFor(x => x.CompanyId).GreaterThan(0);
 
-            RuleFor(x => x.RequestDate)
-             .LessThanOrEqualTo(DateTime.UtcNow)
-             .WithMessage("RequestDate cannot be in the future");
+            //RuleFor(x => x.RequestDate)
+            // .LessThanOrEqualTo(DateTime.UtcNow)
+            // .WithMessage("RequestDate cannot be in the future");
 
             // Mission validation
             RuleFor(x => x.StartDatetime)

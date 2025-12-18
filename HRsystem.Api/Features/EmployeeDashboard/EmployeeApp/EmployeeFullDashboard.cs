@@ -122,8 +122,10 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             const int RejectedStatusId = 8;
             const int PendingStatusId = 10;
 
+            var lastMonthDate = DateTime.UtcNow.AddDays(-30);
             var activityStatuses = await _db.TbEmployeeActivities
-                .Where(a => a.EmployeeId == employeeId)
+                .Where(a => a.EmployeeId == employeeId &&
+                            a.RequestDate >= lastMonthDate)
                 .Select(a => a.StatusId)
                 .ToListAsync(ct);
 
@@ -141,7 +143,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             if (isManager)
             {
                 var managedRequests = await _db.TbEmployeeActivities
-                    .Where(a => a.Employee.ManagerId == employeeId)
+                    .Where(a => a.Employee.ManagerId == employeeId &&
+                            a.RequestDate >= lastMonthDate)
                     .Select(a => a.StatusId)
                     .ToListAsync(ct);
 
