@@ -119,14 +119,14 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
             // ===========================================================
             // (2) Get Number of Pending Requests for Manager
             // ===========================================================
-            group.MapGet("/subordinates/number-of-pending", async (ISender mediator) =>
+            group.MapGet("/subordinates/number-of-activities-types", async (ISender mediator) =>
             {
                 try
                 {
                     var result = await mediator.Send(new GetNumberOfPendingReqForManager());
                     return BuildResponse(result,
-                        "No pending requests found",
-                        "Pending requests count loaded successfully");
+                        "No activities requests found",
+                        "activities requests count loaded successfully");
                 }
                 catch (Exception ex)
                 {
@@ -194,8 +194,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
                 {
                     var result = await mediator.Send(new GetMangerRejectedActivitiesQueury ());
                     return BuildResponse(result,
-                        "No pending activities found",
-                        "Pending activities loaded successfully");
+                        "No Rejected activities found",
+                        "Rejected activities loaded successfully");
                 }
                 catch (Exception ex)
                 {
@@ -208,8 +208,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
                 {
                     var result = await mediator.Send(new GetMangerApprovedActivitiesQueury());
                     return BuildResponse(result,
-                        "No pending activities found",
-                        "Pending activities loaded successfully");
+                        "No Approved activities found",
+                        "Approved activities loaded successfully");
                 }
                 catch (Exception ex)
                 {
@@ -222,8 +222,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
                 {
                     var result = await mediator.Send(new GetMangerAllActivitiesQuery());
                     return BuildResponse(result,
-                        "No pending activities found",
-                        "Pending activities loaded successfully");
+                        "No  activities found",
+                        " activities loaded successfully");
                 }
                 catch (Exception ex)
                 {

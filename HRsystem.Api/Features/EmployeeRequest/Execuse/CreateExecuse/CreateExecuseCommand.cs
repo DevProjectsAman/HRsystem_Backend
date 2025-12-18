@@ -61,7 +61,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
                 EmployeeId = employeeId,
                 // ActivityTypeId = activityType.ActivityTypeId,
                 // StatusId = 10,// when create status automate to pending status
-                ActivityTypeId = _activityTypeCache.GetIdByCode(ActivityCodes.Attendance),
+                ActivityTypeId = _activityTypeCache.GetIdByCode(ActivityCodes.ExcuseRequest),
 
                 //  StatusId = 7, // Pending
 
