@@ -15,6 +15,9 @@ namespace HRsystem.Api.Services.CurrentUser
 
         int? EmployeeID { get; }
         int? CompanyID { get; }
+        string? DeviceId { get; }   // ✅ NEW
+        string? X_ClientType { get; }   // ✅ NEW
+
     }
 
     public class CurrentUserService : ICurrentUserService
@@ -92,5 +95,26 @@ namespace HRsystem.Api.Services.CurrentUser
                 }
             }
         }
+
+
+        public string? DeviceId
+        {
+            get
+            {
+                return _httpContextAccessor.HttpContext?
+                    .Request.Headers["X-Device-Id"]
+                    .FirstOrDefault();
+            }
+        }
+        public string? X_ClientType
+        {
+            get
+            {
+                return _httpContextAccessor.HttpContext?
+                    .Request.Headers["X-ClientType"]
+                    .FirstOrDefault();
+            }
+        }
+
     }
 }

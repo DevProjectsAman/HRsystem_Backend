@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿
+using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Features.AccessManagment.Auth.UserManagement;
@@ -49,6 +50,7 @@ using HRsystem.Api.Services.AuditLog;
 using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.Chatbot;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Services.DeviceEnforcement;
 using HRsystem.Api.Services.LookupCashing;
 using HRsystem.Api.Services.Reports;
 using HRsystem.Api.Shared.EncryptText;
@@ -57,11 +59,13 @@ using HRsystem.Api.Shared.ValidationHandler;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
-
+using System.Threading.RateLimiting;
 
 
 
@@ -254,6 +258,35 @@ builder.Services.AddSingleton<IActivityStatusLookupCache>(sp =>
     return new ActivityStatusLookupCache(data);
 });
 
+//    for rate limiter
+
+
+// Program.cs
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    // Default global policy for all requests
+
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+    {
+        // Get user ID if authenticated
+        var userId = httpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        string key = !string.IsNullOrEmpty(userId) ? $"user:{userId}" : "anonymous";
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: key,
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = !string.IsNullOrEmpty(userId) ? 120 : 30,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            });
+    });
+});
+
 
 // builder.Services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
 //builder.Services.AddScoped<IAuthorizationHandler, PermissionHandlerService>();
@@ -327,6 +360,15 @@ app.UseAuthentication(); // Must come before Authorization
 app.UseAuthorization();
 
 
+app.UseRateLimiter();
+
+
+/// this to enforce device binding
+// app.UseMiddleware<DeviceEnforcementMiddleware>();
+
+
+
+
 //builder.Services.AddControllers();
 
 
@@ -362,6 +404,8 @@ app.MapEmployeePunchEndpoints(); // from EmployeePunchEndpoints.cs
 app.MapEmployeeEndpoints();
 app.MapEmployeeActivityApprovalEndpoints();
 
+
+
 app.MapAspRoleEndpoints();
 
 app.MapVacationRulesGroupEndpoints();
@@ -395,10 +439,13 @@ app.MapEmployeeAppEndPoints();
 
 
 
-app.MapControllers();
-
 app.MapEmployeeReportEndpoints();
 app.MapReportEndPoints();
+
+// Rate Limitter applied to all controllers
+app.MapControllers()   ;
+
+
 app.Run();
 
 
