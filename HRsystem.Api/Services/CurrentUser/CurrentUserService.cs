@@ -101,18 +101,24 @@ namespace HRsystem.Api.Services.CurrentUser
         {
             get
             {
-                return _httpContextAccessor.HttpContext?
+                var res=
+                 _httpContextAccessor.HttpContext?
                     .Request.Headers["X-Device-Id"]
                     .FirstOrDefault();
+
+                return res ?? string.Empty;
+
             }
         }
         public string? X_ClientType
         {
             get
             {
-                return _httpContextAccessor.HttpContext?
+                var res = _httpContextAccessor.HttpContext?
                     .Request.Headers["X-ClientType"]
                     .FirstOrDefault();
+
+                return res ?? string.Empty;
             }
         }
 
