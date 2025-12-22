@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Features.EmployeeHandler.Create;
+using HRsystem.Api.Features.EmployeeHandler.Get;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -46,8 +47,33 @@ namespace HRsystem.Api.Features.EmployeeHandler
                     });
             });
 
+
+            // --- Search Employee by NationalID / HR / Finance code ---
+            group.MapGet("/SearchEmployee", [Authorize] async (IMediator mediator, string searchTerm) =>
+            {
+                if (string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    return Results.BadRequest(new ResponseResultDTO
+                    {
+                        Success = false,
+                        Message = "Search term is required."
+                    });
+                }
+
+                var result = await mediator.Send(new SearchEmployeeQuery(searchTerm));
+
+                if (!result.Success)
+                {
+                    return Results.NotFound(result);
+                }
+
+                return Results.Ok(result);
+            })
+            .WithName("SearchEmployee");
         }
+
     }
 }
+
 
 

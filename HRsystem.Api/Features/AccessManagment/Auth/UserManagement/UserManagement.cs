@@ -17,6 +17,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
             var group = app.MapGroup("/api/AccessManagement").WithTags("_UserManagement");
 
             // 🔹 Auth & User Management
+
             group.MapPost("/login", async (LoginCommand command, ISender mediator, IValidator<LoginCommand> validator) =>
             {
                 var validation = await validator.ValidateAsync(command);
@@ -36,6 +37,18 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                 var result = await mediator.Send(command);
                 return result.Success ? Results.Ok(result) : Results.BadRequest(result);
             });
+
+
+            group.MapPost("/user-update", async (UpdateUserCommand command, ISender mediator, IValidator<UpdateUserCommand> validator) =>
+            {
+                var validation = await validator.ValidateAsync(command);
+                if (!validation.IsValid)
+                    return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
+
+                var result = await mediator.Send(command);
+                return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+            });
+
 
             group.MapPost("/change-password", async (ChangePasswordCommand command, ISender mediator, IValidator<ChangePasswordCommand> validator) =>
             {
@@ -159,6 +172,10 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
         }
     }
 
+
+   
+
+
     public class RegisterUserValidator : AbstractValidator<RegisterUserCommand>
     {
         public RegisterUserValidator()
@@ -170,6 +187,88 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
     }
 
     #endregion
+
+
+    #region Update User
+
+    public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, ResponseResultDTO>
+    {
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public UpdateUserHandler(UserManager<ApplicationUser> userManager)
+        {
+            _userManager = userManager;
+        }
+
+        public async Task<ResponseResultDTO> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
+        {
+            // 1️⃣ Find the existing user
+            var user = await _userManager.FindByIdAsync(request.UserId.ToString());
+            if (user == null)
+                return new ResponseResultDTO { Success = false, Message = "User not found" };
+
+            // 2️⃣ Update basic fields
+            user.UserName = request.UserName ?? user.UserName;
+            user.UserFullName = request.FullName ?? user.UserFullName;
+
+            // 3️⃣ Update email if username changed
+            user.Email = $"{user.UserName}@demo.com";
+
+            // 4️⃣ Update user info
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return new ResponseResultDTO
+                {
+                    Success = false,
+                    Message = string.Join(", ", result.Errors.Select(e => e.Description))
+                };
+
+            // 5️⃣ Optionally update password
+            if (!string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                // Remove current password if exists
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var pwResult = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
+
+                if (!pwResult.Succeeded)
+                    return new ResponseResultDTO
+                    {
+                        Success = false,
+                        Message = string.Join(", ", pwResult.Errors.Select(e => e.Description))
+                    };
+            }
+
+            return new ResponseResultDTO
+            {
+                Success = true,
+                Message = "User updated successfully"
+            };
+        }
+    }
+
+    public class UpdateUserCommand : IRequest<ResponseResultDTO>
+    {
+        public int UserId { get; set; }
+        public string? UserName { get; set; }
+        public string? FullName { get; set; }
+        public string? NewPassword { get; set; } // optional
+    }
+
+
+    public class UpdateUserValidator : AbstractValidator<UpdateUserCommand>
+    {
+        public UpdateUserValidator()
+        {
+            RuleFor(x => x.UserId).GreaterThan(0);
+            RuleFor(x => x.UserName).NotEmpty();
+            RuleFor(x => x.FullName).NotEmpty();
+        }
+    }
+
+
+    #endregion
+
+
 
     #region Change Password
 
