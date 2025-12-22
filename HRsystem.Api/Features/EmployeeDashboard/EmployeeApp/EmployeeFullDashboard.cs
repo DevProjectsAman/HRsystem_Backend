@@ -19,9 +19,12 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 
         public string? TotalHours { get; set; }
 
-
         [MaxLength(25)]
         public string PunchType { get; set; }
+
+        public string? firstPunchIn { get; set; }
+        public string? lastPunchOut { get; set; }
+        public string? actualWorkingHours { get; set; }
     }
     public record EmployeeFullDashboardQuery() : IRequest<EmployeeFullDashboardDto>;
 
@@ -164,7 +167,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             if( activity == null)
             {
                 //  there aren't any activites today 
-            }
+    }
             else
             {
                         var attendance = await _db.TbEmployeeAttendances
@@ -176,26 +179,53 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                 //    TotalHours = attendance.TotalHours,
                 // };
                 string formattedTotal = "00:00";
+                string formattedTotalActual = "00:00";
+
+
 
                 if (attendance.TotalHours.HasValue)
                 {
                     var span = TimeSpan.FromHours((double)attendance.TotalHours.Value);
                     formattedTotal = span.ToString(@"hh\:mm");
+
+                    span = TimeSpan.FromHours((double)attendance.ActualWorkingHours.Value);
+                    formattedTotalActual = span.ToString(@"hh\:mm");
                 }
 
                 checkhistory = new CheckHistoryDto
                 {
                     AttStatues = attendance.AttStatues,
                     PunchDate = attendance.AttendanceDate,
-                    TotalHours = formattedTotal
+                    TotalHours = formattedTotal,
+                    actualWorkingHours= formattedTotalActual
                 };
 
-                var lastPunch = await _db.TbEmployeeAttendancePunches
-                        .Where(p => p.AttendanceId == attendance.AttendanceId)
-                        .OrderByDescending(p => p.PunchTime)
-                        .FirstOrDefaultAsync(ct);
-                    checkhistory.PunchTime = lastPunch?.PunchTime;
-                    checkhistory.PunchType = lastPunch?.PunchType;
+                var punches = await _db.TbEmployeeAttendancePunches
+                    .Where(p => p.AttendanceId == attendance.AttendanceId)
+                    .ToListAsync(ct);
+
+                var lastPunch = punches
+                    .OrderByDescending(p => p.PunchTime)
+                    .FirstOrDefault();
+
+                checkhistory.PunchTime = lastPunch?.PunchTime;
+                checkhistory.PunchType = lastPunch?.PunchType;
+
+                checkhistory.firstPunchIn = punches
+                    .Where(p => p.PunchType == "PunchIn")
+                    .OrderBy(p => p.PunchTime)
+                    .Select(p => p.PunchTime)
+                    .FirstOrDefault()?
+                    .ToString("HH:mm");
+
+                checkhistory.lastPunchOut = punches
+                    .Where(p => p.PunchType == "PunchOut")
+                    .OrderByDescending(p => p.PunchTime)
+                    .Select(p => p.PunchTime)
+                    .FirstOrDefault()?
+                    .ToString("HH:mm");
+
+
             }
             // ✅ Final DTO
             return new EmployeeFullDashboardDto

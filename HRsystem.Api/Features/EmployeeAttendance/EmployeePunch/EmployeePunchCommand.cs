@@ -299,17 +299,19 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                     throw new Exception("Shift not found for employee.");
                 }
 
+                var egyptTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
+                    TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time"));
                 switch (Shift.IsFlexible)
                 {
                     case true:
-                        if ((ShiftINfo.MaxStartTime ?? new TimeOnly(0, 0)).AddMinutes(ShiftINfo.GracePeriodMinutes) < TimeOnly.FromDateTime(DateTime.UtcNow)
+                        if ((ShiftINfo.MaxStartTime ?? new TimeOnly(0, 0)).AddMinutes(ShiftINfo.GracePeriodMinutes) < TimeOnly.FromDateTime(egyptTime)
                             )
                             attendance.AttStatues = statues.Late;
                         else
                             attendance.AttStatues = statues.OnTime;
                         break;
                     case false:
-                        if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(DateTime.UtcNow))
+                        if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(egyptTime))
                             attendance.AttStatues = statues.Late;
                         else
                             attendance.AttStatues = statues.OnTime;
