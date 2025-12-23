@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Google;
+using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Features.SystemAdmin.DTO;
 using HRsystem.Api.Services;
@@ -6,6 +8,7 @@ using HRsystem.Api.Shared;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
@@ -80,6 +83,22 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                 var result = await mediator.Send(command);
                 return result.Success ? Results.Ok(result) : Results.BadRequest(result);
             });
+
+
+            // 🔹 Get User Roles (Role IDs)
+            group.MapPost("/users-roles", async (     GetUserRolesCommand command,     ISender mediator) =>
+            {
+                var result = await mediator.Send(command);
+
+                return result.Success
+                    ? Results.Ok(result)
+                    : Results.NotFound(result);
+            })
+             .WithName("GetUserRoles")
+             .Produces<ResponseResultDTO<List<int>>>(StatusCodes.Status200OK)
+             .Produces<ResponseResultDTO<List<int>>>(StatusCodes.Status404NotFound);
+
+
         }
     }
 
@@ -135,19 +154,32 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
 
     #region Register User
 
-    public record RegisterUserCommand(string UserName, string Password, string FullName, int CompanyId, int EmployeeId)
-        : IRequest<ResponseResultDTO>;
+    public record RegisterUserCommand(
+        string UserName,
+        string Password,
+        string FullName,
+        int CompanyId,
+        int EmployeeId,
+        List<int> RoleIds
+    ) : IRequest<ResponseResultDTO>;
 
-    public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, ResponseResultDTO>
+    public class RegisterUserHandler
+        : IRequestHandler<RegisterUserCommand, ResponseResultDTO>
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
-        public RegisterUserHandler(UserManager<ApplicationUser> userManager)
+        public RegisterUserHandler(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<ApplicationRole> roleManager)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
-        public async Task<ResponseResultDTO> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseResultDTO> Handle(
+            RegisterUserCommand request,
+            CancellationToken cancellationToken)
         {
             var user = new ApplicationUser
             {
@@ -159,21 +191,61 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                 Email = $"{request.UserName}@demo.com"
             };
 
-            var result = await _userManager.CreateAsync(user, request.Password);
+            var createResult = await _userManager.CreateAsync(user, request.Password);
 
-            if (result.Succeeded)
-                return new ResponseResultDTO { Success = true, Message = "User created successfully" };
+            if (!createResult.Succeeded)
+            {
+                return new ResponseResultDTO
+                {
+                    Success = false,
+                    Message = string.Join(", ", createResult.Errors.Select(e => e.Description))
+                };
+            }
+
+            // 🔹 Remove any roles (safe even if none exist)
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles.Any())
+            {
+                var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                if (!removeResult.Succeeded)
+                    return Failed(removeResult);
+            }
+
+            // 🔹 Convert RoleIds → RoleNames
+            var roleNames = await _roleManager.Roles
+                .Where(r => request.RoleIds.Contains(r.Id))
+                .Select(r => r.Name!)
+                .ToListAsync(cancellationToken);
+
+            if (!roleNames.Any())
+            {
+                return new ResponseResultDTO
+                {
+                    Success = false,
+                    Message = "No valid roles found"
+                };
+            }
+
+            // 🔹 Add new roles
+            var addRolesResult = await _userManager.AddToRolesAsync(user, roleNames);
+            if (!addRolesResult.Succeeded)
+                return Failed(addRolesResult);
 
             return new ResponseResultDTO
+            {
+                Success = true,
+                Message = "User created and roles assigned successfully"
+            };
+        }
+
+        private static ResponseResultDTO Failed(IdentityResult result)
+            => new()
             {
                 Success = false,
                 Message = string.Join(", ", result.Errors.Select(e => e.Description))
             };
-        }
     }
 
-
-   
 
 
     public class RegisterUserValidator : AbstractValidator<RegisterUserCommand>
@@ -191,51 +263,80 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
 
     #region Update User
 
-    public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, ResponseResultDTO>
+    public class UpdateUserHandler
+      : IRequestHandler<UpdateUserCommand, ResponseResultDTO>
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
-        public UpdateUserHandler(UserManager<ApplicationUser> userManager)
+        public UpdateUserHandler(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<ApplicationRole> roleManager)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
-        public async Task<ResponseResultDTO> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseResultDTO> Handle(
+            UpdateUserCommand request,
+            CancellationToken cancellationToken)
         {
-            // 1️⃣ Find the existing user
+            // 1️⃣ Find user
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
             if (user == null)
                 return new ResponseResultDTO { Success = false, Message = "User not found" };
 
             // 2️⃣ Update basic fields
-            user.UserName = request.UserName ?? user.UserName;
-            user.UserFullName = request.FullName ?? user.UserFullName;
+            if (!string.IsNullOrWhiteSpace(request.UserName))
+                user.UserName = request.UserName;
 
-            // 3️⃣ Update email if username changed
+            if (!string.IsNullOrWhiteSpace(request.FullName))
+                user.UserFullName = request.FullName;
+
             user.Email = $"{user.UserName}@demo.com";
 
-            // 4️⃣ Update user info
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
-                return new ResponseResultDTO
-                {
-                    Success = false,
-                    Message = string.Join(", ", result.Errors.Select(e => e.Description))
-                };
+            // 3️⃣ Update user
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                return Failed(updateResult);
 
-            // 5️⃣ Optionally update password
+            // 4️⃣ Update password (optional)
             if (!string.IsNullOrWhiteSpace(request.NewPassword))
             {
-                // Remove current password if exists
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var pwResult = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
+                var pwResult = await _userManager.ResetPasswordAsync(
+                    user, token, request.NewPassword);
 
                 if (!pwResult.Succeeded)
+                    return Failed(pwResult);
+            }
+
+            // 5️⃣ Reset roles (same logic as Register)
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles.Any())
+            {
+                var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                if (!removeResult.Succeeded)
+                    return Failed(removeResult);
+            }
+
+            if (request.RoleIds.Any())
+            {
+                var roleNames = await _roleManager.Roles
+                    .Where(r => request.RoleIds.Contains(r.Id))
+                    .Select(r => r.Name!)
+                    .ToListAsync(cancellationToken);
+
+                if (!roleNames.Any())
                     return new ResponseResultDTO
                     {
                         Success = false,
-                        Message = string.Join(", ", pwResult.Errors.Select(e => e.Description))
+                        Message = "No valid roles found"
                     };
+
+                var addResult = await _userManager.AddToRolesAsync(user, roleNames);
+                if (!addResult.Succeeded)
+                    return Failed(addResult);
             }
 
             return new ResponseResultDTO
@@ -244,6 +345,13 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                 Message = "User updated successfully"
             };
         }
+
+        private static ResponseResultDTO Failed(IdentityResult result)
+            => new()
+            {
+                Success = false,
+                Message = string.Join(", ", result.Errors.Select(e => e.Description))
+            };
     }
 
     public class UpdateUserCommand : IRequest<ResponseResultDTO>
@@ -252,7 +360,9 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
         public string? UserName { get; set; }
         public string? FullName { get; set; }
         public string? NewPassword { get; set; } // optional
+        public List<int> RoleIds { get; set; } = [];
     }
+
 
 
     public class UpdateUserValidator : AbstractValidator<UpdateUserCommand>
@@ -260,8 +370,14 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
         public UpdateUserValidator()
         {
             RuleFor(x => x.UserId).GreaterThan(0);
-            RuleFor(x => x.UserName).NotEmpty();
-            RuleFor(x => x.FullName).NotEmpty();
+
+            RuleFor(x => x.UserName)
+                .NotEmpty()
+                .When(x => x.UserName != null);
+
+            RuleFor(x => x.FullName)
+                .NotEmpty()
+                .When(x => x.FullName != null);
         }
     }
 
@@ -412,4 +528,56 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
     }
 
     #endregion
+
+
+    #region GetUserRoles
+    public record GetUserRolesCommand(int UserId)
+     : IRequest<ResponseResultDTO<List<int>>>;
+
+    public class GetUserRolesHandler
+        : IRequestHandler<GetUserRolesCommand, ResponseResultDTO<List<int>>>
+    {
+        private readonly DBContextHRsystem _context;
+
+        public GetUserRolesHandler(DBContextHRsystem context)
+        {
+            _context = context;
+        }
+
+        public async Task<ResponseResultDTO<List<int>>> Handle(
+            GetUserRolesCommand request,
+            CancellationToken cancellationToken)
+        {
+            // 1️⃣ Ensure user exists (optional but recommended)
+            var userExists = await _context.Users
+                .AnyAsync(u => u.Id == request.UserId, cancellationToken);
+
+            if (!userExists)
+            {
+                return new ResponseResultDTO<List<int>>
+                {
+                    Success = false,
+                    Message = "User not found",
+                    Data = []
+                };
+            }
+
+            // 2️⃣ Get Role IDs directly from UserRoles table
+            var roleIds = await _context.UserRoles
+                .Where(ur => ur.UserId == request.UserId)
+                .Select(ur => ur.RoleId)
+                .ToListAsync(cancellationToken);
+
+            return new ResponseResultDTO<List<int>>
+            {
+                Success = true,
+                Message = "User roles loaded successfully",
+                Data = roleIds
+            };
+        }
+    }
+
+
+    #endregion
+
 }
