@@ -20,14 +20,18 @@ namespace HRsystem.Api.Features.EmployeeDevices
                 {
                     var exists = await mediator.Send(new CheckEmployeeDeviceQuery());
 
-                    return Results.Ok(new ResponseResultDTO<bool>
+                    return new ResponseResultDTO<bool>
                     {
                         Success = true,
+                        StatusCode = exists ? 200 : 409,
                         Message = exists
                             ? "Device is registered and active"
                             : "Device is not registered",
                         Data = exists
-                    });
+                    };
+
+
+
                 })
                 .WithName("CheckEmployeeDevice");
 
@@ -80,17 +84,16 @@ namespace HRsystem.Api.Features.EmployeeDevices
             // ✅ 3. Reset (Deactivate) employee active device
             // ============================================================
             group.MapPut("/ResetDevice",
-                async (IMediator mediator, int employeeId) =>
+                async (IMediator mediator, ResetEmployeeDeviceCommand cmd) =>
                 {
-                    var result = await mediator.Send(
-                        new ResetEmployeeDeviceCommand(employeeId));
+                    var result = await mediator.Send(cmd);
 
                     if (!result)
                     {
                         return Results.NotFound(new ResponseResultDTO
                         {
                             Success = false,
-                            Message = "Active device not found for this employee"
+                            Message = "No Active device found for this employee"
                         });
                     }
 

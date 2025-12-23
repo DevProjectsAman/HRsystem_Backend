@@ -559,7 +559,7 @@ namespace HRsystem.Api.Migrations
                     b.Property<long>("AttendanceId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("DeviceId")
+                    b.Property<int?>("DeviceUid")
                         .HasColumnType("int");
 
                     b.Property<int?>("LocationId")

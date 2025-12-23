@@ -455,7 +455,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
     //        public bool IsPunchIn { get; set; }
     //    }
 
-    //    public record PunchInCommand(long AttendanceId, double Latitude, double Longitude, int? DeviceId)
+    //    public record PunchInCommand(long AttendanceId, double Latitude, double Longitude, int? DeviceUid)
     //    : IRequest<long>;
 
     //    public class PunchInHandler : IRequestHandler<PunchInCommand, long>
@@ -492,7 +492,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
     //                AttendanceId = request.AttendanceId,
     //                PunchIn = now,
     //                LocationId = locationId,
-    //                DeviceId = request.DeviceId
+    //                DeviceUid = request.DeviceUid
     //            };
 
     //            _db.TbEmployeeAttendancePunches.Add(punch);
@@ -503,7 +503,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
     //    }
 
 
-    //    public record PunchOutCommand(long AttendanceId, double Latitude, double Longitude, int? DeviceId)
+    //    public record PunchOutCommand(long AttendanceId, double Latitude, double Longitude, int? DeviceUid)
     //     : IRequest<long>;
 
     //    public class PunchOutHandler : IRequestHandler<PunchOutCommand, long>
@@ -545,7 +545,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
 
     //            punch.PunchOut = now;
     //            punch.LocationId = locationId;
-    //            punch.DeviceId = request.DeviceId;
+    //            punch.DeviceUid = request.DeviceUid;
 
     //            await _db.SaveChangesAsync(ct);
 

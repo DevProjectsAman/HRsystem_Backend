@@ -5,9 +5,15 @@ using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace HRsystem.Api.Features.EmployeeDevices
 {
+    #region Enums
+    public enum DevicePlatform
+    {
+        Android = 1,
+        iOS = 2
+    }
+    #endregion
 
     #region CheckEmployeeDevice
     public record CheckEmployeeDeviceQuery() : IRequest<bool>;
@@ -28,28 +34,50 @@ namespace HRsystem.Api.Features.EmployeeDevices
 
         public async Task<bool> Handle(CheckEmployeeDeviceQuery request, CancellationToken ct)
         {
-            return await _db.TbEmployeeDevices
-                .AsNoTracking()
-                .AnyAsync(d =>
-                    d.EmployeeId == _currentUser.EmployeeID &&
-                    d.DeviceUuid == _currentUser.DeviceId &&
-                    d.IsActiveDevice,
-                    ct);
+
+            var device = await _db.TbEmployeeDevicesTrack
+        .FirstOrDefaultAsync(d =>
+             d.EmployeeId == _currentUser.EmployeeID &&
+             d.DeviceUid == _currentUser.DeviceId &&
+             d.IsActiveDevice);
+
+            if (device == null)
+                return false;
+            // Primary check: fingerprint must match
+            //if (device.DeviceFingerprint != fingerprint)
+            //{
+            //    // Log potential security breach
+            //    await _auditService.LogAsync(new SecurityEvent
+            //    {
+            //        Type = "DeviceFingerprintMismatch",
+            //        EmployeeId = device.EmployeeId,
+            //        Severity = "High"
+            //    });
+
+              
+           
+
+            // Update last active
+            device.LastActiveAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+
+            return true;
         }
     }
-
     #endregion
 
     #region AddDevice
     public record AddEmployeeDeviceCommand(
-           string DeviceUuid,
-           string? NativeOsId,
-           string? ModelName,
-           string OsType,
-           string? OsVersion,
-           string? Manufacturer,
-           bool IsPhysical
-       ) : IRequest<bool>;
+        string DeviceId,
+        DevicePlatform Platform,
+        string OsVersion,
+        string Manufacturer,
+        string Model,
+        string Brand,
+        bool IsPhysicalDevice,
+        string DeviceFingerprint,
+        string? AppVersion = null
+    ) : IRequest<bool>;
 
     public class AddEmployeeDeviceHandler
         : IRequestHandler<AddEmployeeDeviceCommand, bool>
@@ -68,31 +96,33 @@ namespace HRsystem.Api.Features.EmployeeDevices
         public async Task<bool> Handle(AddEmployeeDeviceCommand request, CancellationToken ct)
         {
             // ❌ Device already exists (globally)
-            var deviceExists = await _db.TbEmployeeDevices
+            var deviceExists = await _db.TbEmployeeDevicesTrack
                 .AnyAsync(d =>
-                    d.DeviceUuid == request.DeviceUuid &&
+                    d.DeviceUid == request.DeviceId &&
                     d.IsActiveDevice,
                     ct);
 
             if (deviceExists)
                 return false;
 
-            var entity = new TbEmployeeDevices
+            var entity = new TbEmployeeDevicesTrack
             {
                 EmployeeId = (int)_currentUser.EmployeeID,
-                DeviceUuid = request.DeviceUuid,
-                NativeOsId = request.NativeOsId,
-                ModelName = request.ModelName,
-                OsType = request.OsType,
+                DeviceUid = request.DeviceId,
+                Platform = (int)request.Platform,
                 OsVersion = request.OsVersion,
                 Manufacturer = request.Manufacturer,
-                IsPhysical = request.IsPhysical,
+                Model = request.Model,
+                Brand = request.Brand,
+                IsPhysicalDevice = request.IsPhysicalDevice,
+                DeviceFingerprint = request.DeviceFingerprint,
+                AppVersion = request.AppVersion,
                 RegisteredAt = DateTime.UtcNow,
                 LastActiveAt = DateTime.UtcNow,
                 IsActiveDevice = true
             };
 
-            _db.TbEmployeeDevices.Add(entity);
+            _db.TbEmployeeDevicesTrack.Add(entity);
             await _db.SaveChangesAsync(ct);
 
             return true;
@@ -104,40 +134,51 @@ namespace HRsystem.Api.Features.EmployeeDevices
     {
         public AddEmployeeDeviceCommandValidator()
         {
-            RuleFor(x => x.DeviceUuid)
+            RuleFor(x => x.DeviceId)
                 .NotEmpty()
-                .WithMessage("Device UUID is required")
-                .MaximumLength(100);
+                .WithMessage("Device ID is required")
+                .MaximumLength(255);
 
-            RuleFor(x => x.OsType)
-                .NotEmpty()
-                .WithMessage("OS type is required")
-                .MaximumLength(20);
-
-            RuleFor(x => x.ModelName)
-                .MaximumLength(100)
-                .When(x => !string.IsNullOrWhiteSpace(x.ModelName));
-
-            RuleFor(x => x.NativeOsId)
-                .MaximumLength(255)
-                .When(x => !string.IsNullOrWhiteSpace(x.NativeOsId));
+            RuleFor(x => x.Platform)
+                .IsInEnum()
+                .WithMessage("Platform must be Android or iOS");
 
             RuleFor(x => x.OsVersion)
-                .MaximumLength(20)
-                .When(x => !string.IsNullOrWhiteSpace(x.OsVersion));
+                .NotEmpty()
+                .WithMessage("OS version is required")
+                .MaximumLength(20);
 
             RuleFor(x => x.Manufacturer)
-                .MaximumLength(100)
-                .When(x => !string.IsNullOrWhiteSpace(x.Manufacturer));
+                .NotEmpty()
+                .WithMessage("Manufacturer is required")
+                .MaximumLength(100);
+
+            RuleFor(x => x.Model)
+                .NotEmpty()
+                .WithMessage("Model is required")
+                .MaximumLength(100);
+
+            RuleFor(x => x.Brand)
+                .NotEmpty()
+                .WithMessage("Brand is required")
+                .MaximumLength(100);
+
+            RuleFor(x => x.DeviceFingerprint)
+                .NotEmpty()
+                .WithMessage("Device fingerprint is required")
+                .MaximumLength(500);
+
+            RuleFor(x => x.AppVersion)
+                .MaximumLength(50)
+                .When(x => !string.IsNullOrWhiteSpace(x.AppVersion));
         }
     }
-
     #endregion
 
     #region Reset
-
     public record ResetEmployeeDeviceCommand(int EmployeeId)
-      : IRequest<bool>;
+        : IRequest<bool>;
+
     public class ResetEmployeeDeviceHandler
         : IRequestHandler<ResetEmployeeDeviceCommand, bool>
     {
@@ -156,45 +197,32 @@ namespace HRsystem.Api.Features.EmployeeDevices
             ResetEmployeeDeviceCommand request,
             CancellationToken ct)
         {
-            //var device = await _db.TbEmployeeDevices
-            //    .FirstOrDefaultAsync(d =>
-            //        d.EmployeeId == request.EmployeeId &&
-            //        d.IsActiveDevice, ct);
+            int rowsAffected = await _db.TbEmployeeDevicesTrack
+                .Where(d => d.EmployeeId == request.EmployeeId && d.IsActiveDevice)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(d => d.IsActiveDevice, false)
+                    .SetProperty(d => d.ResetByUserId, _currentUser.UserId)
+                    .SetProperty(d => d.ResetByUserDate, DateTime.UtcNow),
+                    ct);
 
-            int rowsAffected = await _db.TbEmployeeDevices
-        .Where(d => d.EmployeeId == request.EmployeeId && d.IsActiveDevice)
-        .ExecuteUpdateAsync(setters => setters
-            .SetProperty(d => d.IsActiveDevice, false)
-            .SetProperty(d => d.ResetByUserId, _currentUser.UserId)
-            .SetProperty(d => d.ResetByUserDate, DateTime.UtcNow),
-            ct);
-
-            if (rowsAffected == 0)
-                return false;
-
-           
-
-          //  await _db.SaveChangesAsync(ct);
-            return true;
+            return rowsAffected > 0;
         }
     }
-
-
-
     #endregion
 
-
     #region ListEmployeeDevices
-
     public class EmployeeDeviceDto
     {
-        public int DeviceId { get; set; }
-        public string DeviceUuid { get; set; } = string.Empty;
-        public string? ModelName { get; set; }
-        public string OsType { get; set; } = string.Empty;
-        public string? OsVersion { get; set; }
-        public string? Manufacturer { get; set; }
-        public bool IsPhysical { get; set; }
+        public int Id { get; set; }
+        public string DeviceId { get; set; } = string.Empty;
+        public string Platform { get; set; } = string.Empty;
+        public string OsVersion { get; set; } = string.Empty;
+        public string Manufacturer { get; set; } = string.Empty;
+        public string Model { get; set; } = string.Empty;
+        public string Brand { get; set; } = string.Empty;
+        public bool IsPhysicalDevice { get; set; }
+        public string DeviceFingerprint { get; set; } = string.Empty;
+        public string? AppVersion { get; set; }
         public bool IsActiveDevice { get; set; }
         public DateTime RegisteredAt { get; set; }
         public DateTime LastActiveAt { get; set; }
@@ -213,20 +241,23 @@ namespace HRsystem.Api.Features.EmployeeDevices
 
         public async Task<List<EmployeeDeviceDto>> Handle(ListEmployeeDevicesQuery request, CancellationToken ct)
         {
-            return await _db.TbEmployeeDevices
+            return await _db.TbEmployeeDevicesTrack
                 .AsNoTracking()
                 .Where(d => d.EmployeeId == request.EmployeeId)
                 .OrderByDescending(d => d.IsActiveDevice)
                 .ThenByDescending(d => d.LastActiveAt)
                 .Select(d => new EmployeeDeviceDto
                 {
-                    DeviceId = d.DeviceId,
-                    DeviceUuid = d.DeviceUuid,
-                    ModelName = d.ModelName,
-                    OsType = d.OsType,
+                    Id = d.Id,
+                    DeviceId = d.DeviceUid,
+                    Platform = ((DevicePlatform)d.Platform).ToString(),
                     OsVersion = d.OsVersion,
                     Manufacturer = d.Manufacturer,
-                    IsPhysical = d.IsPhysical,
+                    Model = d.Model,
+                    Brand = d.Brand,
+                    IsPhysicalDevice = d.IsPhysicalDevice,
+                    DeviceFingerprint = d.DeviceFingerprint,
+                    AppVersion = d.AppVersion,
                     IsActiveDevice = d.IsActiveDevice,
                     RegisteredAt = d.RegisteredAt,
                     LastActiveAt = d.LastActiveAt
@@ -234,11 +265,5 @@ namespace HRsystem.Api.Features.EmployeeDevices
                 .ToListAsync(ct);
         }
     }
-
-
     #endregion
-
-
 }
-
-
