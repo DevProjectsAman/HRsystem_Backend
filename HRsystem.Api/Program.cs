@@ -16,6 +16,7 @@ using HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport;
 using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
 using HRsystem.Api.Features.EmployeeDashboard.ManagerActivity;
 using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
+using HRsystem.Api.Features.EmployeeDevices;
 using HRsystem.Api.Features.EmployeeHandler;
 using HRsystem.Api.Features.EmployeeRequest.EmployeeVacation;
 using HRsystem.Api.Features.EmployeeRequest.Execuse;
@@ -400,11 +401,14 @@ app.MapProjectEndpoints();
 app.MapMissionEndPoint();
 app.MapExcuseEndPoint();
 app.MapEmployeePunchEndpoints(); // from EmployeePunchEndpoints.cs
+
 //app.MapEmployeeVacationsEndPoints();
+
 app.MapEmployeeEndpoints();
+
 app.MapEmployeeActivityApprovalEndpoints();
 
-
+app.MapEmployeeDevicesEndpoints();
 
 app.MapAspRoleEndpoints();
 
