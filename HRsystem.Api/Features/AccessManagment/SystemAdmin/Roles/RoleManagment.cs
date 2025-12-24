@@ -5,6 +5,7 @@ using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
  
 
@@ -92,7 +93,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
             .WithName("GetRole");
 
             // --- Create role (POST) ---
-            group.MapPost("/CreateRole", [Authorize] async (IMediator mediator, IValidator<CreateRoleCommand> validator, CreateRoleCommand cmd) =>
+            group.MapPost("/CreateRole", [Authorize] async (IMediator mediator, IValidator<CreateRoleCommand> validator, [FromBody] CreateRoleCommand cmd) =>
             {
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
@@ -106,7 +107,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
             .WithName("CreateRole");
 
             // --- Update role (PUT) ---
-            group.MapPut("/UpdateRole", [Authorize] async (IMediator mediator, IValidator<UpdateRoleCommand> validator, UpdateRoleCommand cmd) =>
+            group.MapPut("/UpdateRole", [Authorize] async (IMediator mediator, IValidator<UpdateRoleCommand> validator, [FromBody] UpdateRoleCommand cmd) =>
             {
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
@@ -138,7 +139,17 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
         public int RoleId { get; set; }
         public string RoleName { get; set; } = string.Empty;
         public string NormalizedName { get; set; } = string.Empty;
+        public string Category { get; set; } = "General";
+        // Examples: HR, Finance, Attendance, System
+ 
+        public string DisplayName { get; set; } = "";
+        // Example: "Edit Attendance Records"
+  
+        public string? Description { get; set; } = "";
     }
+
+   
+
 
     // ===================================================================
     // 3. REQUESTS (Queries & Commands) - Updated to return DTOs
@@ -149,9 +160,9 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
     public record GetRoleQuery(int RoleId) : IRequest<ResponseResultDTO<RoleDto>>;
 
     // Commands returning only ResponseResultDTO for success/failure info
-    public record CreateRoleCommand(string RoleName) : IRequest<ResponseResultDTO>;
+    public record CreateRoleCommand( string RoleName ,     string Category , string DisplayName ,string? Description ) : IRequest<ResponseResultDTO>;
 
-    public record UpdateRoleCommand(int RoleId, string RoleName) : IRequest<ResponseResultDTO>;
+    public record UpdateRoleCommand(int RoleId ,string RoleName, string Category, string DisplayName, string? Description) : IRequest<ResponseResultDTO>;
 
     public record DeleteRoleCommand(string RoleId) : IRequest<ResponseResultDTO>;
 
@@ -166,6 +177,16 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
             RuleFor(x => x.RoleName)
                 .NotEmpty().WithMessage("Role name is required")
                 .MaximumLength(256).WithMessage("Role name cannot exceed 256 characters");
+
+            RuleFor(x => x.Category)
+               .NotEmpty().WithMessage("Role Category is required")
+               .MaximumLength(256).WithMessage("Role Category cannot exceed 256 characters");
+
+
+            RuleFor(x => x.DisplayName)
+               .NotEmpty().WithMessage("Role DisplayName is required")
+               .MaximumLength(256).WithMessage("Role DisplayName cannot exceed 256 characters");
+
         }
     }
 
@@ -173,13 +194,23 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
     {
         public UpdateRoleValidator()
         {
+        
             RuleFor(x => x.RoleId)
                 .GreaterThan(0).WithMessage("Role ID must be greater than 0");
 
             RuleFor(x => x.RoleName)
                 .NotEmpty().WithMessage("Role name is required")
                 .MaximumLength(256).WithMessage("Role name cannot exceed 256 characters");
+
+            RuleFor(x => x.Category)
+                .NotEmpty().WithMessage("Role Category is required")
+                .MaximumLength(256).WithMessage("Role Category cannot exceed 256 characters");
+
+            RuleFor(x => x.DisplayName)
+                .NotEmpty().WithMessage("Role DisplayName is required")
+                .MaximumLength(256).WithMessage("Role DisplayName cannot exceed 256 characters");
         }
+
     }
 
     public class DeleteRoleValidator : AbstractValidator<DeleteRoleCommand>
@@ -218,7 +249,11 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 {
                     RoleId = r.Id,
                     RoleName = r.Name ?? string.Empty,
-                    NormalizedName = r.NormalizedName ?? string.Empty
+                    NormalizedName = r.NormalizedName ?? string.Empty,
+                     Description = r.Description?? string.Empty,
+                      Category = r.Category?? string.Empty,
+                       DisplayName = r.DisplayName ?? string.Empty,
+
                 })
                 .ToListAsync(ct);
 
@@ -255,7 +290,10 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
             {
                 RoleId = role.Id,
                 RoleName = role.Name ?? string.Empty,
-                NormalizedName = role.NormalizedName ?? string.Empty
+                NormalizedName = role.NormalizedName ?? string.Empty,
+                 Category = role.Category ?? string.Empty,
+                  DisplayName = role.DisplayName ?? string.Empty,
+                   Description = role.Description ?? string.Empty,
             };
 
             return new ResponseResultDTO<RoleDto>
@@ -277,6 +315,10 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
         public async Task<ResponseResultDTO> Handle(CreateRoleCommand request, CancellationToken ct)
         {
             var roleName = request.RoleName.Trim();
+
+
+
+
             var exists = await _roleManager.RoleExistsAsync(roleName);
 
             if (exists)
@@ -288,7 +330,15 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 };
             }
 
-            var role = new ApplicationRole(roleName);
+            // Create role with metadata
+            var role = new ApplicationRole(roleName)
+            {
+                Category = request.Category,
+                DisplayName = request.DisplayName,
+                Description = request.Description,
+                 NormalizedName = _roleManager.NormalizeKey(roleName)
+            };
+        
             var result = await _roleManager.CreateAsync(role);
 
             if (!result.Succeeded)
@@ -322,6 +372,12 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
 
             role.Name = request.RoleName.Trim();
             role.NormalizedName = _roleManager.NormalizeKey(role.Name);
+            role.Category = request.Category;
+            role.DisplayName = request.DisplayName;
+            role.Description = request.Description;
+            role.NormalizedName = _roleManager.NormalizeKey(role.Name);
+
+
 
             var result = await _roleManager.UpdateAsync(role);
 

@@ -18,7 +18,10 @@ namespace HRsystem.Api.Database.DataSeeder
                     Id = 1,
                     Name = Keys.RoleKey.SystemAdmin,
                     ConcurrencyStamp = "0b2f3b2f-a5d1-4d3f-be8b-db04070caed1",
-                    NormalizedName = Keys.RoleKey.SystemAdmin.ToUpper()
+                    NormalizedName = Keys.RoleKey.SystemAdmin.ToUpper(),
+                     Category = "System",
+                     DisplayName = "System Administrator",
+                        Description = "Role with full system access"
                 }
             );
         }
