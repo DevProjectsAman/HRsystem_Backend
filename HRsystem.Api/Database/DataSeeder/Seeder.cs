@@ -21,7 +21,8 @@ namespace HRsystem.Api.Database.DataSeeder
                     NormalizedName = Keys.RoleKey.SystemAdmin.ToUpper(),
                      Category = "System",
                      DisplayName = "System Administrator",
-                        Description = "Role with full system access"
+                        Description = "Role with full system access",
+                        RoleLevel = 1000
                 }
             );
         }

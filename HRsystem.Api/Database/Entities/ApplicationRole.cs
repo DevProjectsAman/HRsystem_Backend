@@ -27,6 +27,8 @@ namespace HRsystem.Api.Database.Entities
         [MaxLength(250)]
         public string? Description { get; set; }="";
         // Example: "Allows the user to edit employee attendance entries"
+        public int RoleLevel { get; set; }
+
     }
 
 }
