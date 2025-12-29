@@ -6,6 +6,7 @@ using HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule;
 using HRsystem.Api.Features.Scheduling.WorkDays;
 using HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.Scheduling.VacationRule
 {
@@ -15,7 +16,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule
         {
             var group = app.MapGroup("/api/Scheduling/VacationRules").WithTags("VacationRules");
 
-            group.MapPost("/GetVacationByMatchingRules", async (GetVacationByMatchingRulesQueury query, ISender mediator) =>
+            group.MapPost("/GetVacationByMatchingRules", [Authorize] async (GetVacationByMatchingRulesQueury query, ISender mediator) =>
             {
                 var result = await mediator.Send(query);
 
@@ -31,14 +32,14 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule
             });
 
             // Get all
-            group.MapGet("/Listofvacationrules/{CompanyID}", async (int CompanyID,ISender mediator) =>
+            group.MapGet("/Listofvacationrules/{CompanyID}", [Authorize] async (int CompanyID,ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllVacationRulesQuery(CompanyID));
                 return Results.Ok(new { Success = true, Data = result });
             });
 
             // Get by Id
-            group.MapGet("/GetOnevacationrules/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOnevacationrules/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetVacationRuleByIdQuery(id));
                 return result == null
@@ -47,14 +48,14 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule
             });
 
             // Create
-            group.MapPost("/Createvacationrules", async (CreateVacationRuleCommand command, ISender mediator) =>
+            group.MapPost("/Createvacationrules", [Authorize] async (CreateVacationRuleCommand command, ISender mediator) =>
             {
                 var result = await mediator.Send(command);
                 return Results.Created($"/api/vacationrules/{result.RuleId}", new { Success = true, Data = result });
             });
 
             // Update
-            group.MapPut("/Updatevacationrules/{id}", async (int id, UpdateVacationRuleCommand command, ISender mediator) =>
+            group.MapPut("/Updatevacationrules/{id}", [Authorize] async (int id, UpdateVacationRuleCommand command, ISender mediator) =>
             {
                 if (id != command.RuleId)
                     return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
@@ -66,7 +67,7 @@ namespace HRsystem.Api.Features.Scheduling.VacationRule
             });
 
             // Delete
-            group.MapDelete("/Deletevacationrules/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/Deletevacationrules/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteVacationRuleCommand(id));
                 return !result

@@ -4,6 +4,7 @@ using HRsystem.Api.Features.AuditLog.GetAuditLogById;
 using HRsystem.Api.Features.AuditLog.UpdateAuditLog;
 using HRsystem.Api.Features.AuditLog.DeleteAuditLog;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.AuditLog
 {
@@ -14,14 +15,14 @@ namespace HRsystem.Api.Features.AuditLog
             var group = app.MapGroup("/api/auditlogs").WithTags("AuditLogs");
 
             // Get all
-            group.MapGet("/ListOfAuditLogs", async (ISender mediator) =>
+            group.MapGet("/ListOfAuditLogs", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllAuditLogsCommand());
                 return Results.Ok(new { Success = true, Data = result });
             });
 
             // Get by Id
-            group.MapGet("/GetOneAuditLog/{id}", async (long id, ISender mediator) =>
+            group.MapGet("/GetOneAuditLog/{id}", [Authorize] async (long id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAuditLogByIdCommand(id));
                 return result == null
@@ -30,14 +31,14 @@ namespace HRsystem.Api.Features.AuditLog
             });
 
             // Create
-            group.MapPost("/CreateAuditLog", async (CreateAuditLogCommand command, ISender mediator) =>
+            group.MapPost("/CreateAuditLog", [Authorize] async (CreateAuditLogCommand command, ISender mediator) =>
             {
                 var result = await mediator.Send(command);
                 return Results.Created($"/api/auditlogs/{result.AuditId}", new { Success = true, Data = result });
             });
 
             // Update
-            group.MapPut("/UpdateAuditLog/{id}", async (long id, UpdateAuditLogCommand command, ISender mediator) =>
+            group.MapPut("/UpdateAuditLog/{id}", [Authorize] async (long id, UpdateAuditLogCommand command, ISender mediator) =>
             {
                 if (id != command.AuditId)
                     return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
@@ -49,7 +50,7 @@ namespace HRsystem.Api.Features.AuditLog
             });
 
             // Delete
-            group.MapDelete("/DeleteAuditLog/{id}", async (long id, ISender mediator) =>
+            group.MapDelete("/DeleteAuditLog/{id}", [Authorize] async (long id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteAuditLogCommand(id));
                 return !result

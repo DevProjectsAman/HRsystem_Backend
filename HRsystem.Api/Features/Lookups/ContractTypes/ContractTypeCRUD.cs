@@ -2,6 +2,7 @@
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.Lookups.ContractTypes;
@@ -164,19 +165,19 @@ public static class ContractTypeEndpoints
     {
         var group = app.MapGroup("/api/Lookups/contracttypes");
 
-        group.MapGet("/GetAllContractTypes", async (IMediator mediator) =>
+        group.MapGet("/GetAllContractTypes", [Authorize] async (IMediator mediator) =>
         {
             var result = await mediator.Send(new GetAllContractTypesQuery());
             return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
         });
 
-        group.MapGet("/GetContractTypeById{id:int}", async (int id, IMediator mediator) =>
+        group.MapGet("/GetContractTypeById{id:int}", [Authorize] async (int id, IMediator mediator) =>
         {
             var result = await mediator.Send(new GetContractTypeByIdQuery(id));
             return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
         });
 
-        group.MapPost("/CreateNewContractType", async (CreateContractTypeCommand cmd, IMediator mediator) =>
+        group.MapPost("/CreateNewContractType", [Authorize] async (CreateContractTypeCommand cmd, IMediator mediator) =>
         {
             var result = await mediator.Send(cmd);
             return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
@@ -185,7 +186,7 @@ public static class ContractTypeEndpoints
 
             
 
-        group.MapPut("/UpdateContractType{id:int}", async (int id, UpdateContractTypeCommand cmd, IMediator mediator) =>
+        group.MapPut("/UpdateContractType{id:int}", [Authorize] async (int id, UpdateContractTypeCommand cmd, IMediator mediator) =>
         {
             if (id != cmd.ContractTypeId) return Results.BadRequest(new ResponseResultDTO() { Success = false, Message = "IDs do not match" });
             var success = await mediator.Send(cmd);
@@ -196,7 +197,7 @@ public static class ContractTypeEndpoints
             return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = true });
         });
 
-        group.MapDelete("/DeleteContractType{id:int}", async (int id, IMediator mediator) =>
+        group.MapDelete("/DeleteContractType{id:int}", [Authorize] async (int id, IMediator mediator) =>
         {
             var success = await mediator.Send(new DeleteContractTypeCommand(id));
             if (!success)

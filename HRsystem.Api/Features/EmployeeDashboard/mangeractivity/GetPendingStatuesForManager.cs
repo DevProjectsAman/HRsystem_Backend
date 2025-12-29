@@ -50,6 +50,7 @@ using HRsystem.Api.Features.EmployeeDashboard.GetRejectedActivities;
 using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
 {
@@ -101,7 +102,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
             // ===========================================================
             // (1) Get Pending Activities for Manager
             // ===========================================================
-            group.MapGet("/subordinates/pending", async (ISender mediator) =>
+            group.MapGet("/subordinates/pending", [Authorize] async (ISender mediator) =>
             {
                 try
                 {
@@ -119,7 +120,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
             // ===========================================================
             // (2) Get Number of Pending Requests for Manager
             // ===========================================================
-            group.MapGet("/subordinates/number-of-activities-types", async (ISender mediator) =>
+            group.MapGet("/subordinates/number-of-activities-types", [Authorize] async (ISender mediator) =>
             {
                 try
                 {
@@ -137,7 +138,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
             // ===========================================================
             // (3) Check if employee is manager
             // ===========================================================
-            group.MapGet("/subordinates/is-manager", async (ISender mediator) =>
+            group.MapGet("/subordinates/is-manager", [Authorize] async (ISender mediator) =>
             {
                 try
                 {
@@ -152,7 +153,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
                 }
             });
 
-            group.MapPost("/change-status", async (ISender mediator, ChangeActivityRequestStatuesDto dto) =>
+            group.MapPost("/change-status", [Authorize] async (ISender mediator, ChangeActivityRequestStatuesDto dto) =>
             {
                 try
                 {
@@ -174,7 +175,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
             // ============================================
             // Pending activities
             // ============================================
-            group.MapGet("/Manager/pending", async (ISender mediator) =>
+            group.MapGet("/Manager/pending", [Authorize] async (ISender mediator) =>
             {
                 try
                 {
@@ -188,7 +189,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
                     return BuildError(ex);
                 }
             });
-            group.MapGet("/Manager/Rejected", async (ISender mediator) =>
+            group.MapGet("/Manager/Rejected", [Authorize] async (ISender mediator) =>
             {
                 try
                 {
@@ -202,7 +203,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
                     return BuildError(ex);
                 }
             });
-            group.MapGet("/Manager/Approved", async (ISender mediator) =>
+            group.MapGet("/Manager/Approved", [Authorize] async (ISender mediator) =>
             {
                 try
                 {
@@ -216,7 +217,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
                     return BuildError(ex);
                 }
             });
-            group.MapGet("/Manager/All-Activites", async (ISender mediator) =>
+            group.MapGet("/Manager/All-Activites", [Authorize] async (ISender mediator) =>
             {
                 try
                 {

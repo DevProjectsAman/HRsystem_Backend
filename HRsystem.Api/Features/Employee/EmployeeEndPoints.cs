@@ -59,6 +59,7 @@ using HRsystem.Api.Features.Employee.Commands;
 using HRsystem.Api.Features.Employee.DTO;
  
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.Employee
 {
@@ -69,7 +70,7 @@ namespace HRsystem.Api.Features.Employee
             var group = app.MapGroup("/api/employees").WithTags("Employees");
 
 
-            group.MapGet("/GetAvailableManagers",
+            group.MapGet("/GetAvailableManagers", [Authorize]
             async (int companyId, int departmentId, int jobLevelId, bool sameDepartmentOnly, IMediator mediator) =>
             {
                 var result = await mediator.Send(new GetAvailableManagersQuery(
@@ -82,14 +83,14 @@ namespace HRsystem.Api.Features.Employee
 
 
             // ✅ Get All
-            group.MapGet("/GetListOFEmployees", async (ISender mediator) =>
+            group.MapGet("/GetListOFEmployees", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllEmployeesQuery());
                 return Results.Ok(new { Success = true, Data = result });
             });
 
             // ✅ Get By Id
-            group.MapGet("/GetOneOFEmployee/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneOFEmployee/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetEmployeeByIdQuery(id));
                 return result == null
@@ -101,7 +102,7 @@ namespace HRsystem.Api.Features.Employee
 
            
             // ✅ Get Employee By HR Code
-            group.MapGet("/GetEmployeeByCodeHr/{employeeCodeHr}", async (string employeeCodeHr, ISender mediator) =>
+            group.MapGet("/GetEmployeeByCodeHr/{employeeCodeHr}", [Authorize] async (string employeeCodeHr, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetEmployeeByCodeHrQuery(employeeCodeHr));
 
@@ -116,7 +117,7 @@ namespace HRsystem.Api.Features.Employee
 
 
             // ✅ Create
-            group.MapPost("/CreateEmployee", async (EmployeeCreateDto dto, ISender mediator) =>
+            group.MapPost("/CreateEmployee", [Authorize] async (EmployeeCreateDto dto, ISender mediator) =>
             {
                 var result = await mediator.Send(new CreateEmployeeCommand(dto));
                 return Results.Created($"/api/employees/{result.EmployeeId}", new { Success = true, Data = result });
@@ -136,7 +137,7 @@ namespace HRsystem.Api.Features.Employee
             //        : Results.Ok(new { Success = true, Data = result });
             //});
 
-            group.MapPut("/UpdateEmployee/{id}", async (int id, EmployeeUpdateDto dto, ISender mediator) =>
+            group.MapPut("/UpdateEmployee/{id}", [Authorize] async (int id, EmployeeUpdateDto dto, ISender mediator) =>
             {
                 if (id != dto.EmployeeId)
                     return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
@@ -151,7 +152,7 @@ namespace HRsystem.Api.Features.Employee
 
 
             // ✅ Delete
-            group.MapDelete("/DeleteEmployee/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteEmployee/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteEmployeeCommand(id));
                 return !result

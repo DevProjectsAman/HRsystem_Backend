@@ -1,6 +1,7 @@
 ﻿using HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch;
 using HRsystem.Api.Services.Reports;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
@@ -14,7 +15,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
             var group = app.MapGroup("/api/employee-Dashboard/report").WithTags("Employees reports");
 
             // Punch In
-            group.MapPost("/reports", async (GetEmployeeMonthlyReport cmd, ISender mediator) =>
+            group.MapPost("/reports", [Authorize] async (GetEmployeeMonthlyReport cmd, ISender mediator) =>
             {
                 var result = await mediator.Send(cmd);
                 return Results.Ok(new { Success = true, Data = result });

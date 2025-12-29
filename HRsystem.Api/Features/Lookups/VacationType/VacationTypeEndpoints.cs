@@ -6,6 +6,7 @@ using HRsystem.Api.Features.VacationType.GetVacationTypeById;
 using HRsystem.Api.Features.VacationType.UpdateVacationType;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 
 
@@ -18,14 +19,14 @@ namespace HRsystem.Api.Features.ShiftEndpoints
             var group = app.MapGroup("/api/Lookups/vacationtypes").WithTags("VacationTypes");
 
             // Get all
-            group.MapGet("/ListOfVacation", async (ISender mediator) =>
+            group.MapGet("/ListOfVacation", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllVacationTypesQuery());
                 return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
             // Get by Id
-            group.MapGet("/GetOneVacation/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneVacation/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetVacationTypeByIdQuery(id));
                 return result == null
@@ -34,7 +35,7 @@ namespace HRsystem.Api.Features.ShiftEndpoints
             });
 
             // Create
-            group.MapPost("/CreateVacation", async (CreateVacationTypeCommand command, ISender mediator, IValidator<CreateVacationTypeCommand> validator) =>
+            group.MapPost("/CreateVacation", [Authorize] async (CreateVacationTypeCommand command, ISender mediator, IValidator<CreateVacationTypeCommand> validator) =>
             {
                 var validation = await validator.ValidateAsync(command);
                 if (!validation.IsValid)
@@ -61,7 +62,7 @@ namespace HRsystem.Api.Features.ShiftEndpoints
             });
 
             // Update
-            group.MapPut("/UpdateVacation/{id}", async (int id, UpdateVacationTypeCommand command, ISender mediator, IValidator<UpdateVacationTypeCommand> validator) =>
+            group.MapPut("/UpdateVacation/{id}", [Authorize] async (int id, UpdateVacationTypeCommand command, ISender mediator, IValidator<UpdateVacationTypeCommand> validator) =>
             {
                 if (id != command.VacationTypeId)
                     return Results.BadRequest(new ResponseResultDTO { Success = false, Message = "Id mismatch" });
@@ -91,7 +92,7 @@ namespace HRsystem.Api.Features.ShiftEndpoints
             });
 
             // Delete
-            group.MapDelete("/DeleteVacation/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteVacation/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteVacationTypeCommand(id));
                 return !result

@@ -5,6 +5,7 @@ using HRsystem.Api.Features.Groups.GetALlGroup;
 using HRsystem.Api.Features.Groups.GetGroupById;
 using HRsystem.Api.Features.Groups.UpdateGroup;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -17,14 +18,14 @@ namespace HRsystem.Api.Features.Groups
             var group = app.MapGroup("/api/Organization/groups").WithTags("Groups");
 
             // GET All Groups
-            group.MapGet("/GetAllGroup", async (ISender mediator) =>
+            group.MapGet("/GetAllGroup", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllGroupCommand());
                 return Results.Ok(new { Success = true, Data = result });
             }).WithName("GetAllGroup");
 
             // GET Group by ID
-            group.MapGet("/GetOneGroup/{id}", async (
+            group.MapGet("/GetOneGroup/{id}", [Authorize] async (
                 int id,
                 ISender mediator,
                 IValidator<GetGroupByIdCommand> validator) =>
@@ -62,7 +63,7 @@ namespace HRsystem.Api.Features.Groups
             }).WithName("GetGroup");
 
             // POST Create Group
-            group.MapPost("/CreateGroup", async (
+            group.MapPost("/CreateGroup", [Authorize] async (
             [FromBody] CreateGroupRequest dto,
             ISender mediator,
             IValidator<CreateGroupCommand> validator) =>
@@ -81,7 +82,7 @@ namespace HRsystem.Api.Features.Groups
             }).WithName("CreateGroup");
 
             // PUT Update Group
-            group.MapPut("/UpdateGroup/{id}", async (
+            group.MapPut("/UpdateGroup/{id}", [Authorize] async (
                 int id,
                 UpdateGroupDto body,
                 ISender mediator) =>
@@ -106,7 +107,7 @@ namespace HRsystem.Api.Features.Groups
             }).WithName("UpdateGroup");
 
             // DELETE Group
-            group.MapDelete("/DeleteGroup/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteGroup/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteGroupCommand(id));
 

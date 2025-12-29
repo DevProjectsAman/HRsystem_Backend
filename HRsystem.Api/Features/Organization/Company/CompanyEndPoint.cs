@@ -5,6 +5,7 @@ using HRsystem.Api.Features.Organization.Company.GetCompanyById;
 using HRsystem.Api.Features.Organization.Company.UpdateCompany;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.Organization.Company
 {
@@ -15,7 +16,7 @@ namespace HRsystem.Api.Features.Organization.Company
             var group = app.MapGroup("/api/Organization/companies").WithTags("Companies");
 
             // ✅ Get All
-            group.MapGet("/ListOfCompany", async (ISender mediator) =>
+            group.MapGet("/ListOfCompany", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllCompanyCommand());
                 return Results.Ok(new ResponseResultDTO<object>
@@ -27,7 +28,7 @@ namespace HRsystem.Api.Features.Organization.Company
             });
 
             // ✅ Get One
-            group.MapGet("/GetOneCompany/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneCompany/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetCompanyByIdCommand(id));
 
@@ -49,7 +50,7 @@ namespace HRsystem.Api.Features.Organization.Company
             });
 
             // ✅ Create
-            group.MapPost("/CreateCompany", async (CreateCompanyCommand cmd, ISender mediator, IValidator<CreateCompanyCommand> validator) =>
+            group.MapPost("/CreateCompany", [Authorize] async (CreateCompanyCommand cmd, ISender mediator, IValidator<CreateCompanyCommand> validator) =>
             {
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
@@ -80,7 +81,7 @@ namespace HRsystem.Api.Features.Organization.Company
             });
 
             // ✅ Update
-            group.MapPut("/UpdateCompany/{id}", async (int id, UpdateCompanyCommand cmd, ISender mediator, IValidator<UpdateCompanyCommand> validator) =>
+            group.MapPut("/UpdateCompany/{id}", [Authorize] async (int id, UpdateCompanyCommand cmd, ISender mediator, IValidator<UpdateCompanyCommand> validator) =>
             {
                 if (id != cmd.CompanyId)
                 {
@@ -130,7 +131,7 @@ namespace HRsystem.Api.Features.Organization.Company
             });
 
             // ✅ Optional: Delete (if you re-enable later)
-            // group.MapDelete("/{id}", async (int id, ISender mediator) =>
+            // group.MapDelete("/{id}", [Authorize] async (int id, ISender mediator) =>
             // {
             //     var result = await mediator.Send(new DeleteCompanyCommand(id));
             //     if (!result)

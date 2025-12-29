@@ -4,6 +4,7 @@ using HRsystem.Api.Features.Organization.Project.GetProjectById;
 using HRsystem.Api.Features.Organization.Project.UpdateProject;
 using HRsystem.Api.Features.Project.DeleteProject;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.Organization.Project
 {
@@ -14,14 +15,14 @@ namespace HRsystem.Api.Features.Organization.Project
             var group = app.MapGroup("/api/Organization/Project").WithTags("Projects");
 
             // Get all
-            group.MapGet("/ListOfProjects/{CompanyId}", async (ISender mediator,int CompanyId) =>
+            group.MapGet("/ListOfProjects/{CompanyId}", [Authorize] async (ISender mediator,int CompanyId) =>
             {
                 var result = await mediator.Send(new GetAllProjectsCommand(CompanyId));
                 return Results.Ok(new { Success = true, Data = result });
             });
 
             // Get by Id
-            group.MapGet("/GetOneProject/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneProject/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetProjectByIdCommand(id));
                 return result == null
@@ -30,14 +31,14 @@ namespace HRsystem.Api.Features.Organization.Project
             });
 
             // Create
-            group.MapPost("/CreateProject", async (CreateProjectCommand command, ISender mediator) =>
+            group.MapPost("/CreateProject", [Authorize] async (CreateProjectCommand command, ISender mediator) =>
             {
                 var result = await mediator.Send(command);
                 return Results.Created($"/api/projects/{result.ProjectId}", new { Success = true, Data = result });
             });
 
             // Update
-            group.MapPut("/UpdateProject/{id}", async (int id, UpdateProjectCommand command, ISender mediator) =>
+            group.MapPut("/UpdateProject/{id}", [Authorize] async (int id, UpdateProjectCommand command, ISender mediator) =>
             {
                 if (id != command.ProjectId)
                     return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
@@ -49,7 +50,7 @@ namespace HRsystem.Api.Features.Organization.Project
             });
 
             // Delete
-            group.MapDelete("/DeleteProject/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteProject/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteProjectCommand(id));
                 return !result

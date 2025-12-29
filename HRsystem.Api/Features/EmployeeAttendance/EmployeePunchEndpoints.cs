@@ -1,5 +1,6 @@
 ﻿using HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRsystem.Api.Features.EmployeeAttendance
@@ -13,7 +14,7 @@ namespace HRsystem.Api.Features.EmployeeAttendance
                            .WithTags("Employee Activities");
 
             // Punch In
-            group.MapPost("/in", async (PunchInCommand cmd, ISender mediator) =>
+            group.MapPost("/in", [Authorize] async (PunchInCommand cmd, ISender mediator) =>
             {
                 try
                 {
@@ -33,7 +34,7 @@ namespace HRsystem.Api.Features.EmployeeAttendance
             });
 
             // Punch Out
-            group.MapPost("/out", async (PunchOutCommand cmd, ISender mediator) =>
+            group.MapPost("/out", [Authorize] async (PunchOutCommand cmd, ISender mediator) =>
             {
                 try
                 {

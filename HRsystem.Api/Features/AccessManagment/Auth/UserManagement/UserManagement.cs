@@ -7,6 +7,7 @@ using HRsystem.Api.Services;
 using HRsystem.Api.Shared;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
@@ -45,7 +46,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
             });
 
 
-            group.MapPost("/user-update", async (UpdateUserCommand command, ISender mediator, IValidator<UpdateUserCommand> validator) =>
+            group.MapPost("/user-update", [Authorize] async (UpdateUserCommand command, ISender mediator, IValidator<UpdateUserCommand> validator) =>
             {
                 var validation = await validator.ValidateAsync(command);
                 if (!validation.IsValid)
@@ -56,7 +57,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
             });
 
 
-            group.MapPost("/change-password", async (ChangePasswordCommand command, ISender mediator, IValidator<ChangePasswordCommand> validator) =>
+            group.MapPost("/change-password", [Authorize] async (ChangePasswordCommand command, ISender mediator, IValidator<ChangePasswordCommand> validator) =>
             {
                 var validation = await validator.ValidateAsync(command);
                 if (!validation.IsValid)
@@ -66,7 +67,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                 return result.Success ? Results.Ok(result) : Results.BadRequest(result);
             });
 
-            group.MapPost("/toggle-active", async (ToggleUserStatusCommand command, ISender mediator, IValidator<ToggleUserStatusCommand> validator) =>
+            group.MapPost("/toggle-active", [Authorize] async (ToggleUserStatusCommand command, ISender mediator, IValidator<ToggleUserStatusCommand> validator) =>
             {
                 var validation = await validator.ValidateAsync(command);
                 if (!validation.IsValid)
@@ -77,7 +78,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
             });
 
             // 🔹 Role Assignment
-            group.MapPost("/assign-roles", async (AssignUserToRolesCommand command, ISender mediator, IValidator<AssignUserToRolesCommand> validator) =>
+            group.MapPost("/assign-roles", [Authorize] async (AssignUserToRolesCommand command, ISender mediator, IValidator<AssignUserToRolesCommand> validator) =>
             {
                 var validation = await validator.ValidateAsync(command);
                 if (!validation.IsValid)
@@ -89,7 +90,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
 
 
             // 🔹 Get User Roles (Role IDs)
-            group.MapPost("/users-roles", async (     GetUserRolesCommand command,     ISender mediator) =>
+            group.MapPost("/users-roles", [Authorize] async (     GetUserRolesCommand command,     ISender mediator) =>
             {
                 var result = await mediator.Send(command);
 

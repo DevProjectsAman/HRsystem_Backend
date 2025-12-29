@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +63,7 @@ namespace HRsystem.Api.Features.Reports
 
 
             // ===================== Department-level Dashboard Endpoint =====================
-            group.MapGet("/home-dashboard", async (
+            group.MapGet("/home-dashboard", [Authorize] async (
                     ISender mediator,
                     [FromQuery] int? departmentId,
                     [FromQuery] DateTime? fromDate,
@@ -89,7 +90,7 @@ namespace HRsystem.Api.Features.Reports
             .WithDescription("Retrieves department-level attendance percentages based on FromDate and ToDate");
 
 
-            group.MapGet("/employee-attendance-report", async (
+            group.MapGet("/employee-attendance-report", [Authorize] async (
                     ISender mediator,
                     [FromQuery] int? departmentId,
                     [FromQuery] DateTime? fromDate,

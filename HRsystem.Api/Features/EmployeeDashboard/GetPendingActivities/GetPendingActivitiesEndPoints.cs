@@ -66,6 +66,7 @@ using HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites;
 using HRsystem.Api.Features.EmployeeDashboard.GetRejectedActivities;
 using MediatR;
 using HRsystem.Api.Shared.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
 {
@@ -117,7 +118,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
             // ============================================
             // Pending activities
             // ============================================
-            group.MapGet("/pending", async (ISender mediator) =>
+            group.MapGet("/pending", [Authorize] async (ISender mediator) =>
             {
                 try
                 {
@@ -135,7 +136,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
             // ============================================
             // Count of all activities
             // ============================================
-            group.MapGet("/count-of-all-activities", async (ISender mediator) =>
+            group.MapGet("/count-of-all-activities", [Authorize] async (ISender mediator) =>
             {
                 try
                 {
@@ -153,7 +154,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
             // ============================================
             // Approved activities
             // ============================================
-            group.MapGet("/approved", async (ISender mediator) =>
+            group.MapGet("/approved", [Authorize] async (ISender mediator) =>
             {
                 try
                 {
@@ -171,7 +172,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
             // ============================================
             // Rejected activities
             // ============================================
-            group.MapGet("/rejected", async (ISender mediator) =>
+            group.MapGet("/rejected", [Authorize] async (ISender mediator) =>
             {
                 try
                 {
@@ -189,7 +190,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
             // ============================================
             // All activities
             // ============================================
-            group.MapGet("/all-activities", async (ISender mediator) =>
+            group.MapGet("/all-activities", [Authorize] async (ISender mediator) =>
             {
                 try
                 {
