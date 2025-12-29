@@ -5,6 +5,7 @@ using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Shared.Tools;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.Organization.JobManagment
@@ -16,7 +17,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             var group = app.MapGroup("/api/Organization/JobTitle").WithTags("Job Titles");
 
             // Get All
-            group.MapGet("/ListJobTitles", async (int companyId, int departmentId, IMediator mediator) =>
+            group.MapGet("/ListJobTitles" , [Authorize] async (int companyId, int departmentId, IMediator mediator) =>
             {
                 var result = await mediator.Send(new GetAllJobTitlesQuery(companyId, departmentId));
                 return Results.Ok(new ResponseResultDTO<List<JobTitleDto>>
@@ -27,7 +28,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             });
 
             // Get One
-            group.MapGet("/GetOneJobTitle/{id}", async (int id, IMediator mediator) =>
+            group.MapGet("/GetOneJobTitle/{id}", [Authorize] async (int id, IMediator mediator) =>
             {
                 var result = await mediator.Send(new GetJobTitleByIdQuery(id));
                 return result.Success
@@ -36,7 +37,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             });
 
             // Create
-            group.MapPost("/CreateJobTitle", async (CreateJobTitleCommand cmd, IMediator mediator) =>
+            group.MapPost("/CreateJobTitle", [Authorize] async (CreateJobTitleCommand cmd, IMediator mediator) =>
             {
                 var result = await mediator.Send(cmd);
                 return result.Success
@@ -45,7 +46,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             });
 
             // Update
-            group.MapPut("/UpdateJobTitle/{id}", async (int id, UpdateJobTitleCommand cmd, IMediator mediator) =>
+            group.MapPut("/UpdateJobTitle/{id}", [Authorize] async (int id, UpdateJobTitleCommand cmd, IMediator mediator) =>
             {
                 if (id != cmd.JobTitleId)
                     return Results.BadRequest(new ResponseResultDTO { Success = false, Message = "Id mismatch" });
@@ -57,7 +58,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             });
 
             // Delete
-            group.MapDelete("/DeleteJobTitle/{id}", async (int id, IMediator mediator) =>
+            group.MapDelete("/DeleteJobTitle/{id}", [Authorize] async (int id, IMediator mediator) =>
             {
                 var result = await mediator.Send(new DeleteJobTitleCommand(id));
                 return result.Success
@@ -66,7 +67,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             });
 
             // Filter
-            group.MapGet("/filter", async (int companyId, int departmentId, int jobLevelId, IMediator mediator) =>
+            group.MapGet("/filter", [Authorize] async (int companyId, int departmentId, int jobLevelId, IMediator mediator) =>
             {
                 var result = await mediator.Send(new GetFilteredJobTitlesQuery(companyId, departmentId, jobLevelId));
                 if (result == null || !result.Any())

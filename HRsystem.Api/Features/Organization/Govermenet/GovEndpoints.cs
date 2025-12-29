@@ -7,6 +7,7 @@ using HRsystem.Api.Features.Organization.Govermenet.GetGovById;
 using HRsystem.Api.Features.Organization.Govermenet.UpdateGov;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using static HRsystem.Api.Features.Organization.Govermenet.GetAllGovs.Handler;
 
 namespace HRsystem.Api.Features.Organization.Govermenet
@@ -18,7 +19,7 @@ namespace HRsystem.Api.Features.Organization.Govermenet
             var group = app.MapGroup("/api/Organization/govs").WithTags("Governments");
 
             // Get All
-            group.MapGet("/ListOfGovs", async (ISender mediator) =>
+            group.MapGet("/ListOfGovs", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllGovsQuery());
 
@@ -36,7 +37,7 @@ namespace HRsystem.Api.Features.Organization.Govermenet
             });
 
             // Get by Id
-            group.MapGet("/GetOneGov/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneGov/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 if (id <= 0)
                 {
@@ -71,7 +72,7 @@ namespace HRsystem.Api.Features.Organization.Govermenet
 
 
             // Create
-            group.MapPost("/CreateGov", async (CreateGovCommand cmd, ISender mediator, IValidator<CreateGovCommand> validator) =>
+            group.MapPost("/CreateGov", [Authorize] async (CreateGovCommand cmd, ISender mediator, IValidator<CreateGovCommand> validator) =>
             {
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
@@ -82,7 +83,7 @@ namespace HRsystem.Api.Features.Organization.Govermenet
             });
 
             // Update
-            group.MapPut("/UpdateGov/{id}", async (int id, UpdateGovCommand cmd, ISender mediator, IValidator<UpdateGovCommand> validator) =>
+            group.MapPut("/UpdateGov/{id}", [Authorize] async (int id, UpdateGovCommand cmd, ISender mediator, IValidator<UpdateGovCommand> validator) =>
             {
                 if (id != cmd.GovId)
                     return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
@@ -98,7 +99,7 @@ namespace HRsystem.Api.Features.Organization.Govermenet
             });
 
             // Delete
-            group.MapDelete("/DeleteGov/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteGov/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 if (id <= 0)
                     return Results.BadRequest(new { Success = false, Message = "Invalid GovId" });

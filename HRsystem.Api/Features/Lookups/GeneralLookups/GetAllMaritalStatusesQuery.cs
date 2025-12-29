@@ -4,6 +4,7 @@ using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Shared.Tools;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.Lookups.MaretialStatus
@@ -54,7 +55,7 @@ namespace HRsystem.Api.Features.Lookups.MaretialStatus
     {
         public static void MapMaritalStatusEndpoints(this WebApplication app)
         {
-            app.MapGet("/api/Lookups/marital-statuses", async (IMediator mediator) =>
+            app.MapGet("/api/Lookups/marital-statuses", [Authorize] async (IMediator mediator) =>
             {
                 var result = await mediator.Send(new GetAllMaritalStatusesQuery());
                 return Results.Ok(new ResponseResultDTO<object> { Success=true  , Data =result  } );

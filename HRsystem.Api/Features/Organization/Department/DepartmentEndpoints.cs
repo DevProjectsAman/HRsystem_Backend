@@ -7,6 +7,7 @@ using HRsystem.Api.Features.Organization.Department.GetDepartmentById;
 using HRsystem.Api.Features.Organization.Department.UpdateDepartment;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.Organization.Department
 {
@@ -18,7 +19,7 @@ namespace HRsystem.Api.Features.Organization.Department
                            .WithTags("Departments");
 
             // ✅ Get All (localized)
-            group.MapGet("/listOfDepartmentsLocalized/{CompanyId}", async (int CompanyId ,ISender mediator) =>
+            group.MapGet("/listOfDepartmentsLocalized/{CompanyId}", [Authorize] async (int CompanyId ,ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllDepartmentsLocalized(CompanyId));
                 return Results.Ok(new ResponseResultDTO<object>
@@ -30,7 +31,7 @@ namespace HRsystem.Api.Features.Organization.Department
             });
 
             // ✅ Get All (non-localized)
-            group.MapGet("/listOfDepartments/{CompanyId}", async (int CompanyId, ISender mediator) =>
+            group.MapGet("/listOfDepartments/{CompanyId}", [Authorize] async (int CompanyId, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllDepartmentsQuery(CompanyId));
                 return Results.Ok(new ResponseResultDTO<object>
@@ -42,7 +43,7 @@ namespace HRsystem.Api.Features.Organization.Department
             });
 
             // ✅ Get One
-            group.MapGet("/GetOneDepartment/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneDepartment/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetDepartmentByIdQuery(id));
 
@@ -64,7 +65,7 @@ namespace HRsystem.Api.Features.Organization.Department
             });
 
             // ✅ Create
-            group.MapPost("/CreateDepartment", async (
+            group.MapPost("/CreateDepartment", [Authorize] async (
                 CreateDepartmentCommand cmd,
                 ISender mediator,
                 IValidator<CreateDepartmentCommand> validator) =>
@@ -98,7 +99,7 @@ namespace HRsystem.Api.Features.Organization.Department
             });
 
             // ✅ Update
-            group.MapPut("/UpdateDepartment", async (
+            group.MapPut("/UpdateDepartment", [Authorize] async (
                 
                 UpdateDepartmentCommand cmd,
                 ISender mediator,
@@ -141,7 +142,7 @@ namespace HRsystem.Api.Features.Organization.Department
             });
 
             // ✅ Delete
-            group.MapDelete("/DeleteDepartment/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteDepartment/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteDepartmentCommand(id));
 

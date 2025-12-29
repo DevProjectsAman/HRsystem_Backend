@@ -7,6 +7,7 @@ using HRsystem.Api.Features.Organization.City.GetCityByGovId;
 using HRsystem.Api.Features.Organization.City.GetCityById;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 
 namespace HRsystem.Api.Features.City
@@ -18,14 +19,14 @@ namespace HRsystem.Api.Features.City
             var group = app.MapGroup("/api/Organization/cities").WithTags("Cities");
 
             // Get All
-            group.MapGet("/ListOfCities", async (ISender mediator) =>
+            group.MapGet("/ListOfCities", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllCitiesQuery());
                 return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
             // Get One
-            group.MapGet("/GetOneCity/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneCity/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetCityByCityIdQuery(id));
                 return result == null
@@ -34,7 +35,7 @@ namespace HRsystem.Api.Features.City
             });
 
             // Get One By GovID
-            group.MapGet("/GetOneCityByGov/{GovId}", async (int GovId, ISender mediator) =>
+            group.MapGet("/GetOneCityByGov/{GovId}", [Authorize] async (int GovId, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetCityByGovIdQuery(GovId));
                 return result == null
@@ -43,7 +44,7 @@ namespace HRsystem.Api.Features.City
             });
 
             // Create
-            group.MapPost("/CreateCity", async (CreateCityCommand cmd, ISender mediator, IValidator<CreateCityCommand> validator) =>
+            group.MapPost("/CreateCity", [Authorize] async (CreateCityCommand cmd, ISender mediator, IValidator<CreateCityCommand> validator) =>
             {
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
@@ -70,7 +71,7 @@ namespace HRsystem.Api.Features.City
             });
 
             // Update
-            group.MapPut("/UpdateCity/{id}", async (int id, UpdateCityCommand cmd, ISender mediator, IValidator<UpdateCityCommand> validator) =>
+            group.MapPut("/UpdateCity/{id}", [Authorize] async (int id, UpdateCityCommand cmd, ISender mediator, IValidator<UpdateCityCommand> validator) =>
             {
                 if (id != cmd.CityId)
                     return Results.BadRequest(new ResponseResultDTO { Success = false, Message = "Id mismatch" });
@@ -97,7 +98,7 @@ namespace HRsystem.Api.Features.City
             });
 
             // Delete
-            group.MapDelete("/DeleteCity/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteCity/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteCityCommand(id));
                 return !result

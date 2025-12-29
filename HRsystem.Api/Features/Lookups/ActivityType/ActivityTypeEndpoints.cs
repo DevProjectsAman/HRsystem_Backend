@@ -5,6 +5,7 @@ using HRsystem.Api.Features.ActivityType.GetActivityTypeById;
 using HRsystem.Api.Features.ActivityType.DeleteActivityType;
 using MediatR;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.ActivityType
 {
@@ -15,14 +16,14 @@ namespace HRsystem.Api.Features.ActivityType
             var group = app.MapGroup("/api/Lookups/activity-types").WithTags("Activity Types");
 
             // Get All
-            group.MapGet("/ListOfActivityTypes", async (ISender mediator) =>
+            group.MapGet("/ListOfActivityTypes", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllActivityTypesQuery());
                 return Results.Ok(new { Success = true, Data = result });
             });
 
             // Get by Id
-            group.MapGet("/GetOneActivityType/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneActivityType/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 if (id <= 0)
                     return Results.BadRequest(new { Success = false, Message = "Invalid ActivityTypeId" });
@@ -34,7 +35,7 @@ namespace HRsystem.Api.Features.ActivityType
             });
 
             // Create
-            group.MapPost("/CreateActivityType", async (CreateActivityTypeCommand cmd, ISender mediator, IValidator<CreateActivityTypeCommand> validator) =>
+            group.MapPost("/CreateActivityType", [Authorize] async (CreateActivityTypeCommand cmd, ISender mediator, IValidator<CreateActivityTypeCommand> validator) =>
             {
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
@@ -45,7 +46,7 @@ namespace HRsystem.Api.Features.ActivityType
             });
 
             // Update
-            group.MapPut("/UpdateActivityType/{id}", async (int id, UpdateActivityTypeCommand cmd, ISender mediator, IValidator<UpdateActivityTypeCommand> validator) =>
+            group.MapPut("/UpdateActivityType/{id}", [Authorize] async (int id, UpdateActivityTypeCommand cmd, ISender mediator, IValidator<UpdateActivityTypeCommand> validator) =>
             {
                 if (id != cmd.ActivityTypeId)
                     return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
@@ -61,7 +62,7 @@ namespace HRsystem.Api.Features.ActivityType
             });
 
             // Delete
-            group.MapDelete("/DeleteActivityType/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteActivityType/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 if (id <= 0)
                     return Results.BadRequest(new { Success = false, Message = "Invalid ActivityTypeId" });

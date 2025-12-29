@@ -1,6 +1,7 @@
 ﻿using HRsystem.Api.Features.WorkDaysRules;
 using HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.WorkDaysRules
 {
@@ -11,14 +12,14 @@ namespace HRsystem.Api.Features.WorkDaysRules
             var group = app.MapGroup("/api/Scheduling/workdaysrules").WithTags("WorkDaysRules");
 
             // Get All
-            group.MapGet("/GetListOfWorkDaysRule/{CompanyId}", async (ISender mediator,int CompanyId) =>
+            group.MapGet("/GetListOfWorkDaysRule/{CompanyId}", [Authorize] async (ISender mediator,int CompanyId) =>
             {
                 var result = await mediator.Send(new GetAllWorkDaysRulesQuery(CompanyId));
                 return Results.Ok(new { Success = true, Data = result });
             });
 
             // Get One
-            group.MapGet("/GetOneOfWorkDaysRule/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneOfWorkDaysRule/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetWorkDaysRuleByIdQuery(id));
                 return result == null
@@ -27,14 +28,14 @@ namespace HRsystem.Api.Features.WorkDaysRules
             });
 
             // Create
-            group.MapPost("/CreateWorkDaysRule", async (CreateWorkDaysRuleCommand cmd, ISender mediator) =>
+            group.MapPost("/CreateWorkDaysRule", [Authorize] async (CreateWorkDaysRuleCommand cmd, ISender mediator) =>
             {
                 var result = await mediator.Send(cmd);
                 return Results.Created($"/api/workdaysrules/{result.WorkDaysRuleId}", new { Success = true, Data = result });
             });
 
             // Update
-            group.MapPut("/UpdateOneOfWorkDaysRule", async ( UpdateWorkDaysRuleCommand cmd, ISender mediator) =>
+            group.MapPut("/UpdateOneOfWorkDaysRule", [Authorize] async ( UpdateWorkDaysRuleCommand cmd, ISender mediator) =>
             {
                  
 
@@ -45,7 +46,7 @@ namespace HRsystem.Api.Features.WorkDaysRules
             });
 
             // Delete
-            group.MapDelete("/DeleteOneOfWorkDaysRule/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteOneOfWorkDaysRule/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteWorkDaysRuleCommand(id));
                 return !result

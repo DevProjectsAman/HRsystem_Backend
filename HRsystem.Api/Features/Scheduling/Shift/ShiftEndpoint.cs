@@ -7,6 +7,7 @@ using HRsystem.Api.Features.Scheduling.Shift.GetShiftById;
 using HRsystem.Api.Features.Scheduling.Shift.UpdateShift;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace HRsystem.Api.Features.Scheduling.Shift
@@ -18,14 +19,14 @@ namespace HRsystem.Api.Features.Scheduling.Shift
             var group = app.MapGroup("/api/Scheduling/shifts").WithTags("Shifts");
 
             // Get all
-            group.MapGet("/ListShifts/{id}", async (int id ,ISender mediator) =>
+            group.MapGet("/ListShifts/{id}", [Authorize] async (int id ,ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllShiftsQuery(id));
                 return Results.Ok(new { Success = true, Data = result });
             });
 
             // Get by Id
-            group.MapGet("/GetOneShift/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneShift/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetShiftByIdQuery(id));
                 return result == null
@@ -34,7 +35,7 @@ namespace HRsystem.Api.Features.Scheduling.Shift
             });
 
             // Create
-            group.MapPost("/CreateShift", async (CreateShiftCommand command, ISender mediator, IValidator<CreateShiftCommand> validator) =>
+            group.MapPost("/CreateShift", [Authorize] async (CreateShiftCommand command, ISender mediator, IValidator<CreateShiftCommand> validator) =>
             {
                 var validation = await validator.ValidateAsync(command);
                 if (!validation.IsValid)
@@ -51,7 +52,7 @@ namespace HRsystem.Api.Features.Scheduling.Shift
             });
 
             // Update
-            group.MapPut("/UpdateShift", async (UpdateShiftCommand command, ISender mediator, IValidator<UpdateShiftCommand> validator) =>
+            group.MapPut("/UpdateShift", [Authorize] async (UpdateShiftCommand command, ISender mediator, IValidator<UpdateShiftCommand> validator) =>
             {
                 var validation = await validator.ValidateAsync(command);
                 if (!validation.IsValid)
@@ -64,7 +65,7 @@ namespace HRsystem.Api.Features.Scheduling.Shift
             });
 
             // Delete
-            group.MapDelete("/DeleteShift/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteShift/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 try
                 {

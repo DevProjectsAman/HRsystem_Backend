@@ -8,6 +8,7 @@ using HRsystem.Api.Features.Organization.WorkLocation.GetWorkLocationById;
 using HRsystem.Api.Features.Organization.WorkLocation.UpdateWorkLocation;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.Organization.WorkLocation
 {
@@ -18,20 +19,20 @@ namespace HRsystem.Api.Features.Organization.WorkLocation
             var group = app.MapGroup("/api/Organization/WorkLocation").WithTags("WorkLocations");
 
             // Get all
-            group.MapGet("/List", async (ISender mediator) =>
+            group.MapGet("/List", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllWorkLocationsQuery());
                 return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
             // Get all
-            group.MapGet("/ListSpecific", async (ISender mediator,int companyId, int cityId) =>
+            group.MapGet("/ListSpecific", [Authorize] async (ISender mediator,int companyId, int cityId) =>
             {
                 var result = await mediator.Send(new GetSpecificWorkLocationsQuery( companyId , cityId));
                 return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
             // Get by Id
-            group.MapGet("/GetOne", async (int id, ISender mediator) =>
+            group.MapGet("/GetOne", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetWorkLocationByIdQuery(id));
                 return result == null
@@ -40,7 +41,7 @@ namespace HRsystem.Api.Features.Organization.WorkLocation
             });
 
             // Create
-            group.MapPost("/Create", async (CreateWorkLocationCommand cmd, ISender mediator, IValidator<CreateWorkLocationCommand> validator) =>
+            group.MapPost("/Create", [Authorize] async (CreateWorkLocationCommand cmd, ISender mediator, IValidator<CreateWorkLocationCommand> validator) =>
             {
                 var validation = await validator.ValidateAsync(cmd);
                 if (!validation.IsValid)
@@ -67,7 +68,7 @@ namespace HRsystem.Api.Features.Organization.WorkLocation
             });
 
             // Update
-            group.MapPut("/Update", async (UpdateWorkLocationCommand cmd, ISender mediator, IValidator<UpdateWorkLocationCommand> validator) =>
+            group.MapPut("/Update", [Authorize] async (UpdateWorkLocationCommand cmd, ISender mediator, IValidator<UpdateWorkLocationCommand> validator) =>
             {
                 var validation = await validator.ValidateAsync(cmd);
                 if (!validation.IsValid)
@@ -91,7 +92,7 @@ namespace HRsystem.Api.Features.Organization.WorkLocation
             });
 
             // Delete
-            group.MapDelete("/Delete", async (int id, ISender mediator) =>
+            group.MapDelete("/Delete", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new DeleteWorkLocationCommand(id));
                 return !result

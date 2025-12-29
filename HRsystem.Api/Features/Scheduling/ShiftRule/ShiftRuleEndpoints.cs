@@ -7,6 +7,7 @@ using HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters;
 using HRsystem.Api.Features.ShiftRule.UpdateShiftRule;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRsystem.Api.Features.Scheduling.ShiftRule
@@ -18,7 +19,7 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule
             var group = app.MapGroup("/api/Scheduling/shiftrules").WithTags("ShiftRules");
 
             // Get all
-            group.MapGet("/ListShiftRules/{CompanyId}", async (ISender mediator, int CompanyId) =>
+            group.MapGet("/ListShiftRules/{CompanyId}", [Authorize] async (ISender mediator, int CompanyId) =>
             {
                 try
                 {
@@ -32,7 +33,7 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule
             });
 
             // Get by Id
-            group.MapGet("/GetOneShiftRule/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneShiftRule/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 try
                 {
@@ -48,7 +49,7 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule
             });
 
             // Get by parameters
-            group.MapPost("/GetMatchingShiftRules", async (GetMatchingShiftRulesQuery query, ISender mediator) =>
+            group.MapPost("/GetMatchingShiftRules", [Authorize] async (GetMatchingShiftRulesQuery query, ISender mediator) =>
             {
                 try
                 {
@@ -64,7 +65,7 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule
             });
 
             // Create
-            group.MapPost("/CreateShiftRule", async (CreateShiftRuleCommand command, ISender mediator, IValidator<CreateShiftRuleCommand> validator) =>
+            group.MapPost("/CreateShiftRule", [Authorize] async (CreateShiftRuleCommand command, ISender mediator, IValidator<CreateShiftRuleCommand> validator) =>
             {
                 try
                 {
@@ -82,7 +83,7 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule
             });
 
             // Update
-            group.MapPut("/UpdateShiftRule/{id}", async (int id, UpdateShiftRuleCommand command, ISender mediator, IValidator<UpdateShiftRuleCommand> validator) =>
+            group.MapPut("/UpdateShiftRule/{id}", [Authorize] async (int id, UpdateShiftRuleCommand command, ISender mediator, IValidator<UpdateShiftRuleCommand> validator) =>
             {
                 try
                 {
@@ -105,7 +106,7 @@ namespace HRsystem.Api.Features.Scheduling.ShiftRule
             });
 
             // Delete
-            group.MapDelete("/DeleteShiftRule/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteShiftRule/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 try
                 {

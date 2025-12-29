@@ -5,6 +5,7 @@ using HRsystem.Api.Features.HolidayType.GetHolidayTypeById;
 using HRsystem.Api.Features.HolidayType.UpdateHolidayType;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.HolidayType
 {
@@ -14,26 +15,26 @@ namespace HRsystem.Api.Features.HolidayType
         {
             var group = app.MapGroup("/api/holidaytypes").WithTags("Holiday Types");
 
-            group.MapGet("/GetListOfHolidayTypes", async (ISender mediator) =>
+            group.MapGet("/GetListOfHolidayTypes", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllHolidayTypesQuery());
                 return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
-            group.MapGet("/GetOneOfHolidayTypes/{id:int}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneOfHolidayTypes/{id:int}", [Authorize] async (int id, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetHolidayTypeByIdQuery(id));
                 if (result == null) return Results.NotFound(new ResponseResultDTO { Success = false, Message = "Not found" });
                 return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
 
-            group.MapPost("/", async (CreateHolidayTypeDto dto, ISender mediator) =>
+            group.MapPost("/", [Authorize] async (CreateHolidayTypeDto dto, ISender mediator) =>
             {
                 var id = await mediator.Send(new CreateHolidayTypeCommand(dto));
                 return Results.Ok(new ResponseResultDTO<int> { Success = true, Data = id });
             });
 
-            group.MapPut("/{id:int}", async (int id, UpdateHolidayTypeDto dto, ISender mediator) =>
+            group.MapPut("/{id:int}", [Authorize] async (int id, UpdateHolidayTypeDto dto, ISender mediator) =>
             {
                 dto.HolidayTypeId = id;
                 var updated = await mediator.Send(new UpdateHolidayTypeCommand(dto));
@@ -42,7 +43,7 @@ namespace HRsystem.Api.Features.HolidayType
                     : Results.NotFound(new ResponseResultDTO { Success = false, Message = "Not found" });
             });
 
-            group.MapDelete("/{id:int}", async (int id, ISender mediator) =>
+            group.MapDelete("/{id:int}", [Authorize] async (int id, ISender mediator) =>
             {
                 var deleted = await mediator.Send(new DeleteHolidayTypeCommand(id));
                 return deleted

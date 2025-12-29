@@ -1,5 +1,6 @@
 ﻿using HRsystem.Api.Features.EmployeeRequest.EmployeeVacation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 //using static HRsystem.Api.Features.employeevacations.EmployeeVacations;
 
@@ -12,7 +13,7 @@ namespace HRsystem.Api.Features.employeevacations
             //var group = app.MapGroup("/api/vacations").WithTags("Vacations");
             var group = app.MapGroup("/api/employee-requests").WithTags("Employee Requests");
 
-            group.MapGet("/mybalances", async (ISender mediator) =>
+            group.MapGet("/mybalances", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetEmployeeVacationsQuery());
                 return result == null || !result.Any()
@@ -24,7 +25,7 @@ namespace HRsystem.Api.Features.employeevacations
             //var group = app.MapGroup("/api/employee-requests").WithTags("Employee Requests");
 
             // ✅ Request Vacation
-            group.MapPost("/vacation-request", async (
+            group.MapPost("/vacation-request", [Authorize] async (
                 RequestVacationCommand command,
                 ISender mediator) =>
             {
@@ -54,7 +55,7 @@ namespace HRsystem.Api.Features.employeevacations
 
 
             // ✅ Get Vacation Balance by Type
-            group.MapGet("/get-balance/{vacationTypeId}", async (int vacationTypeId, ISender mediator) =>
+            group.MapGet("/get-balance/{vacationTypeId}", [Authorize] async (int vacationTypeId, ISender mediator) =>
             {
                 var result = await mediator.Send(new GetVacationBalanceCommand(vacationTypeId));
                 return result == null

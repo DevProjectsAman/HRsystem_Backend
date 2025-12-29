@@ -5,6 +5,7 @@ using HRsystem.Api.Features.Lookups.ActivityStatus.GetActivityStatusById;
 using HRsystem.Api.Features.Lookups.ActivityStatus.GetAllActivityStatuses;
 using HRsystem.Api.Features.Lookups.ActivityStatus.UpdateActivityStatus;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.Lookups.ActivityStatus
 {
@@ -15,14 +16,14 @@ namespace HRsystem.Api.Features.Lookups.ActivityStatus
             var group = app.MapGroup("/api/Lookups/activity-statuses").WithTags("Activity Status");
 
             // Get All
-            group.MapGet("/ListOfActivityStatuses", async (ISender mediator) =>
+            group.MapGet("/ListOfActivityStatuses", [Authorize] async (ISender mediator) =>
             {
                 var result = await mediator.Send(new GetAllActivityStatusesQuery());
                 return Results.Ok(new { Success = true, Data = result });
             });
 
             // Get by Id
-            group.MapGet("/GetOneActivityStatus/{id}", async (int id, ISender mediator) =>
+            group.MapGet("/GetOneActivityStatus/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 if (id <= 0)
                     return Results.BadRequest(new { Success = false, Message = "Invalid StatusId" });
@@ -34,7 +35,7 @@ namespace HRsystem.Api.Features.Lookups.ActivityStatus
             });
 
             // Create
-            group.MapPost("/CreateActivityStatus", async (CreateActivityStatusCommand cmd, ISender mediator, IValidator<CreateActivityStatusCommand> validator) =>
+            group.MapPost("/CreateActivityStatus", [Authorize] async (CreateActivityStatusCommand cmd, ISender mediator, IValidator<CreateActivityStatusCommand> validator) =>
             {
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
@@ -45,7 +46,7 @@ namespace HRsystem.Api.Features.Lookups.ActivityStatus
             });
 
             // Update
-            group.MapPut("/UpdateActivityStatus/{id}", async (int id, UpdateActivityStatusCommand cmd, ISender mediator, IValidator<UpdateActivityStatusCommand> validator) =>
+            group.MapPut("/UpdateActivityStatus/{id}", [Authorize] async (int id, UpdateActivityStatusCommand cmd, ISender mediator, IValidator<UpdateActivityStatusCommand> validator) =>
             {
                 if (id != cmd.StatusId)
                     return Results.BadRequest(new { Success = false, Message = "Id mismatch" });
@@ -61,7 +62,7 @@ namespace HRsystem.Api.Features.Lookups.ActivityStatus
             });
 
             // Delete
-            group.MapDelete("/DeleteActivityStatus/{id}", async (int id, ISender mediator) =>
+            group.MapDelete("/DeleteActivityStatus/{id}", [Authorize] async (int id, ISender mediator) =>
             {
                 if (id <= 0)
                     return Results.BadRequest(new { Success = false, Message = "Invalid StatusId" });

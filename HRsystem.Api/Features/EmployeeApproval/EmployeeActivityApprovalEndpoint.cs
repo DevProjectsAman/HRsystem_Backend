@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.EmployeeApproval
 {
@@ -9,7 +10,7 @@ namespace HRsystem.Api.Features.EmployeeApproval
             var group = app.MapGroup("/api/employee-activities/Approval").WithTags("Employee Activities");
 
             // Approve/Reject Activity
-            group.MapPost("/approval/{activityId}", async (
+            group.MapPost("/approval/{activityId}", [Authorize] async (
                 long activityId,
                 ApproveEmployeeActivityCommand command,
                 ISender mediator) =>

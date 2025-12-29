@@ -3,6 +3,7 @@ using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.Lookups.GeneralLookups
@@ -51,7 +52,7 @@ namespace HRsystem.Api.Features.Lookups.GeneralLookups
     {
         public static void MapGetAllNationalitiesEndpoint(this WebApplication app)
         {
-            app.MapGet("/api/lookups/nationalities", async (IMediator mediator) =>
+            app.MapGet("/api/lookups/nationalities", [Authorize] async (IMediator mediator) =>
             {
                 var result = await mediator.Send(new GetAllNationalitiesQuery());
                 return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });

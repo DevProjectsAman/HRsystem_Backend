@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRsystem.Api.Features.EmployeeDevices
 {
@@ -15,8 +16,8 @@ namespace HRsystem.Api.Features.EmployeeDevices
             // ============================================================
             // ✅ 1. Check if current device is registered & active
             // ============================================================
-            group.MapGet("/CheckCurrentDevice",
-                async (IMediator mediator) =>
+            group.MapGet("/CheckCurrentDevice", [Authorize]
+            async (IMediator mediator) =>
                 {
                     var exists = await mediator.Send(new CheckEmployeeDeviceQuery());
 
@@ -38,8 +39,8 @@ namespace HRsystem.Api.Features.EmployeeDevices
             // ============================================================
             // ✅ 2. Add new device for current employee
             // ============================================================
-            group.MapPost("/AddDevice",
-                async (
+            group.MapPost("/AddDevice", [Authorize]
+            async (
                     IMediator mediator,
                     IValidator<AddEmployeeDeviceCommand> validator,
                     AddEmployeeDeviceCommand cmd) =>
@@ -83,8 +84,8 @@ namespace HRsystem.Api.Features.EmployeeDevices
             // ============================================================
             // ✅ 3. Reset (Deactivate) employee active device
             // ============================================================
-            group.MapPut("/ResetDevice",
-                async (IMediator mediator, ResetEmployeeDeviceCommand cmd) =>
+            group.MapPut("/ResetDevice", [Authorize]
+            async (IMediator mediator, ResetEmployeeDeviceCommand cmd) =>
                 {
                     var result = await mediator.Send(cmd);
 
@@ -107,8 +108,8 @@ namespace HRsystem.Api.Features.EmployeeDevices
 
 
 
-            group.MapGet("/ListEmployeeDevices/{employeeId:int}",
-        async (IMediator mediator, int employeeId) =>
+            group.MapGet("/ListEmployeeDevices/{employeeId:int}", [Authorize]
+            async (IMediator mediator, int employeeId) =>
         {
             var result = await mediator.Send(
                 new ListEmployeeDevicesQuery(employeeId));

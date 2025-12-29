@@ -5,6 +5,7 @@ using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.Lookups.ActivityTypeStatus
@@ -18,19 +19,19 @@ namespace HRsystem.Api.Features.Lookups.ActivityTypeStatus
                            .WithTags("Activity Type Status");
 
             // CREATE
-            group.MapPost("/AddNew", async (CreateActivityTypeStatusCommand cmd, IMediator mediator) =>
+            group.MapPost("/AddNew", [Authorize] async (CreateActivityTypeStatusCommand cmd, IMediator mediator) =>
                 await mediator.Send(cmd));
 
             // GET by Id
-            group.MapGet("/GetById{id:int}", async (int id, IMediator mediator) =>
+            group.MapGet("/GetById{id:int}", [Authorize] async (int id, IMediator mediator) =>
                 await mediator.Send(new GetActivityTypeStatusByIdQuery(id)));
 
             // GET list by ActivityType + Company
-            group.MapGet("/by-activity/GetBy{activityTypeId:int}/company/{companyId:int}", async (int activityTypeId, int companyId, IMediator mediator) =>
+            group.MapGet("/by-activity/GetBy{activityTypeId:int}/company/{companyId:int}", [Authorize] async (int activityTypeId, int companyId, IMediator mediator) =>
                 await mediator.Send(new GetActivityTypeStatusListByTypeQuery(activityTypeId, companyId)));
 
             // UPDATE
-            group.MapPut("/Update{id:int}", async (int id, UpdateActivityTypeStatusCommand cmd, IMediator mediator) =>
+            group.MapPut("/Update{id:int}", [Authorize] async (int id, UpdateActivityTypeStatusCommand cmd, IMediator mediator) =>
             {
                 // enforce id from route
                 cmd = cmd with { ActivityTypeStatusId = id };
@@ -38,7 +39,7 @@ namespace HRsystem.Api.Features.Lookups.ActivityTypeStatus
             });
 
             // DELETE
-            group.MapDelete("/DeleteById{id:int}", async (int id, IMediator mediator) =>
+            group.MapDelete("/DeleteById{id:int}", [Authorize] async (int id, IMediator mediator) =>
                 await mediator.Send(new DeleteActivityTypeStatusCommand(id)));
         }
     }

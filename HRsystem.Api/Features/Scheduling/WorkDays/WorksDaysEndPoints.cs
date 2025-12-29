@@ -2,6 +2,7 @@
 using HRsystem.Api.Features.Scheduling.WorkDays;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 public static class WorkDaysEndpoints
 {
@@ -9,7 +10,7 @@ public static class WorkDaysEndpoints
     {
         var group = app.MapGroup("/api/Scheduling/workdays").WithTags("WorkDays");
 
-        group.MapGet("/GetListOfWorkDays", async (ISender mediator) =>
+        group.MapGet("/GetListOfWorkDays", [Authorize] async (ISender mediator) =>
         {
             var result = await mediator.Send(new GetAllWorkDaysQuery());
             return Results.Ok(new ResponseResultDTO<object>
@@ -19,7 +20,7 @@ public static class WorkDaysEndpoints
             });
         });
 
-        group.MapGet("/GetOneOfWorkDays/{id}", async (int id, ISender mediator) =>
+        group.MapGet("/GetOneOfWorkDays/{id}", [Authorize] async (int id, ISender mediator) =>
         {
             var result = await mediator.Send(new GetWorkDaysByIdQuery(id));
             return Results.Ok(result == null
@@ -27,7 +28,7 @@ public static class WorkDaysEndpoints
                 : new ResponseResultDTO<object> { Success = true, Data = result });
         });
 
-        group.MapPost("/CreateWorkDays", async (CreateWorkDaysCommand cmd, ISender mediator) =>
+        group.MapPost("/CreateWorkDays", [Authorize] async (CreateWorkDaysCommand cmd, ISender mediator) =>
         {
             var id = await mediator.Send(cmd);
             return Results.Ok(new ResponseResultDTO<int>
@@ -38,7 +39,7 @@ public static class WorkDaysEndpoints
             });
         });
 
-        group.MapPut("/UpdateOneOfWorkDays/{id}", async (int id, UpdateWorkDaysCommand cmd, ISender mediator) =>
+        group.MapPut("/UpdateOneOfWorkDays/{id}", [Authorize] async (int id, UpdateWorkDaysCommand cmd, ISender mediator) =>
         {
             if (id != cmd.Id)
                 return Results.Ok(new ResponseResultDTO { Success = false, Message = "Invalid id" });
@@ -49,7 +50,7 @@ public static class WorkDaysEndpoints
                 : new ResponseResultDTO { Success = false, Message = "Not found" });
         });
 
-        group.MapDelete("/DeleteOneOfWorkDays/{id}", async (int id, ISender mediator) =>
+        group.MapDelete("/DeleteOneOfWorkDays/{id}", [Authorize] async (int id, ISender mediator) =>
         {
             var deleted = await mediator.Send(new DeleteWorkDaysCommand(id));
             return Results.Ok(deleted
@@ -57,7 +58,7 @@ public static class WorkDaysEndpoints
                 : new ResponseResultDTO { Success = false, Message = "Not found" });
         });
 
-        group.MapPost("/GettingWorkDaysIdByMatchingRules", async (GettingWorkDaysIdByMatchingRules query, ISender mediator) =>
+        group.MapPost("/GettingWorkDaysIdByMatchingRules", [Authorize] async (GettingWorkDaysIdByMatchingRules query, ISender mediator) =>
         {
             var result = await mediator.Send(query);
 
