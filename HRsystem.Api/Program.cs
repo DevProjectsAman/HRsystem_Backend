@@ -52,6 +52,7 @@ using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.Chatbot;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Services.DeviceEnforcement;
+using HRsystem.Api.Services.GenerateDailyEmployeeReport;
 using HRsystem.Api.Services.LookupCashing;
 using HRsystem.Api.Services.Reports;
 using HRsystem.Api.Shared.EncryptText;
@@ -158,6 +159,8 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+
 
 // Register JWT Authentication
 builder.Services.AddAuthentication(options =>
@@ -292,9 +295,22 @@ builder.Services.AddRateLimiter(options =>
 // builder.Services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
 //builder.Services.AddScoped<IAuthorizationHandler, PermissionHandlerService>();
 
+////Monthly Report Service
+//builder.Services.AddScoped<IEmployeeMonthlyReportService, EmployeeMonthlyReportService>();
+//builder.Services.AddHostedService<EmployeeMonthlyReportScheduler>();
+
+
+
+
 // Monthly Report Service
-builder.Services.AddScoped<IEmployeeMonthlyReportService, EmployeeMonthlyReportService>();
-builder.Services.AddHostedService<EmployeeMonthlyReportScheduler>();
+builder.Services.AddScoped<IGenerateEmployeeMonthlyReportService, GenerateEmployeesMonthlyActivityReport>();
+
+// Register background service (runs at midnight)
+builder.Services.AddHostedService<MonthlyReportBackgroundService>();
+
+
+
+
 
 
 //chatbot

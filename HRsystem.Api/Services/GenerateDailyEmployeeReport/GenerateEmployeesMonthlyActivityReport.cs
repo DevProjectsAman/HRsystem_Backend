@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Text.Json;
 using static HRsystem.Api.Enums.EnumsList;
 
-namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
+namespace HRsystem.Api.Services.GenerateDailyEmployeeReport
 {
     public interface IGenerateEmployeeMonthlyReportService
     {
@@ -400,7 +400,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<MonthlyReportBackgroundService> _logger;
-        private readonly TimeSpan _executionTime = new(0, 0, 0); // Midnight
+      //  private readonly TimeSpan _executionTime = new(0, 0, 0); // Midnight
+        private readonly TimeSpan _executionTime = new(13, 52, 0); // Midnight
 
         public MonthlyReportBackgroundService(
             IServiceProvider serviceProvider,

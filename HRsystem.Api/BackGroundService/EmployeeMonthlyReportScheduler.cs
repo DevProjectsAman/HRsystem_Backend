@@ -82,7 +82,7 @@ public class EmployeeMonthlyReportScheduler : BackgroundService
                 var now = DateTime.UtcNow;
 
                 // تحديد وقت التشغيل: 1:10 مساءً بتوقيت UTC
-                var nextRun = DateTime.UtcNow.Date.AddHours(13).AddMinutes(10);
+                var nextRun = DateTime.UtcNow.Date.AddHours(13).AddMinutes(40);
 
                 // لو الوقت الحالي عدى الميعاد النهارده → شغلها بكرة
                 if (now >= nextRun)
