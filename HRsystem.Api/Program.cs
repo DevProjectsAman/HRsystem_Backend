@@ -367,9 +367,6 @@ app.UseRateLimiter();
 /// this to enforce device binding
 // app.UseMiddleware<DeviceEnforcementMiddleware>();
 
-
-
-
 //builder.Services.AddControllers();
 
 

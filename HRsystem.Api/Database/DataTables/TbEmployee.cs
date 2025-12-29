@@ -87,6 +87,8 @@ public partial class TbEmployee
     public int WorkDaysId { get; set; }
     public int? RemoteWorkDaysId { get; set; }
 
+    public bool IsActive { get; set; }= true;
+
     public virtual TbCompany Company { get; set; } = null!;
 
     public virtual ICollection<TbEmployee> InverseManager { get; set; } = new List<TbEmployee>();
