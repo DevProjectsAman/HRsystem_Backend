@@ -10,6 +10,9 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+
+
 
 namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
 {
@@ -131,8 +134,8 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
             if (user == null || !user.IsActive)
                 return new LoginResponse(false, ResponseMessages.InvalidLogin);
 
-            var roles = await _userManager.GetRolesAsync(user);
-            var jwtToken = await _jwtService.GenerateTokenAsync(user, roles);
+           
+            var jwtToken = await _jwtService.GenerateTokenAsync(user);
             var tokenString = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
             return new LoginResponse(true, ResponseMessages.SucessLogin, tokenString, user.UserName);
@@ -311,33 +314,45 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                     return Failed(pwResult);
             }
 
-            // 5️⃣ Reset roles (same logic as Register)
-            var currentRoles = await _userManager.GetRolesAsync(user);
-            if (currentRoles.Any())
-            {
-                var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
-                if (!removeResult.Succeeded)
-                    return Failed(removeResult);
-            }
 
-            if (request.RoleIds.Any())
-            {
-                var roleNames = await _roleManager.Roles
-                    .Where(r => request.RoleIds.Contains(r.Id))
-                    .Select(r => r.Name!)
-                    .ToListAsync(cancellationToken);
 
-                if (!roleNames.Any())
+            if (!request.RoleIds.Any())
+            { 
                     return new ResponseResultDTO
                     {
                         Success = false,
                         Message = "No valid roles found"
                     };
-
-                var addResult = await _userManager.AddToRolesAsync(user, roleNames);
-                if (!addResult.Succeeded)
-                    return Failed(addResult);
+ 
             }
+
+
+            // 5️⃣ Reset roles (same logic as Register)
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            var newRoleNames = new List<string>();
+
+            foreach (var roleId in request.RoleIds)
+            {
+                var role = await _roleManager.FindByIdAsync(roleId.ToString());
+                if (role != null)
+                    newRoleNames.Add(role.Name!);
+            }
+
+
+            var rolesToRemove = currentRoles.Except(newRoleNames).ToList();
+            var rolesToAdd = newRoleNames.Except(currentRoles).ToList();
+
+            if (rolesToRemove.Any())
+            {
+                await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+            }
+
+            if (rolesToAdd.Any())
+            {
+                await _userManager.AddToRolesAsync(user, rolesToAdd);
+            }
+
+
 
             return new ResponseResultDTO
             {

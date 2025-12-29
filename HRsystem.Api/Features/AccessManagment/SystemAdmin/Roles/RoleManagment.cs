@@ -80,6 +80,10 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                     ? Results.Ok(result)
                     : Results.BadRequest(result);
             })
+                   .RequireAuthorization(policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("SystemAdmin") &&
+                    ctx.User.HasClaim("permission", "system.roles")))
             .WithName("ListRoles");
 
             // --- Get role by id (GET) ---
@@ -90,6 +94,10 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                     ? Results.Ok(result)
                     : Results.NotFound(result); // Returns 404 if handler returns Success=false
             })
+                   .RequireAuthorization(policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("SystemAdmin") &&
+                    ctx.User.HasClaim("permission", "system.roles")))
             .WithName("GetRole");
 
             // --- Create role (POST) ---
@@ -104,6 +112,10 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 var result = await mediator.Send(cmd);
                 return HandleCommandResult(result, successStatusCode: 201);
             })
+                   .RequireAuthorization(policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("SystemAdmin") &&
+                    ctx.User.HasClaim("permission", "system.roles")))
             .WithName("CreateRole");
 
             // --- Update role (PUT) ---
@@ -118,6 +130,10 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 var result = await mediator.Send(cmd);
                 return HandleCommandResult(result);
             })
+                   .RequireAuthorization(policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("SystemAdmin") &&
+                    ctx.User.HasClaim("permission", "system.roles")))
             .WithName("UpdateRole");
 
             // --- Delete role (DELETE) ---
@@ -126,6 +142,10 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 var result = await mediator.Send(new DeleteRoleCommand(roleId));
                 return HandleCommandResult(result); // Handles 404 (not found) and 409 (users assigned)
             })
+                   .RequireAuthorization(policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("SystemAdmin") &&
+                    ctx.User.HasClaim("permission", "system.roles")))
             .WithName("DeleteRole");
         }
     }

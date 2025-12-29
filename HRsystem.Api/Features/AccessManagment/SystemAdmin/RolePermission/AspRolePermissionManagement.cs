@@ -45,8 +45,8 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
             // Apply the custom authorization policy
             .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") ||
-                    ctx.User.HasClaim("Permission", "CanViewPermissions")))
+                    ctx.User.IsInRole("SystemAdmin") &&
+                    ctx.User.HasClaim("permission", "system.role.permissions")))
             .WithName("ListRolePermissions");
 
             // --- Get Role Permission ---
@@ -71,6 +71,10 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
                     Data = result
                 });
             })
+                   .RequireAuthorization(policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("SystemAdmin") &&
+                     ctx.User.HasClaim("permission", "system.role.permissions")))
             .WithName("GetRolePermission");
 
             // --- Create Role Permission ---
@@ -90,6 +94,10 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
                         Data = result
                     });
             })
+                   .RequireAuthorization(policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("SystemAdmin") &&
+                     ctx.User.HasClaim("permission", "system.role.permissions")))
             .WithName("CreateRolePermission");
 
             // --- Delete Role Permission ---
@@ -100,7 +108,7 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
             {
                 var result = await mediator.Send(new DeleteRolePermissionCommand(roleId, permissionId));
 
-                
+
 
                 return Results.Ok(new ResponseResultDTO
                 {
@@ -108,6 +116,10 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
                     Message = $"RolePermission deleted successfully"
                 });
             })
+                   .RequireAuthorization(policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("SystemAdmin") &&
+                     ctx.User.HasClaim("permission", "system.role.permissions")))
             .WithName("DeleteRolePermission");
 
             // --- Update Role Permissions (Bulk) ---
@@ -117,7 +129,7 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
             {
                 var result = await mediator.Send(new UpdateRolePermissionsCommand(dto));
 
-            
+
 
                 return Results.Ok(new ResponseResultDTO<object>
                 {
@@ -126,6 +138,10 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
                     Data = result
                 });
             })
+                   .RequireAuthorization(policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("SystemAdmin") &&
+                     ctx.User.HasClaim("permission", "system.role.permissions")))
             .WithName("UpdateRolePermissions");
         }
     }
@@ -139,11 +155,16 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
     //    public int? CreatedBy { get; set; }
     //}
 
+
+
     public class RolePermissionDto
     {
         public int PermissionId { get; set; }
         public string PermissionName { get; set; } = string.Empty;
         public string PermissionDescription { get; set; } = string.Empty;
+
+        public string PermissionCatagory { get; set; }
+
         public bool IsSelected { get; set; }
     }
 
@@ -205,7 +226,7 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
         {
             var permissions = await db.AspPermissions
                 .AsNoTracking()
-                .Select(p => new { p.PermissionId, p.PermissionName, p.PermissionDescription })
+                .Select(p => new { p.PermissionId, p.PermissionName, p.PermissionDescription, p.PermissionCatagory })
                 .ToListAsync(ct);
 
             var rolePermissionIds = new HashSet<int>();
@@ -223,10 +244,12 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
                 PermissionId = p.PermissionId,
                 PermissionName = p.PermissionName,
                 PermissionDescription = p.PermissionDescription,
+                PermissionCatagory = p.PermissionCatagory,
+
                 IsSelected = rolePermissionIds.Contains(p.PermissionId)
             }).ToList();
 
-            return  result ;
+            return result;
         }
     }
 
@@ -237,7 +260,7 @@ namespace HRsystem.Api.Features.SystemAdmin.RolePermission
             var entity = await db.Set<AspRolePermissions>()
                 .FindAsync(new object[] { request.RoleId, request.PermissionId }, ct);
 
-            return  entity ;
+            return entity;
         }
     }
 

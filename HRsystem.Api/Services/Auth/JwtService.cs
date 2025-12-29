@@ -13,23 +13,28 @@ using System.Text.Json;
 
 namespace HRsystem.Api.Services
 {
-    public class JwtService 
+    public class JwtService
     {
         private readonly IConfiguration _configuration;
         private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly DBContextHRsystem _dbContext;
 
         // ✅ FIX: Constructor parameter name was incorrect
-        public JwtService(IConfiguration configuration, RoleManager<ApplicationRole> roleManager, DBContextHRsystem dbContext)
+        public JwtService(IConfiguration configuration, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, DBContextHRsystem dbContext)
         {
             _configuration = configuration;
             _roleManager = roleManager;
             _dbContext = dbContext;
+            _userManager = userManager;
         }
 
         // ✅ FIX: Add 'async' keyword to method signature
-        public async Task<JwtSecurityToken> GenerateTokenAsync(ApplicationUser user, IList<string> roles)
+        public async Task<JwtSecurityToken> GenerateTokenAsync(ApplicationUser user)
         {
+
+            var roles = await _userManager.GetRolesAsync(user);
+
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var secretKey = jwtSettings["SecretKey"];
             var issuer = jwtSettings["Issuer"];
@@ -40,7 +45,7 @@ namespace HRsystem.Api.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            
+
 
             var claims = new List<Claim>
     {
@@ -87,14 +92,21 @@ namespace HRsystem.Api.Services
 
         private async Task<List<string>> GetRolePermissionsAsync(string role)
         {
-            var roleDetails = await _roleManager.FindByNameAsync(role);
+            //  var roleDetails = await _roleManager.FindByNameAsync(role);
+
+            var roleDetails = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Name == role);
+
+
             if (roleDetails == null) return new List<string>();
 
-            return await (from rolePermission in _dbContext.AspRolePermissions
-                          join permission in _dbContext.AspPermissions
-                          on rolePermission.PermissionId equals permission.PermissionId
-                          where rolePermission.RoleId == roleDetails.Id
-                          select permission.PermissionName).ToListAsync();
+            var rolePerm = await (from rolePermission in _dbContext.AspRolePermissions
+                                  join permission in _dbContext.AspPermissions
+                                  on rolePermission.PermissionId equals permission.PermissionId
+                                  where rolePermission.RoleId == roleDetails.Id
+                                  select permission.PermissionName).ToListAsync();
+
+            return rolePerm;
+
         }
     }
 }

@@ -12,6 +12,10 @@ public partial class TbCity
     public int CityId { get; set; }
 
     public int? GovId { get; set; }
+
+    [MaxLength(15)]  
+    public string? GoveCode { get; set; }
+
     [MaxLength(75)]
     public string? CityName { get; set; }
 
