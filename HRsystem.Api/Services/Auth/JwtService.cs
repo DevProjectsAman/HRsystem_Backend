@@ -10,7 +10,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 
-
 namespace HRsystem.Api.Services.Auth
 {
     public class JwtService
@@ -30,9 +29,8 @@ namespace HRsystem.Api.Services.Auth
         }
 
         // ✅ FIX: Add 'async' keyword to method signature
-        public async Task<JwtSecurityToken> GenerateTokenAsync(ApplicationUser user)
+        public async Task<(JwtSecurityToken Token, string Jti)> GenerateTokenAsync(ApplicationUser user)
         {
-
             var roles = await _userManager.GetRolesAsync(user);
 
             var jwtSettings = _configuration.GetSection("JwtSettings");
@@ -45,23 +43,19 @@ namespace HRsystem.Api.Services.Auth
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            var jti = Guid.NewGuid().ToString();
 
+            var claims = new List<Claim>    {
+                    // Standard JWT claims
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),              // subject (user ID)
 
-            var claims = new List<Claim>
-    {
-              
-
-
-        // Standard JWT claims
-        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),              // subject (user ID)
-        
-        new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),    // email
-        new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty), // username
-               new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-         new Claim("PermissionVersion", user.PermissionVersion.ToString()),
-        new Claim("eid", SimpleCrypto.Encrypt(user.EmployeeId.ToString())),
-        new Claim("cid", SimpleCrypto.Encrypt(user.CompanyId.ToString()))
-    };
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),    // email
+                    new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty), // username
+                           new Claim(JwtRegisteredClaimNames.Jti, jti),
+                     new Claim("PermissionVersion", user.PermissionVersion.ToString()),
+                    new Claim("eid", SimpleCrypto.Encrypt(user.EmployeeId.ToString())),
+                    new Claim("cid", SimpleCrypto.Encrypt(user.CompanyId.ToString()))
+                };
 
             // Add roles + permissions
             foreach (var role in roles)
@@ -88,7 +82,7 @@ namespace HRsystem.Api.Services.Auth
                 signingCredentials: credentials
             );
 
-            return token;
+            return (token,jti);
         }
 
         private async Task<List<string>> GetRolePermissionsAsync(string role)
@@ -96,7 +90,6 @@ namespace HRsystem.Api.Services.Auth
             //  var roleDetails = await _roleManager.FindByNameAsync(role);
 
             var roleDetails = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Name == role);
-
 
             if (roleDetails == null) return new List<string>();
 
@@ -107,8 +100,6 @@ namespace HRsystem.Api.Services.Auth
                                   select permission.PermissionName).ToListAsync();
 
             return rolePerm;
-
         }
     }
 }
-

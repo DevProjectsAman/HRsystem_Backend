@@ -4,6 +4,7 @@ using HRsystem.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRsystem.Api.Migrations
 {
     [DbContext(typeof(DBContextHRsystem))]
-    partial class DBContextHRsystemModelSnapshot : ModelSnapshot
+    [Migration("20260105114751_TbUserSession")]
+    partial class TbUserSession
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2152,7 +2155,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2026, 1, 5, 11, 50, 12, 844, DateTimeKind.Utc).AddTicks(9401),
+                            CreatedAt = new DateTime(2026, 1, 5, 11, 47, 47, 704, DateTimeKind.Utc).AddTicks(2437),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -2160,7 +2163,7 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2026, 1, 5, 11, 50, 12, 845, DateTimeKind.Utc).AddTicks(2452),
+                            LastPasswordChangedAt = new DateTime(2026, 1, 5, 11, 47, 47, 704, DateTimeKind.Utc).AddTicks(5601),
                             LockoutEnabled = false,
                             MobileApplicationVersion = "1.0.0",
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
@@ -2170,7 +2173,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("eca2cb30-e800-4226-92a2-203e8feecc46"),
+                            RowGuid = new Guid("14990f74-adff-4234-ac2c-5038cecf2889"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",
@@ -2274,7 +2277,7 @@ namespace HRsystem.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tb_User_Sessions");
+                    b.ToTable("Tb_UserSessions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

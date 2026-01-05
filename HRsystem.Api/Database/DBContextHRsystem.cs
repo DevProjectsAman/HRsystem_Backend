@@ -2,6 +2,7 @@
 using HRsystem.Api.Database.DataTables;
 //using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Database.Entities;
+ 
 using HRsystem.Api.Shared.DTO;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -100,6 +101,9 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
     public DbSet<TbEmployeeDevicesTrack> TbEmployeeDevicesTrack { get; set; }
 
     public DbSet<TbEmployeeCodeTracking> TbEmployeeCodeTrackings { get; set; }
+    public DbSet<TbUserSession> TbUserSession { get; set; }
+
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -245,6 +249,17 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
         // 🔹 Unique index on permission names
         modelBuilder.Entity<AspPermission>()
             .HasIndex(p => p.PermissionName)
+            .IsUnique();
+
+
+
+
+        modelBuilder.Entity<TbUserSession>()
+      .HasIndex(x => new { x.UserId, x.ClientType })
+      .IsUnique();
+
+        modelBuilder.Entity<TbUserSession>()
+            .HasIndex(x => x.Jti)
             .IsUnique();
     }
 

@@ -3,7 +3,9 @@ using Google;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Features.AccessManagment.SystemAdmin.DTO;
+ 
 using HRsystem.Api.Services.Auth;
+using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
@@ -115,14 +117,19 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtService _jwtService;
+        private readonly ICurrentUserService _currentUser;
+        private readonly DBContextHRsystem _dbContextHRsystem;
 
         public LoginHandler(SignInManager<ApplicationUser> signInManager,
                             UserManager<ApplicationUser> userManager,
-                            JwtService jwtService)
+                            JwtService jwtService , ICurrentUserService currentUserService
+            , DBContextHRsystem dbContextHRsystem)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _jwtService = jwtService;
+            _currentUser = currentUserService;
+            _dbContextHRsystem = dbContextHRsystem;
         }
 
         public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -135,9 +142,43 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
             if (user == null || !user.IsActive)
                 return new LoginResponse(false, ResponseMessages.InvalidLogin);
 
-           
+
+            var clientType = string.IsNullOrEmpty( _currentUser.X_ClientType)  ? "web": _currentUser.X_ClientType  ;
+            var DeviceId = string.IsNullOrEmpty(_currentUser.DeviceId) ? "web" : _currentUser.DeviceId;
+
+            
+
+
+            var oldSession = await _dbContextHRsystem.TbUserSession
+                            .Where(s =>
+                                s.UserId == user.Id &&
+                                s.ClientType == clientType &&
+                                s.IsActive)
+                            .FirstOrDefaultAsync();
+
+            if (oldSession != null)
+            {
+                oldSession.IsActive = false;
+                oldSession.LastSeenAt = DateTime.UtcNow;
+            }
+
+
             var jwtToken = await _jwtService.GenerateTokenAsync(user);
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(jwtToken.Token);
+            var jti = jwtToken.Jti;
+
+            _dbContextHRsystem.TbUserSession.Add(new TbUserSession
+            {
+                UserId = user.Id,
+                ClientType = clientType,
+                DeviceId = DeviceId,
+                Jti = jti,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                LastSeenAt = DateTime.UtcNow
+            });
+
+            await _dbContextHRsystem.SaveChangesAsync();
 
             return new LoginResponse(true, ResponseMessages.SucessLogin, tokenString, user.UserName);
         }

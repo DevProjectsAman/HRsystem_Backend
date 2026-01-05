@@ -130,6 +130,11 @@ builder.Services.AddCors(options =>
 
 
 
+builder.Services.AddMemoryCache();
+
+builder.Services.AddScoped<JwtSessionValidator>();
+
+
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer(); // Needed for minimal APIs
@@ -208,49 +213,18 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(secretKey)
     };
 
-    // 🔥 THIS REPLACES PermissionVersionValidator
+    
     options.Events = new JwtBearerEvents
     {
         OnTokenValidated = async context =>
         {
-            var userManager = context.HttpContext.RequestServices
-                .GetRequiredService<UserManager<ApplicationUser>>();
+            var validator = context.HttpContext.RequestServices
+                .GetRequiredService<JwtSessionValidator>();
 
-            var userId = context.Principal?
-                .FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var tokenPermissionVersion = context.Principal?
-                .FindFirstValue("PermissionVersion");
-
-            if (string.IsNullOrEmpty(userId) ||
-                string.IsNullOrEmpty(tokenPermissionVersion))
-            {
-                context.Fail("Missing required claims");
-                return;
-            }
-
-            var user = await userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                context.Fail("User not found");
-                return;
-            }
-
-            // 🔥 FORCE LOGOUT
-            if (user.ForceLogout)
-            {
-                context.Fail("User is forced to logout");
-                return;
-            }
-
-            // 🔥 PERMISSION VERSION CHECK
-            if (user.PermissionVersion.ToString() != tokenPermissionVersion)
-            {
-                context.Fail("Stale token");
-                return;
-            }
+            await validator.ValidateAsync(context);
         }
     };
+
 });
 
 
