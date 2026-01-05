@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
-namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters
+namespace HRsystem.Api.Features.Scheduling.ShiftRule.GetShiftRuleByParameters
 {
 
 

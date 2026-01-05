@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.ActivityType.DeleteActivityType
+namespace HRsystem.Api.Features.Lookups.ActivityType.DeleteActivityType
 {
     public record DeleteActivityTypeCommand(int ActivityTypeId) : IRequest<bool>;
 

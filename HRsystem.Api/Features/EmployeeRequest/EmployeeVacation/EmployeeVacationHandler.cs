@@ -16,11 +16,11 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
     {
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUser;
-        private readonly IActivityTypeLookupCache _activityTypeCache; 
+        private readonly IActivityTypeLookupCache _activityTypeCache;
         private readonly IActivityStatusLookupCache _activityStatusLookupCache;
 
         public RequestVacationHandler(DBContextHRsystem db, ICurrentUserService currentUser
-            , IActivityTypeLookupCache activityTypeLookupCache , IActivityStatusLookupCache activityStatusLookupCache)
+            , IActivityTypeLookupCache activityTypeLookupCache, IActivityStatusLookupCache activityStatusLookupCache)
         {
             _db = db;
             _currentUser = currentUser;
@@ -35,16 +35,20 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
             var employeeId = _currentUser.EmployeeID;
             var employee = await _db.TbEmployees.FirstOrDefaultAsync(e => e.EmployeeId == employeeId, ct);
             if (employee == null)
-                throw new NotFoundException("Employee Not Found", employeeId);
+                throw new Exception($"Employee Not Found With ID{employeeId}");
 
             var balance = await _db.TbEmployeeVacationBalances
                 .FirstOrDefaultAsync(b => b.EmployeeId == employee.EmployeeId && b.VacationTypeId == dto.VacationTypeId, ct);
 
             if (balance == null)
-                throw new NotFoundException("Don't Have Vacation Balance From This Type", dto.VacationTypeId);
+                throw new Exception("Don't Have Vacation Balance From This Type");
 
             if (balance.RemainingDays < dto.DaysCount)
-                throw new NotFoundException("Balance not enough", dto.DaysCount);
+                throw new Exception($"Balance not Enoght You requested {dto.DaysCount} but your Remaining Balance {balance.RemainingDays} ");
+
+
+
+
 
             await using var transaction = await _db.Database.BeginTransactionAsync(ct);
             try
@@ -52,10 +56,10 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
                 var activity = new TbEmployeeActivity
                 {
                     EmployeeId = employee.EmployeeId,
-                  //  ActivityTypeId = 5,
+                    //  ActivityTypeId = 5,
                     ActivityTypeId = _activityTypeCache.GetIdByCode(ActivityCodes.VacationRequest),
 
-                  //  StatusId = 7, // Pending
+                    //  StatusId = 7, // Pending
 
                     StatusId = _activityStatusLookupCache.GetIdByCode(ActivityStatusCodes.Pending),
 
@@ -73,7 +77,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
                     StartDate = dto.StartDate,
                     EndDate = dto.EndDate,
                     DaysCount = dto.DaysCount,
-                    Notes=dto.Notes,
+                    Notes = dto.Notes,
                 };
                 _db.TbEmployeeVacations.Add(vacation);
 
@@ -128,13 +132,13 @@ namespace HRsystem.Api.Features.EmployeeRequest.EmployeeVacation
         {
             var employeeId = _currentUser.EmployeeID;
             var employee = await _db.TbEmployees.FirstOrDefaultAsync(e => e.EmployeeId == employeeId, ct);
-            if (employee == null) throw new NotFoundException("Employee Not Found", employeeId);
+            if (employee == null) throw new Exception($"Employee Not Found {employeeId}");
 
 
             var balance = await _db.TbEmployeeVacationBalances
                 .FirstOrDefaultAsync(b => b.EmployeeId == employee.EmployeeId && b.VacationTypeId == request.VacationTypeId, ct);
 
-            if (balance == null) throw new NotFoundException(" Don't Have Vacation Balance From This Type ", request.VacationTypeId);
+            if (balance == null) throw new Exception(" Don't Have Vacation Balance From This Type { request.VacationTypeId }");
 
             return new EmployeeVacationBalanceDto
             {

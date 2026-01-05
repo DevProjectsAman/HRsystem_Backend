@@ -53,7 +53,7 @@ namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
                 .FirstOrDefaultAsync(x => x.ActivityCode == "REQ_EXCUSE", ct);
 
             if (activityType == null)
-                throw new NotFoundException("Invalid ActivityType code:", "REQ_EXCUSE");
+                throw new Exception($"Invalid ActivityType code: REQ_EXCUSE");
 
             // 2️⃣ Create Employee Activity first
             var activity = new TbEmployeeActivity

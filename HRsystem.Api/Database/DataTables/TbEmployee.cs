@@ -11,10 +11,13 @@ public partial class TbEmployee
     public int EmployeeId { get; set; }
 
     [MaxLength(55)]
-    public string EmployeeCodeFinance { get; set; }
+    public string? EmployeeCodeFinance { get; set; }
 
     [MaxLength(55)]
-    public string EmployeeCodeHr { get; set; }
+    public string? EmployeeCodeHr { get; set; }
+
+    [MaxLength(55)]
+    public string?    UniqueEmployeeCode { get; set; }
 
     public int? JobLevelId { get; set; }
     public int JobTitleId { get; set; }
@@ -65,7 +68,7 @@ public partial class TbEmployee
     public string Email { get; set; }
 
     [MaxLength(25)]
-    public string SerialMobile { get; set; }
+    public string? SerialMobile { get; set; }
 
     public DateTime StartDate { get; set; }
 

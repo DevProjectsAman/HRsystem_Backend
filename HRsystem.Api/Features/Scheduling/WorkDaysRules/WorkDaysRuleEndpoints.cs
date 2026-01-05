@@ -1,9 +1,8 @@
-﻿using HRsystem.Api.Features.WorkDaysRules;
-using HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules;
+﻿using HRsystem.Api.Features.Scheduling.WorkDaysRules.GetAllWorkDaysRules;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 
-namespace HRsystem.Api.Features.WorkDaysRules
+namespace HRsystem.Api.Features.Scheduling.WorkDaysRules
 {
     public static class WorkDaysRuleEndpoints
     {

@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.City.DeleteCity
+namespace HRsystem.Api.Features.Organization.City.DeleteCity
 {
     public record DeleteCityCommand(int CityId) : IRequest<bool>;
 

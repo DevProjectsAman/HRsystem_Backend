@@ -5,34 +5,34 @@ using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Features.AccessManagment.Auth.UserManagement;
 using HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission;
 using HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles;
-using HRsystem.Api.Features.ActivityType;
 using HRsystem.Api.Features.AuditLog;
-using HRsystem.Api.Features.City;
+using HRsystem.Api.Features.Documents;
 using HRsystem.Api.Features.Employee;
 using HRsystem.Api.Features.EmployeeApproval;
 using HRsystem.Api.Features.EmployeeAttendance;
 using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
 using HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport;
 using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
-using HRsystem.Api.Features.EmployeeDashboard.ManagerActivity;
 using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
 using HRsystem.Api.Features.EmployeeDevices;
 using HRsystem.Api.Features.EmployeeHandler;
 using HRsystem.Api.Features.EmployeeRequest.EmployeeVacation;
+using HRsystem.Api.Features.EmployeeRequest.employeevacations;
 using HRsystem.Api.Features.EmployeeRequest.Execuse;
-using HRsystem.Api.Features.employeevacations;
-using HRsystem.Api.Features.Groups;
+using HRsystem.Api.Features.EmployeeRequest.Mission;
 using HRsystem.Api.Features.Holiday;
 using HRsystem.Api.Features.HolidayType;
 using HRsystem.Api.Features.Lookups.ActivityStatus;
+using HRsystem.Api.Features.Lookups.ActivityType;
 using HRsystem.Api.Features.Lookups.ActivityTypeStatus;
 using HRsystem.Api.Features.Lookups.ContractTypes;
 using HRsystem.Api.Features.Lookups.GeneralLookups;
-using HRsystem.Api.Features.Lookups.MaretialStatus;
-using HRsystem.Api.Features.Mission;
+using HRsystem.Api.Features.Lookups.VacationType;
+using HRsystem.Api.Features.Organization.City;
 using HRsystem.Api.Features.Organization.Company;
 using HRsystem.Api.Features.Organization.Department;
 using HRsystem.Api.Features.Organization.Govermenet;
+using HRsystem.Api.Features.Organization.Groups;
 using HRsystem.Api.Features.Organization.JobManagment;
 using HRsystem.Api.Features.Organization.Project;
 using HRsystem.Api.Features.Organization.WorkLocation;
@@ -43,10 +43,7 @@ using HRsystem.Api.Features.Scheduling.ShiftRule;
 using HRsystem.Api.Features.Scheduling.VacationRule;
 using HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule;
 using HRsystem.Api.Features.Scheduling.VacationRulesGroup;
-using HRsystem.Api.Features.ShiftEndpoints;
-using HRsystem.Api.Features.SystemAdmin.RolePermission;
-using HRsystem.Api.Features.WorkDaysRules;
-using HRsystem.Api.Services;
+using HRsystem.Api.Features.Scheduling.WorkDaysRules;
 using HRsystem.Api.Services.AuditLog;
 using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.Chatbot;
@@ -453,6 +450,9 @@ app.MapHolidayEndpoints();
 app.MapEmployeeAppEndPoints();
 
  app.MapEmployeeHandlerEndpoints();
+
+
+app.MapDocumentEndpoints();
 
 
 

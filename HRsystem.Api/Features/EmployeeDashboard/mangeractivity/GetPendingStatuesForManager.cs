@@ -43,16 +43,11 @@
 //    }
 //}using MediatR;
 using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
-using HRsystem.Api.Features.EmployeeDashboard.GetAllActivities;
-using HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites;
-using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
-using HRsystem.Api.Features.EmployeeDashboard.GetRejectedActivities;
-using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 
-namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
+namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
 {
     public static class ManagerActivitiesEndpoints
     {

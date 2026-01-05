@@ -3,7 +3,7 @@ using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.EmployeeDashboard.ManagerActivity
+namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
 {
     public record GetNumberOfPendingReqForManager() : IRequest<RequestStatusesOfManagerDto>;
 

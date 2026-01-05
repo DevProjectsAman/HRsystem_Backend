@@ -425,12 +425,10 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("varchar(25)");
 
                     b.Property<string>("EmployeeCodeFinance")
-                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
 
                     b.Property<string>("EmployeeCodeHr")
-                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("varchar(55)");
 
@@ -507,7 +505,6 @@ namespace HRsystem.Api.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SerialMobile")
-                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
@@ -521,6 +518,10 @@ namespace HRsystem.Api.Migrations
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
+
+                    b.Property<string>("UniqueEmployeeCode")
+                        .HasMaxLength(55)
+                        .HasColumnType("varchar(55)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");
@@ -700,6 +701,48 @@ namespace HRsystem.Api.Migrations
                     b.HasIndex("AttendanceId");
 
                     b.ToTable("Tb_Employee_Attendance_Punch");
+                });
+
+            modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeCodeTracking", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DocFullPath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FolderPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime>("GeneratedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("GeneratedById")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("UniqueEmployeeCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tb_EmployeeCode_Tracking");
                 });
 
             modelBuilder.Entity("HRsystem.Api.Database.DataTables.TbEmployeeDevicesTrack", b =>
@@ -2045,6 +2088,10 @@ namespace HRsystem.Api.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("MobileApplicationVersion")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
@@ -2105,7 +2152,7 @@ namespace HRsystem.Api.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 1,
                             ConcurrencyStamp = "2cc3da7b-b1d4-43fc-b129-4e706e02ac96",
-                            CreatedAt = new DateTime(2025, 12, 29, 11, 1, 36, 815, DateTimeKind.Utc).AddTicks(9210),
+                            CreatedAt = new DateTime(2026, 1, 4, 11, 16, 18, 558, DateTimeKind.Utc).AddTicks(6613),
                             Email = "systemadmin@example.com",
                             EmailConfirmed = false,
                             EmployeeId = 1,
@@ -2113,8 +2160,9 @@ namespace HRsystem.Api.Migrations
                             ForceLogout = false,
                             IsActive = true,
                             IsToChangePassword = false,
-                            LastPasswordChangedAt = new DateTime(2025, 12, 29, 11, 1, 36, 816, DateTimeKind.Utc).AddTicks(2143),
+                            LastPasswordChangedAt = new DateTime(2026, 1, 4, 11, 16, 18, 559, DateTimeKind.Utc).AddTicks(1176),
                             LockoutEnabled = false,
+                            MobileApplicationVersion = "1.0.0",
                             NormalizedEmail = "SYSTEMADMIN@EXAMPLE.COM",
                             NormalizedUserName = "BOLES",
                             PasswordHash = "AQAAAAIAAYagAAAAEHuYA7U5KAgI1iuzqry/7jPmIBrciy7nyILnyLHLuOwz3plNoiOeAavDPyJliZul9A==",
@@ -2122,7 +2170,7 @@ namespace HRsystem.Api.Migrations
                             PhoneNumber = "01200000000",
                             PhoneNumberConfirmed = true,
                             PreferredLanguage = "en",
-                            RowGuid = new Guid("4a4a8c4a-40ec-43d3-a7ee-7363ca4f109e"),
+                            RowGuid = new Guid("36d98634-67f5-42bb-b53f-d6941d042354"),
                             SecurityStamp = "6QVLU2WHQVYOV4FRB6EFKIGE2KJJICGL",
                             TwoFactorEnabled = false,
                             UserFullName = "Boles Lewis Boles",

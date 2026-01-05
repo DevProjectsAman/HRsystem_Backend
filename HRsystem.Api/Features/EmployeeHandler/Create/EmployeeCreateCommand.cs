@@ -30,7 +30,8 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
         DateOnly Birthdate,
         string? PlaceOfBirth,
         EnumGenderType Gender,
-        string? EmployeePhotoPath
+      //  string? EmployeePhotoPath,
+           string UniqueEmployeeCode
     );
 
     #endregion

@@ -4,7 +4,7 @@ using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.WorkDaysRules.GetAllWorkDaysRules
+namespace HRsystem.Api.Features.Scheduling.WorkDaysRules.GetAllWorkDaysRules
 {
     public class WorkDaysRuleDto
     {

@@ -1,8 +1,8 @@
-﻿using HRsystem.Api.Features.Mission.CreateMission;
+﻿using HRsystem.Api.Features.EmployeeRequest.Mission.CreateMission;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 
-namespace HRsystem.Api.Features.Mission
+namespace HRsystem.Api.Features.EmployeeRequest.Mission
 {
 
     public static class MissionEndPoint

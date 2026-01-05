@@ -1,7 +1,7 @@
 ﻿using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
 using System.ComponentModel.DataAnnotations;
 
-namespace HRsystem.Api.Features.EmployeeActivityDt
+namespace HRsystem.Api.Features.EmployeeAttendance
 {
 
     // EmployeeActivityDto.cs

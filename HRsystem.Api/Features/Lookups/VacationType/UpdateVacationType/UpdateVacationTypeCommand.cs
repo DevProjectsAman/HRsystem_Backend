@@ -1,12 +1,11 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Features.VacationType.UpdateVacationType;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.VacationType.UpdateVacationType
+namespace HRsystem.Api.Features.Lookups.VacationType.UpdateVacationType
 {
     public record UpdateVacationTypeCommand(
         int VacationTypeId,
@@ -41,7 +40,7 @@ namespace HRsystem.Api.Features.VacationType.UpdateVacationType
         }
     }
 }
-namespace HRsystem.Api.Features.VacationType.UpdateVacationType
+namespace HRsystem.Api.Features.Lookups.VacationType.UpdateVacationType
 {
     public class UpdateVacationTypeValidator : AbstractValidator<UpdateVacationTypeCommand>
     {

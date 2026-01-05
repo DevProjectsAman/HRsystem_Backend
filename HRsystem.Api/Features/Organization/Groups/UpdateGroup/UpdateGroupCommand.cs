@@ -1,9 +1,7 @@
 ﻿using HRsystem.Api.Database;
-using HRsystem.Api.Features.Groups.GetALlGroup;
 using MediatR;
-using System.Security.Cryptography.X509Certificates;
 
-namespace HRsystem.Api.Features.Groups.UpdateGroup
+namespace HRsystem.Api.Features.Organization.Groups.UpdateGroup
 {
     public record UpdateGroupCommand ( int groupid , string new_groupname) : IRequest<UpdateGroupRsponse>;
 

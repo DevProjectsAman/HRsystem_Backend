@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 
-namespace HRsystem.Api.Features.ShiftRule.DeleteShiftRule
+namespace HRsystem.Api.Features.Scheduling.ShiftRule.DeleteShiftRule
 {
     public record DeleteShiftRuleCommand(int RuleId) : IRequest<bool>;
 

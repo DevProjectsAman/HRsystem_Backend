@@ -38,7 +38,7 @@ namespace HRsystem.Api.Features.EmployeeApproval
                 .FirstOrDefaultAsync(a => a.ActivityId == request.ActivityId, ct);
 
             if (activity == null)
-                throw new NotFoundException("Activity Not Found", request.ActivityId);
+                throw new Exception($"Activity Not Found { request.ActivityId }");
 
             // ✅ Step 2: Record Approval 
             var approval = new TbEmployeeActivityApproval

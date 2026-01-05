@@ -1,4 +1,4 @@
-﻿using HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch;
+﻿using HRsystem.Api.Features.EmployeeAttendance.EmployeePunch;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

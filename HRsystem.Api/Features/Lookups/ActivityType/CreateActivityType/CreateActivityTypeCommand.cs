@@ -4,7 +4,7 @@ using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 
-namespace HRsystem.Api.Features.ActivityType.CreateActivityType
+namespace HRsystem.Api.Features.Lookups.ActivityType.CreateActivityType
 {
     public record CreateActivityTypeCommand(
         string ActivityCode,
@@ -41,7 +41,7 @@ namespace HRsystem.Api.Features.ActivityType.CreateActivityType
 
 
 
-namespace HRsystem.Api.Features.ActivityType.CreateActivityType
+namespace HRsystem.Api.Features.Lookups.ActivityType.CreateActivityType
 {
     public class CreateActivityTypeValidator : AbstractValidator<CreateActivityTypeCommand>
     {

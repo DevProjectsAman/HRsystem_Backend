@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Data;
 
-namespace HRsystem.Api.Features.Groups.GetGroupById
+namespace HRsystem.Api.Features.Organization.Groups.GetGroupById
 {
 
     public record GetGroupByIdCommand(int GroupId) : IRequest<GetGroupResponse>;

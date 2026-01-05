@@ -99,7 +99,7 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
     public DbSet<TbShiftRuleMappng> TbShiftRuleMappngs { get; set; }
     public DbSet<TbEmployeeDevicesTrack> TbEmployeeDevicesTrack { get; set; }
 
-
+    public DbSet<TbEmployeeCodeTracking> TbEmployeeCodeTrackings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

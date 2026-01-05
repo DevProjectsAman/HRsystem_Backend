@@ -29,7 +29,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             var employeeId = _currentUser.EmployeeID;
             var employeeAtten = await _db.TbEmployeeActivities.Include(a => a.TbEmployeeAttendances)
                 .FirstOrDefaultAsync(e => e.EmployeeId == employeeId, ct);
-            if (employeeAtten == null) throw new NotFoundException("Employee Not Found", employeeId);
+            if (employeeAtten == null) throw new Exception($"Employee Not Found {employeeId}");
 
 
             var balance = await _db.TbEmployeeAttendances
@@ -39,7 +39,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 
             CheckOutTime = balance.LastPuchout;
 
-            if (CheckOutTime == null) throw new NotFoundException("CheckOutTime Not Found", CheckOutTime);
+            if (CheckOutTime == null) throw new Exception($"CheckInTime Not Found {CheckOutTime}");
 
             return (DateTime)CheckOutTime;
 

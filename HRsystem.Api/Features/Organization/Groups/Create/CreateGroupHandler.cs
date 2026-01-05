@@ -2,7 +2,7 @@
 using HRsystem.Api.Database.DataTables;
 using MediatR;
 
-namespace HRsystem.Api.Features.Groups.Create
+namespace HRsystem.Api.Features.Organization.Groups.Create
 {
     public class CreateGroupHandler : IRequestHandler<CreateGroupCommand, int>
     {

@@ -2,9 +2,9 @@
 using MediatR;
 using System;
 using Microsoft.EntityFrameworkCore;
-    
 
-namespace HRsystem.Api.Features.Groups.DeleteGroup
+
+namespace HRsystem.Api.Features.Organization.Groups.DeleteGroup
 {
     public record DeleteGroupCommand (int groud_id) : IRequest<bool>;
 

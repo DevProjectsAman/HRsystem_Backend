@@ -1,10 +1,11 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites;
+using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
+namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
 {
     //public class GetPendingActivitiesQuery
     //{
@@ -53,7 +54,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
                                     .Where(a =>
                                         a.Employee.ManagerId == employeeId &&
                                         a.RequestDate >= lastMonthDate &&
-                                        (a.StatusId == PendingStatusId) &&
+                                        a.StatusId == PendingStatusId &&
                                         a.ActivityTypeId != 1
                                     )
                                     .Select(a => new
@@ -67,7 +68,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
                                         StatusName = language == "ar"
                                             ? a.Status.StatusName.ar
                                             : a.Status.StatusName.en,
-                                        StatusId = a.StatusId,
+                                        a.StatusId,
                                         CreatedAt = a.RequestDate,
                                         Vacations = a.TbEmployeeVacations,
                                         Missions = a.TbEmployeeMissions,

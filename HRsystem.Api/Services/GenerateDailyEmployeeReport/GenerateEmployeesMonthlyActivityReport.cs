@@ -402,7 +402,7 @@ namespace HRsystem.Api.Services.GenerateDailyEmployeeReport
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<MonthlyReportBackgroundService> _logger;
       //  private readonly TimeSpan _executionTime = new(0, 0, 0); // Midnight
-        private readonly TimeSpan _executionTime = new(13, 0, 0); // Midnight
+        private readonly TimeSpan _executionTime = new(23, 0, 0); // Midnight
 
         public MonthlyReportBackgroundService(
             IServiceProvider serviceProvider,

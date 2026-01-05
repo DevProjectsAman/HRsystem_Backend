@@ -1,13 +1,14 @@
-﻿using HRsystem.Api.Features.ActivityType.CreateActivityType;
-using HRsystem.Api.Features.ActivityType.UpdateActivityType;
-using HRsystem.Api.Features.ActivityType.GetAllActivityTypes;
-using HRsystem.Api.Features.ActivityType.GetActivityTypeById;
-using HRsystem.Api.Features.ActivityType.DeleteActivityType;
+﻿ 
 using MediatR;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using HRsystem.Api.Features.Lookups.ActivityType.CreateActivityType;
+using HRsystem.Api.Features.Lookups.ActivityType.UpdateActivityType;
+using HRsystem.Api.Features.Lookups.ActivityType.GetAllActivityTypes;
+using HRsystem.Api.Features.Lookups.ActivityType.DeleteActivityType;
+using HRsystem.Api.Features.Lookups.ActivityType.GetActivityTypeById;
 
-namespace HRsystem.Api.Features.ActivityType
+namespace HRsystem.Api.Features.Lookups.ActivityType
 {
     public static class ActivityTypeEndpoints
     {

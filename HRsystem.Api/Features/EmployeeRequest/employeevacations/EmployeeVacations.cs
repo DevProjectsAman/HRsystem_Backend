@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace HRsystem.Api.Features.employeevacations
+namespace HRsystem.Api.Features.EmployeeRequest.employeevacations
 {
     //public class EmployeeVacations
     //{
@@ -48,7 +48,7 @@ namespace HRsystem.Api.Features.employeevacations
                             : b.VacationType.VacationName.en,
                         TotalBalance = b.TotalDays,
                         UsedDays = b.UsedDays ?? 0,
-                        RemainingBalance = b.RemainingDays ?? (b.TotalDays - (b.UsedDays ?? 0))
+                        RemainingBalance = b.RemainingDays ?? b.TotalDays - (b.UsedDays ?? 0)
                     })
                     .ToListAsync(ct);
 

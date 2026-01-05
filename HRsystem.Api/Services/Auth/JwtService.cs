@@ -11,7 +11,7 @@ using System.Text;
 using System.Text.Json;
 
 
-namespace HRsystem.Api.Services
+namespace HRsystem.Api.Services.Auth
 {
     public class JwtService
     {

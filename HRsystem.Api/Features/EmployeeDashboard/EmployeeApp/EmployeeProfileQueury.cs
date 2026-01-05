@@ -70,7 +70,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 
             if (employee == null)
             {
-                throw new NotFoundException("Employee not found", employeeId);
+                throw new Exception($"Employee Not Found ID= {employeeId}");
 
             }
 

@@ -1,12 +1,12 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Features.ShiftRule.UpdateShiftRule;
+using HRsystem.Api.Features.Scheduling.ShiftRule.UpdateShiftRule;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.ShiftRule.UpdateShiftRule
+namespace HRsystem.Api.Features.Scheduling.ShiftRule.UpdateShiftRule
 {
     public record UpdateShiftRuleCommand(
         int RuleId,

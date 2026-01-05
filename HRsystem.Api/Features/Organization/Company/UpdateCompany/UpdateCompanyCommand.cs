@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Database;
-using HRsystem.Api.Features.Groups.UpdateGroup;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

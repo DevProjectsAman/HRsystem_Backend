@@ -1,13 +1,13 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Features.ActivityType.GetAllActivityTypes;
+ 
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
 using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.VacationType.GetAllVacationTypes
+namespace HRsystem.Api.Features.Lookups.VacationType.GetAllVacationTypes
 {
     public record GetAllVacationTypesQuery() : IRequest<List<VacationTypeDto>>;
 

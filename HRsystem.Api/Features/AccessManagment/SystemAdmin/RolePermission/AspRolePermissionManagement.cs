@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.SystemAdmin.RolePermission
+namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
 {
 
     using MediatR;

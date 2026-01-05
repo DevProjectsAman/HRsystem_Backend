@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.Project.DeleteProject
+namespace HRsystem.Api.Features.Organization.Project.DeleteProject
 {
     public record DeleteProjectCommand(int ProjectId) : IRequest<bool>;
 

@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.Lookups.MaretialStatus
+namespace HRsystem.Api.Features.Lookups.GeneralLookups
 {
     // ===================== Query =====================
     public record GetAllMaritalStatusesQuery() : IRequest<List<MaritalStatusDto>>;

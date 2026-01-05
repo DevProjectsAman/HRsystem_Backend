@@ -1,12 +1,13 @@
 ﻿using Google.Cloud.Iam.V1;
 using HRsystem.Api.Database;
 using HRsystem.Api.Features.EmployeeDashboard.GetAllActivities;
+using HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites;
 using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites
+namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
 {
     public record GetMangerApprovedActivitiesQueury() : IRequest<List<ApprovedActivityDto>>;
 
@@ -52,7 +53,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites
                 .Where(a =>
                     a.Employee.ManagerId == employeeId &&
                     a.RequestDate >= lastMonthDate &&
-                    (a.StatusId == ApprovedStatusId) &&
+                    a.StatusId == ApprovedStatusId &&
                     a.ActivityTypeId != 1
                 )
                 .Select(a => new
@@ -66,7 +67,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites
                     StatusName = language == "ar"
                         ? a.Status.StatusName.ar
                         : a.Status.StatusName.en,
-                    StatusId = a.StatusId,
+                    a.StatusId,
                     CreatedAt = a.RequestDate,
                     Vacations = a.TbEmployeeVacations,
                     Missions = a.TbEmployeeMissions,

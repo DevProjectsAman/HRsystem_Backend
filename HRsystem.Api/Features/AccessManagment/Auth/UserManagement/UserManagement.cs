@@ -2,8 +2,8 @@
 using Google;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
-using HRsystem.Api.Features.SystemAdmin.DTO;
-using HRsystem.Api.Services;
+using HRsystem.Api.Features.AccessManagment.SystemAdmin.DTO;
+using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Shared;
 using HRsystem.Api.Shared.DTO;
 using MediatR;

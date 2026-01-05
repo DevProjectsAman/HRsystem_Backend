@@ -5,7 +5,7 @@ using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.ActivityType.UpdateActivityType
+namespace HRsystem.Api.Features.Lookups.ActivityType.UpdateActivityType
 {
     public record UpdateActivityTypeCommand(
         int ActivityTypeId,
@@ -42,7 +42,7 @@ namespace HRsystem.Api.Features.ActivityType.UpdateActivityType
 }
 
 
-namespace HRsystem.Api.Features.ActivityType.UpdateActivityType
+namespace HRsystem.Api.Features.Lookups.ActivityType.UpdateActivityType
 {
     public class UpdateActivityTypeValidator : AbstractValidator<UpdateActivityTypeCommand>
     {

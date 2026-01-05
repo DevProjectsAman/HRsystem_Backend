@@ -1,10 +1,11 @@
 ﻿using HRsystem.Api.Database;
+using HRsystem.Api.Features.EmployeeDashboard.GetAllActivities;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using static Azure.Core.HttpHeader;
 
-namespace HRsystem.Api.Features.EmployeeDashboard.GetAllActivities
+namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
 {
     public record GetMangerAllActivitiesQuery() : IRequest<List<AllActivityDto>>;
 
@@ -74,7 +75,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetAllActivities
                     StatusName = language == "ar"
                         ? a.Status.StatusName.ar
                         : a.Status.StatusName.en,
-                    StatusId = a.StatusId,
+                    a.StatusId,
                     CreatedAt = a.RequestDate,
                     Vacations = a.TbEmployeeVacations,
                     Missions = a.TbEmployeeMissions,

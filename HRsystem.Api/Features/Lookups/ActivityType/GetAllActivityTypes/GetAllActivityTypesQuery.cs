@@ -4,7 +4,7 @@ using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.ActivityType.GetAllActivityTypes
+namespace HRsystem.Api.Features.Lookups.ActivityType.GetAllActivityTypes
 {
     public record GetAllActivityTypesQuery() : IRequest<List<ActivityTypeDto>>;
 

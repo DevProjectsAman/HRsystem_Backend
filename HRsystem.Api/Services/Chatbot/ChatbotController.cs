@@ -1,7 +1,6 @@
-﻿using HRsystem.Api.Services.Chatbot;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace HRsystem.Api.Controllers
+namespace HRsystem.Api.Services.Chatbot
 {
     [ApiController]
     [Route("api/chatbot")]

@@ -3,8 +3,6 @@ using HRsystem.Api.Features.Scheduling.VacationRule.DeleteVacationRule;
 using HRsystem.Api.Features.Scheduling.VacationRule.GetAllVacationRules;
 using HRsystem.Api.Features.Scheduling.VacationRule.GetVacationRuleById;
 using HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule;
-using HRsystem.Api.Features.Scheduling.WorkDays;
-using HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 
