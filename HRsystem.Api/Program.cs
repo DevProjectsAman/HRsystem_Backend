@@ -52,6 +52,7 @@ using HRsystem.Api.Services.DeviceEnforcement;
 using HRsystem.Api.Services.GenerateDailyEmployeeReport;
 using HRsystem.Api.Services.LookupCashing;
 using HRsystem.Api.Services.Reports;
+using HRsystem.Api.Services.VacationCalculation;
 using HRsystem.Api.Shared.EncryptText;
 using HRsystem.Api.Shared.ExceptionHandling;
 using HRsystem.Api.Shared.ValidationHandler;
@@ -297,6 +298,7 @@ builder.Services.AddRateLimiter(options =>
 //builder.Services.AddHostedService<EmployeeMonthlyReportScheduler>();
 
 
+builder.Services.AddScoped<IVacationDaysCalculator, VacationDaysCalculator>();
 
 
 // Monthly Report Service
