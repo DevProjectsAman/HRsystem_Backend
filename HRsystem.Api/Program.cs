@@ -160,7 +160,32 @@ builder.Services.AddSwaggerGen(options =>
 
 
 
-// Register JWT Authentication
+//// Register JWT Authentication
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//.AddJwtBearer(options =>
+//{
+//    options.RequireHttpsMetadata = false;
+//    options.SaveToken = true;
+
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuer = true,
+//        ValidateAudience = true,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+
+//        ValidIssuer = jwtSettings["Issuer"],
+//        ValidAudience = jwtSettings["Audience"],
+//        IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+//    };
+//});
+
+
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -182,18 +207,61 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(secretKey)
     };
+
+    // 🔥 THIS REPLACES PermissionVersionValidator
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = async context =>
+        {
+            var userManager = context.HttpContext.RequestServices
+                .GetRequiredService<UserManager<ApplicationUser>>();
+
+            var userId = context.Principal?
+                .FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var tokenPermissionVersion = context.Principal?
+                .FindFirstValue("PermissionVersion");
+
+            if (string.IsNullOrEmpty(userId) ||
+                string.IsNullOrEmpty(tokenPermissionVersion))
+            {
+                context.Fail("Missing required claims");
+                return;
+            }
+
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                context.Fail("User not found");
+                return;
+            }
+
+            // 🔥 FORCE LOGOUT
+            if (user.ForceLogout)
+            {
+                context.Fail("User is forced to logout");
+                return;
+            }
+
+            // 🔥 PERMISSION VERSION CHECK
+            if (user.PermissionVersion.ToString() != tokenPermissionVersion)
+            {
+                context.Fail("Stale token");
+                return;
+            }
+        }
+    };
 });
+
+
+
+
+
 
 builder.Services.AddAuthorization();
 
+ 
 
-builder.Services.Configure<SecurityStampValidatorOptions>(options =>
-{
-    options.ValidationInterval = TimeSpan.FromMinutes(5); // how often to re-check
-});
-
-// Replace default with our version
-builder.Services.AddScoped<ISecurityStampValidator, PermissionVersionValidator<ApplicationUser>>();
 
 
 builder.Services.AddMediatR(cfg =>
@@ -282,7 +350,7 @@ builder.Services.AddRateLimiter(options =>
             partitionKey: key,
             factory: _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = !string.IsNullOrEmpty(userId) ? 120 : 30,
+                PermitLimit = !string.IsNullOrEmpty(userId) ? 60 : 30,
                 Window = TimeSpan.FromMinutes(1),
                 QueueLimit = 0
             });

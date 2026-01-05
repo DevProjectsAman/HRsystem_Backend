@@ -57,7 +57,8 @@ namespace HRsystem.Api.Services.Auth
         
         new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),    // email
         new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty), // username
-        new Claim("PermissionVersion", user.PermissionVersion.ToString()),
+               new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+         new Claim("PermissionVersion", user.PermissionVersion.ToString()),
         new Claim("eid", SimpleCrypto.Encrypt(user.EmployeeId.ToString())),
         new Claim("cid", SimpleCrypto.Encrypt(user.CompanyId.ToString()))
     };
