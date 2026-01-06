@@ -129,12 +129,11 @@ builder.Services.AddCors(options =>
 });
 
 
-
+ // this for  cashing the security  of the user 
 builder.Services.AddMemoryCache();
-
+builder.Services.AddSingleton<ISecurityCacheService, SecurityCacheService>();
 builder.Services.AddScoped<JwtSessionValidator>();
-
-
+/**************************************************************/
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer(); // Needed for minimal APIs
@@ -224,6 +223,8 @@ builder.Services.AddAuthentication(options =>
             await validator.ValidateAsync(context);
         }
     };
+
+
 
 });
 
@@ -355,8 +356,12 @@ builder.Services.AddHostedService<MonthlyReportBackgroundService>();
 
 
 //chatbot
-builder.Services.AddScoped<ChatbotService>();
-builder.Services.AddScoped<IntentExecutorService>();
+//builder.Services.AddScoped<ChatbotService>();
+
+//builder.Services.AddScoped<IntentExecutorService>();
+
+
+
 builder.Services.AddControllers();
 
 

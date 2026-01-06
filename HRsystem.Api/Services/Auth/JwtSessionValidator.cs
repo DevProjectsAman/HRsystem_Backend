@@ -4,88 +4,133 @@ using HRsystem.Api.Services.CurrentUser;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace HRsystem.Api.Services.Auth
 {
+    public record UserSecurityProfile(
+    string CurrentJti,
+    int PermissionVersion,
+    bool ForceLogout
+);
+
     public class JwtSessionValidator
     {
         private readonly DBContextHRsystem _db;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMemoryCache _cache;
         private readonly ICurrentUserService _currentUser;
+        private readonly ISecurityCacheService _securityCache;
 
         public JwtSessionValidator(
             DBContextHRsystem db,
-            UserManager<ApplicationUser> userManager,
-            ICurrentUserService currentUser)
+            IMemoryCache cache,
+            ICurrentUserService currentUser,
+            ISecurityCacheService securityCache)
         {
             _db = db;
-            _userManager = userManager;
+            _cache = cache;
             _currentUser = currentUser;
+            _securityCache = securityCache;
         }
 
         public async Task ValidateAsync(TokenValidatedContext context)
         {
             var principal = context.Principal;
 
+            // 1. Extract Claims from Token
             var userIdStr = principal?.FindFirstValue(ClaimTypes.NameIdentifier);
-            var jti = principal?.FindFirstValue(JwtRegisteredClaimNames.Jti);
-            var tokenPermissionVersion = principal?.FindFirstValue("PermissionVersion");
+            var tokenJti = principal?.FindFirstValue(JwtRegisteredClaimNames.Jti);
+            var tokenPermVersion = principal?.FindFirstValue("PermissionVersion");
 
-            if (string.IsNullOrEmpty(userIdStr) ||
-                string.IsNullOrEmpty(jti) ||
-                string.IsNullOrEmpty(tokenPermissionVersion))
+            if (string.IsNullOrEmpty(userIdStr) || string.IsNullOrEmpty(tokenJti) || string.IsNullOrEmpty(tokenPermVersion))
             {
-                context.Fail("Missing required claims");
+                context.Fail("Required security claims are missing.");
                 return;
             }
 
-            var userId = int.Parse(userIdStr);
+            int userId = int.Parse(userIdStr);
+          //  string cacheKey = $"user_sec_{userId}_{_currentUser.X_ClientType}";
 
-            var user = await _userManager.FindByIdAsync(userIdStr);
-            if (user == null)
+            // Use the helper for the key!
+            string cacheKey = _securityCache.GetCacheKey(userId, _currentUser.X_ClientType);
+
+            // 2. Try to get Security Profile from Cache (Fast Path)
+            if (!_cache.TryGetValue(cacheKey, out UserSecurityProfile? profile))
             {
-                context.Fail("User not found");
+                // 3. Cache Miss: Query DB (Slow Path)
+                // We fetch the User and the Active Session in one go
+                var securityData = await (from u in _db.Users
+                                          join s in _db.TbUserSession
+                                          on u.Id equals s.UserId
+                                          where u.Id == userId
+                                          && s.ClientType == _currentUser.X_ClientType
+                                          && s.IsActive == true
+                                          select new UserSecurityProfile(
+                                              s.Jti,
+                                              u.PermissionVersion,
+                                              u.ForceLogout
+                                          )).FirstOrDefaultAsync();
+
+                if (securityData == null)
+                {
+                    context.Fail("Session not found or user deactivated.");
+                    return;
+                }
+
+                profile = securityData;
+
+                // Store in cache for 5 minutes (adjust as needed)
+                _cache.Set(cacheKey, profile, TimeSpan.FromMinutes(5));
+            }
+
+            // 4. Validate Logic (Order matters for performance)
+
+            // 🔥 Check Force Logout
+            if (profile!.ForceLogout)
+            {
+                context.Fail("Your account has been remotely logged out.");
                 return;
             }
 
-            // 🔥 ADMIN FORCE LOGOUT
-            if (user.ForceLogout)
+            // 🔥 Check Permission Version
+            if (profile.PermissionVersion.ToString() != tokenPermVersion)
             {
-                context.Fail("User is forced to logout");
+                context.Fail("Your permissions have changed. Please login again.");
                 return;
             }
 
-            // 🔥 PERMISSION VERSION
-            if (user.PermissionVersion.ToString() != tokenPermissionVersion)
+            // 🔥 Check Single Session (JTI check)
+            if (profile.CurrentJti != tokenJti)
             {
-                context.Fail("Stale token");
+                context.Fail("This account logged in from another device.");
                 return;
             }
 
-            // 🔥 ONE SESSION PER CLIENT TYPE
-            var session = await _db.TbUserSession
-                .FirstOrDefaultAsync(s =>
-                    s.UserId == userId &&
-                    s.ClientType == _currentUser.X_ClientType &&
-                    s.Jti == jti &&
-                    s.IsActive);
+            // 5. Throttled LastSeen Update
+            await UpdateLastSeenThrottled(userId, tokenJti);
+        }
 
-            if (session == null)
+        private async Task UpdateLastSeenThrottled(int userId, string jti)
+        {
+            string lastSeenCacheKey = $"last_seen_{jti}";
+
+            // Only update the database once every 5 minutes per session
+            if (!_cache.TryGetValue(lastSeenCacheKey, out _))
             {
-                context.Fail("Session expired or logged out");
-                return;
-            }
+                var session = await _db.TbUserSession
+                    .FirstOrDefaultAsync(s => s.UserId == userId && s.Jti == jti);
 
-            session.LastSeenAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
+                if (session != null)
+                {
+                    session.LastSeenAt = DateTime.UtcNow;
+                    await _db.SaveChangesAsync();
+
+                    // Set a "lock" in cache so we don't update DB again for 5 minutes
+                    _cache.Set(lastSeenCacheKey, true, TimeSpan.FromMinutes(5));
+                }
+            }
         }
     }
-
-
-
-
-
-
 }

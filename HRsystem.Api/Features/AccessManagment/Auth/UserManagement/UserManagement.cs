@@ -119,17 +119,19 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
         private readonly JwtService _jwtService;
         private readonly ICurrentUserService _currentUser;
         private readonly DBContextHRsystem _dbContextHRsystem;
+        private readonly ISecurityCacheService _securityCacheService;
 
         public LoginHandler(SignInManager<ApplicationUser> signInManager,
                             UserManager<ApplicationUser> userManager,
                             JwtService jwtService , ICurrentUserService currentUserService
-            , DBContextHRsystem dbContextHRsystem)
+            , DBContextHRsystem dbContextHRsystem , ISecurityCacheService securityCacheService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _jwtService = jwtService;
             _currentUser = currentUserService;
             _dbContextHRsystem = dbContextHRsystem;
+            _securityCacheService = securityCacheService;
         }
 
         public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -161,6 +163,10 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                 oldSession.IsActive = false;
                 oldSession.LastSeenAt = DateTime.UtcNow;
             }
+
+            // 🔥 3. CLEAR THE CACHE using the helper
+            // This ensures that the NEXT request the user makes will trigger a fresh DB check
+            _securityCacheService.ClearUserCache(user.Id, clientType);
 
 
             var jwtToken = await _jwtService.GenerateTokenAsync(user);
