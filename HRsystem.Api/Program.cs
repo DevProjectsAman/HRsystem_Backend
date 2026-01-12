@@ -3,6 +3,7 @@ using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Features.AccessManagment.Auth.UserManagement;
+using HRsystem.Api.Features.AccessManagment.RefreshTokens;
 using HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission;
 using HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles;
 using HRsystem.Api.Features.AuditLog;
@@ -105,6 +106,13 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     options.Password.RequireUppercase = false; // Require at least one uppercase letter
     options.Password.RequireNonAlphanumeric = false; // Require at least one special character (e.g., !@#$%)
     options.Password.RequiredUniqueChars = 2; // Require at least 4 unique characters
+
+    options.Lockout.AllowedForNewUsers = true;
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+
+
+
 })
     .AddEntityFrameworkStores<DBContextHRsystem>()
     .AddDefaultTokenProviders();
@@ -209,19 +217,38 @@ builder.Services.AddAuthentication(options =>
 
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+        IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+
+        // allow 4 minutes more after expire to refresh 
+        ClockSkew = TimeSpan.Zero // 🔥 IMPORTANT
+
+
     };
 
     
     options.Events = new JwtBearerEvents
     {
+        //OnTokenValidated = async context =>
+        //{
+        //    var validator = context.HttpContext.RequestServices
+        //        .GetRequiredService<JwtSessionValidator>();
+
+        //    await validator.ValidateAsync(context);
+        //}
+
+
         OnTokenValidated = async context =>
         {
             var validator = context.HttpContext.RequestServices
                 .GetRequiredService<JwtSessionValidator>();
 
+            // Manually pull the header here
+           // var clientType = context.Request.Headers["X-ClientType"].FirstOrDefault() ?? string.Empty;
+
+            // Pass the Principal and ClientType explicitly
             await validator.ValidateAsync(context);
         }
+
     };
 
 
@@ -330,7 +357,46 @@ builder.Services.AddRateLimiter(options =>
                 QueueLimit = 0
             });
     });
+
+    options.AddPolicy("LoginPolicy", httpContext =>
+    {
+        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        return RateLimitPartition.GetSlidingWindowLimiter(
+            partitionKey: $"login:{ip}",
+            factory: _ => new SlidingWindowRateLimiterOptions
+            {
+                PermitLimit = 5,                    // 5 attempts
+                Window = TimeSpan.FromMinutes(1),   // per minute
+                SegmentsPerWindow = 5,
+                QueueLimit = 0
+            });
+    });
+
+
+    options.AddPolicy("RefreshTokenPolicy", httpContext =>
+    {
+        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: $"refresh:{ip}",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            });
+    });
+
+
+
 });
+
+
+
+
+
+
 
 
 // builder.Services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
@@ -503,6 +569,7 @@ app.MapEmployeeAppEndPoints();
 
 app.MapDocumentEndpoints();
 
+app.MapRefreshTokenEndpoint();
 
 
 app.MapEmployeeReportEndpoints();

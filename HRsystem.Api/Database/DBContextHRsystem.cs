@@ -251,12 +251,7 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
             .HasIndex(p => p.PermissionName)
             .IsUnique();
 
-
-
-
-        modelBuilder.Entity<TbUserSession>()
-      .HasIndex(x => new { x.UserId, x.ClientType })
-      .IsUnique();
+ 
 
         modelBuilder.Entity<TbUserSession>()
             .HasIndex(x => x.Jti)

@@ -20,24 +20,31 @@ namespace HRsystem.Api.Services.Auth
     {
         private readonly DBContextHRsystem _db;
         private readonly IMemoryCache _cache;
-        private readonly ICurrentUserService _currentUser;
+      //  private readonly ICurrentUserService _currentUser;
         private readonly ISecurityCacheService _securityCache;
 
         public JwtSessionValidator(
             DBContextHRsystem db,
             IMemoryCache cache,
-            ICurrentUserService currentUser,
+         
             ISecurityCacheService securityCache)
         {
             _db = db;
             _cache = cache;
-            _currentUser = currentUser;
+           // _currentUser = currentUser;
             _securityCache = securityCache;
         }
 
         public async Task ValidateAsync(TokenValidatedContext context)
         {
             var principal = context.Principal;
+
+            // Manually pull the header here
+            var clientType = context.Request.Headers["X-ClientType"].FirstOrDefault() ?? string.Empty;
+
+            var deviceId = context.HttpContext.Request.Headers["X-Device-Id"].FirstOrDefault();
+
+
 
             // 1. Extract Claims from Token
             var userIdStr = principal?.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -50,11 +57,18 @@ namespace HRsystem.Api.Services.Auth
                 return;
             }
 
-            int userId = int.Parse(userIdStr);
-          //  string cacheKey = $"user_sec_{userId}_{_currentUser.X_ClientType}";
+           // int userId = int.TryParse(userIdStr);
+
+            if (!int.TryParse(userIdStr, out var userId))
+            {
+                context.Fail("Invalid user id");
+                return;
+            }
+
+            //  string cacheKey = $"user_sec_{userId}_{_currentUser.X_ClientType}";
 
             // Use the helper for the key!
-            string cacheKey = _securityCache.GetCacheKey(userId, _currentUser.X_ClientType);
+            string cacheKey = _securityCache.GetCacheKey(userId, clientType);
 
             // 2. Try to get Security Profile from Cache (Fast Path)
             if (!_cache.TryGetValue(cacheKey, out UserSecurityProfile? profile))
@@ -65,7 +79,7 @@ namespace HRsystem.Api.Services.Auth
                                           join s in _db.TbUserSession
                                           on u.Id equals s.UserId
                                           where u.Id == userId
-                                          && s.ClientType == _currentUser.X_ClientType
+                                          && s.ClientType == clientType
                                           && s.IsActive == true
                                           select new UserSecurityProfile(
                                               s.Jti,

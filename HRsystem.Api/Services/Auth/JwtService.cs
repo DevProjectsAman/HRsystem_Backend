@@ -38,7 +38,7 @@ namespace HRsystem.Api.Services.Auth
             var issuer = jwtSettings["Issuer"];
             var audience = jwtSettings["Audience"];
             // Get expiry time from configuration with fallback
-            var expiryInMinutes = int.Parse(jwtSettings["ExpiryInMinutes"] ?? "60");
+            var expiryInMinutes = int.Parse(jwtSettings["ExpiryInMinutes"] ?? "30");
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -78,7 +78,8 @@ namespace HRsystem.Api.Services.Auth
                 issuer: issuer,
                 audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(10),
+               // expires: DateTime.UtcNow.AddMinutes(10),
+                expires: DateTime.UtcNow.AddMinutes(expiryInMinutes),
                 signingCredentials: credentials
             );
 
