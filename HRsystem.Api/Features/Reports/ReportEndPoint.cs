@@ -1,9 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using System.Threading;
 
 namespace HRsystem.Api.Features.Reports
 {
@@ -117,6 +119,44 @@ namespace HRsystem.Api.Features.Reports
             .WithName("GetEmployeeAttendanceReport")
             .WithSummary("Get top employee attendance report")
             .WithDescription("Retrieves employee attendance percentages within a department and time period, ordered by most absent employees.");
+
+
+
+            group.MapGet("/employee-activity-report-by-manager", [Authorize]
+            async (
+        ISender mediator,
+        [FromQuery] DateTime? fromDate,
+        [FromQuery] DateTime? toDate,
+        CancellationToken cancellationToken
+    ) =>
+            {
+                var query = new EmployeeActivityReportByManager
+                    .GetEmployeeActivityReportByManagerQuery(
+                        FromDate: fromDate,
+                        ToDate: toDate
+                    );
+
+                var result = await mediator.Send(query, cancellationToken);
+
+                return Results.Ok(new
+                {
+                    Success = result.Success,
+                    Message = result.Message,
+                    Data = result.Data
+                });
+            })
+    .WithName("GetEmployeeActivityReportByManager")
+    .WithSummary("Get employee activity report by manager")
+    .WithDescription(
+        "Returns employee activities (rows) and activity summary " +
+        "for employees managed by the authenticated manager, " +
+        "with special handling for today's date."
+    );
+
         }
+
+
+
+
     }
 }
