@@ -80,8 +80,8 @@ namespace HRsystem.Api.Services.Auth
                 audience: audience,
                 claims: claims,
                // expires: DateTime.UtcNow.AddMinutes(10),
-               // expires: DateTime.UtcNow.AddMinutes(expiryInMinutes),
-               expires: DateTime.UtcNow.AddSeconds(expiryInMinutes),
+                expires: DateTime.UtcNow.AddMinutes(expiryInMinutes),
+             //  expires: DateTime.UtcNow.AddSeconds(expiryInMinutes),
                 signingCredentials: credentials
             );
 
