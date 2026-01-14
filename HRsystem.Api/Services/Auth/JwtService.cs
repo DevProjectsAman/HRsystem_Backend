@@ -29,7 +29,7 @@ namespace HRsystem.Api.Services.Auth
         }
 
         // ✅ FIX: Add 'async' keyword to method signature
-        public async Task<(JwtSecurityToken Token, string Jti)> GenerateTokenAsync(ApplicationUser user)
+        public async Task<JwtSecurityToken> GenerateTokenAsync(ApplicationUser user,string? currentJti)
         {
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -43,7 +43,8 @@ namespace HRsystem.Api.Services.Auth
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var jti = Guid.NewGuid().ToString();
+           // var jti = Guid.NewGuid().ToString();
+           var jti = string.IsNullOrEmpty(currentJti) ? Guid.NewGuid().ToString() : currentJti;
 
             var claims = new List<Claim>    {
                     // Standard JWT claims
@@ -80,10 +81,11 @@ namespace HRsystem.Api.Services.Auth
                 claims: claims,
                // expires: DateTime.UtcNow.AddMinutes(10),
                 expires: DateTime.UtcNow.AddMinutes(expiryInMinutes),
+             //  expires: DateTime.UtcNow.AddSeconds(expiryInMinutes),
                 signingCredentials: credentials
             );
 
-            return (token,jti);
+            return (token);
         }
 
         private async Task<List<string>> GetRolePermissionsAsync(string role)

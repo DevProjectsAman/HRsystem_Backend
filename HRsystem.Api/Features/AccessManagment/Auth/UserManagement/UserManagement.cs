@@ -197,10 +197,10 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
             // This ensures that the NEXT request the user makes will trigger a fresh DB check
             _securityCacheService.ClearUserCache(user.Id, clientType);
 
-
-            var jwtToken = await _jwtService.GenerateTokenAsync(user);
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(jwtToken.Token);
-            var jti = jwtToken.Jti;
+            var jti = Guid.NewGuid().ToString();
+            var jwtToken = await _jwtService.GenerateTokenAsync(user,jti );
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+           // var jti = jwtToken.Jti;
 
             string refreshToken = GenerateRefreshTokenHelperr.GenerateRefreshToken();
 

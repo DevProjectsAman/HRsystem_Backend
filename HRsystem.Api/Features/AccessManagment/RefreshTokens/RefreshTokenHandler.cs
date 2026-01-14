@@ -63,11 +63,11 @@ namespace HRsystem.Api.Features.AccessManagment.RefreshTokens
                     {
                         // We return the info for the NEW token that was already created
                         // Note: You'll need to store the raw token or regenerate the JWT for this specific case
-                        var jwtResult = await _jwtService.GenerateTokenAsync(session.User!);
+                        var jwtResult = await _jwtService.GenerateTokenAsync(session.User!,session.Jti);
                         return new AuthResponseDto(
-                            AccessToken: new JwtSecurityTokenHandler().WriteToken(jwtResult.Token),
+                            AccessToken: new JwtSecurityTokenHandler().WriteToken(jwtResult),
                             RefreshToken: "USE_EXISTING_NEW_TOKEN_LOGIC", // See Note Below
-                            AccessTokenExpiresAt: jwtResult.Token.ValidTo
+                            AccessTokenExpiresAt: jwtResult.ValidTo
                         );
                     }
                 }
@@ -109,15 +109,18 @@ namespace HRsystem.Api.Features.AccessManagment.RefreshTokens
 
             _db.TbUserSession.Add(newSession);
 
-            var jwt = await _jwtService.GenerateTokenAsync(session.User!);
-            newSession.Jti = jwt.Jti;
+            var jwt = await _jwtService.GenerateTokenAsync(session.User!, session.Jti);
+            // newSession.Jti = jwt.Jti;
+            // need to keep the same jti for the new session
+            newSession.Jti = session.Jti;
+
 
             await _db.SaveChangesAsync(cancellationToken);
 
             return new AuthResponseDto(
-                AccessToken: new JwtSecurityTokenHandler().WriteToken(jwt.Token),
+                AccessToken: new JwtSecurityTokenHandler().WriteToken(jwt),
                 RefreshToken: newRefreshToken,
-                AccessTokenExpiresAt: jwt.Token.ValidTo
+                AccessTokenExpiresAt: jwt.ValidTo
             );
         }
 
