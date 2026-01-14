@@ -18,6 +18,8 @@ namespace HRsystem.Api.Services.CurrentUser
         string? DeviceId { get; }   // ✅ NEW
         string? X_ClientType { get; }   // ✅ NEW
 
+
+
     }
 
     public class CurrentUserService : ICurrentUserService
@@ -31,6 +33,9 @@ namespace HRsystem.Api.Services.CurrentUser
         }
 
         private ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
+ 
+
+
 
         public int UserId =>
             Convert.ToInt32(User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -121,6 +126,7 @@ namespace HRsystem.Api.Services.CurrentUser
                 return res ?? string.Empty;
             }
         }
+
 
     }
 }
