@@ -1,11 +1,12 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites;
 using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
+using HRsystem.Api.Features.EmployeeDashboard.GetRejectedActivities;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.EmployeeDashboard.GetRejectedActivities
+namespace HRsystem.Api.Features.EmployeeDashboard.mangeractivity
 {
     public record GetMangerRejectedActivitiesQueury() : IRequest<List<RejectedActivityDto>>;
     //public class RejectedActivityDto
@@ -50,7 +51,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetRejectedActivities
                         .Where(a =>
                              a.Employee.ManagerId == employeeId &&
                             a.RequestDate >= lastMonthDate &&
-                            (a.StatusId == RejectedStatusId) &&
+                            a.StatusId == RejectedStatusId &&
                             a.ActivityTypeId != 1
                         )
                         .Select(a => new
@@ -64,7 +65,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetRejectedActivities
                             StatusName = language == "ar"
                                 ? a.Status.StatusName.ar
                                 : a.Status.StatusName.en,
-                            StatusId = a.StatusId,
+                            a.StatusId,
                             CreatedAt = a.RequestDate,
                             Vacations = a.TbEmployeeVacations,
                             Missions = a.TbEmployeeMissions,

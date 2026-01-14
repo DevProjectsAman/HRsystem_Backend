@@ -1,9 +1,8 @@
 ﻿using HRsystem.Api.Database;
-using HRsystem.Api.Features.Groups.GetGroupById;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.Groups.GetALlGroup
+namespace HRsystem.Api.Features.Organization.Groups.GetALlGroup
 {
     public record GetAllGroupCommand() : IRequest<List<GetAllGroupResponse>>;
 

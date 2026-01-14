@@ -1,16 +1,17 @@
 ﻿using FluentValidation;
-using HRsystem.Api.Features.City.CreateCity;
-using HRsystem.Api.Features.City.DeleteCity;
-using HRsystem.Api.Features.City.GetAllCities;
-using HRsystem.Api.Features.City.UpdateCity;
+ 
+using HRsystem.Api.Features.Organization.City.CreateCity;
+using HRsystem.Api.Features.Organization.City.DeleteCity;
+using HRsystem.Api.Features.Organization.City.GetAllCities;
 using HRsystem.Api.Features.Organization.City.GetCityByGovId;
 using HRsystem.Api.Features.Organization.City.GetCityById;
+using HRsystem.Api.Features.Organization.City.UpdateCity;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 
-namespace HRsystem.Api.Features.City
+namespace HRsystem.Api.Features.Organization.City
 {
     public static class CityEndpoints
     {

@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Text.Json;
 using static HRsystem.Api.Enums.EnumsList;
 
-namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
+namespace HRsystem.Api.Services.GenerateDailyEmployeeReport
 {
     public interface IGenerateEmployeeMonthlyReportService
     {
@@ -63,6 +63,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
                     try
                     {
                         await ProcessEmployeeDailyReportAsync(employee, processDate, ct);
+//                         await _db.SaveChangesAsync(ct);
                         processedCount++;
                     }
                     catch (Exception ex)
@@ -400,7 +401,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<MonthlyReportBackgroundService> _logger;
-        private readonly TimeSpan _executionTime = new(0, 0, 0); // Midnight
+      //  private readonly TimeSpan _executionTime = new(0, 0, 0); // Midnight
+        private readonly TimeSpan _executionTime = new(23, 0, 0); // Midnight
 
         public MonthlyReportBackgroundService(
             IServiceProvider serviceProvider,
@@ -413,6 +415,15 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Monthly Report Background Service started");
+
+
+            // --- ADD THIS FOR TESTING ---
+            // This ensures the service runs once immediately on startup
+            _logger.LogInformation("Running initial report generation on startup...");
+         //   await GenerateReportAsync(stoppingToken);
+            // ----------------------------
+
+
 
             while (!stoppingToken.IsCancellationRequested)
             {

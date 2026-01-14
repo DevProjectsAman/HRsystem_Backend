@@ -2,7 +2,7 @@
 using HRsystem.Api.Database.DataTables;
 using MediatR;
 
-namespace HRsystem.Api.Features.VacationType.GetVacationTypeById
+namespace HRsystem.Api.Features.Lookups.VacationType.GetVacationTypeById
 {
     public record GetVacationTypeByIdQuery(int VacationTypeId) : IRequest<TbVacationType?>;
 

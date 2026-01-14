@@ -1,8 +1,8 @@
 ﻿using HRsystem.Api.Features.Organization.Project.CreateProject;
+using HRsystem.Api.Features.Organization.Project.DeleteProject;
 using HRsystem.Api.Features.Organization.Project.GetAllProjects;
 using HRsystem.Api.Features.Organization.Project.GetProjectById;
 using HRsystem.Api.Features.Organization.Project.UpdateProject;
-using HRsystem.Api.Features.Project.DeleteProject;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 

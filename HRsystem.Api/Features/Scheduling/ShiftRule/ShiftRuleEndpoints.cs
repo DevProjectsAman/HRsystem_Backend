@@ -1,14 +1,13 @@
 ﻿using FluentValidation;
+using HRsystem.Api.Features.Scheduling.ShiftRule.CreateShiftRule;
+using HRsystem.Api.Features.Scheduling.ShiftRule.DeleteShiftRule;
 using HRsystem.Api.Features.Scheduling.ShiftRule.GetAllShiftRules;
-using HRsystem.Api.Features.ShiftRule.CreateShiftRule;
-using HRsystem.Api.Features.ShiftRule.DeleteShiftRule;
-using HRsystem.Api.Features.ShiftRule.GetShiftRuleById;
-using HRsystem.Api.Features.ShiftRule.GetShiftRuleByParameters;
-using HRsystem.Api.Features.ShiftRule.UpdateShiftRule;
+using HRsystem.Api.Features.Scheduling.ShiftRule.GetShiftRuleById;
+using HRsystem.Api.Features.Scheduling.ShiftRule.GetShiftRuleByParameters;
+using HRsystem.Api.Features.Scheduling.ShiftRule.UpdateShiftRule;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace HRsystem.Api.Features.Scheduling.ShiftRule
 {

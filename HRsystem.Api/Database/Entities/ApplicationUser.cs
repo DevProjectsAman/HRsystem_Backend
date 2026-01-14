@@ -33,9 +33,14 @@ namespace HRsystem.Api.Database.Entities
         // 🔑 New field
         public int PermissionVersion { get; set; } = 1;
 
+        public string  MobileApplicationVersion { get; set; } = "1.0.0";
+
 
         public int? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+
+ 
+
 
     }
 }

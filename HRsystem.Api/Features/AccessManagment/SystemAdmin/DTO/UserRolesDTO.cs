@@ -1,4 +1,4 @@
-﻿namespace HRsystem.Api.Features.SystemAdmin.DTO
+﻿namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.DTO
 {
     public class UserRolesDTO
     {

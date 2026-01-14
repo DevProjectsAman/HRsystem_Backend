@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 //using static HRsystem.Api.Features.employeevacations.EmployeeVacations;
 
-namespace HRsystem.Api.Features.employeevacations
+namespace HRsystem.Api.Features.EmployeeRequest.employeevacations
 {
     public static class EmployeeVacationsEndPoints
     {
@@ -25,7 +25,9 @@ namespace HRsystem.Api.Features.employeevacations
             //var group = app.MapGroup("/api/employee-requests").WithTags("Employee Requests");
 
             // ✅ Request Vacation
-            group.MapPost("/vacation-request", [Authorize] async (
+            // [Authorize] 
+
+            group.MapPost("/vacation-request", async (
                 RequestVacationCommand command,
                 ISender mediator) =>
             {

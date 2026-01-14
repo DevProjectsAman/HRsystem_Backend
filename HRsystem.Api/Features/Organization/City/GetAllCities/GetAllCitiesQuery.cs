@@ -3,7 +3,7 @@ using HRsystem.Api.Database.DataTables;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.City.GetAllCities
+namespace HRsystem.Api.Features.Organization.City.GetAllCities
 {
     public record GetAllCitiesQuery() : IRequest<List<CityDto>>;
 

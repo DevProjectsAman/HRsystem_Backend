@@ -41,7 +41,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                      .Include(a => a.Department)
                     .FirstOrDefaultAsync(b => b.EmployeeId == employeeId , ct);
 
-            if (EmployeeInfo == null) throw new NotFoundException("EmployeeId not found", employeeId);
+            if (EmployeeInfo == null) throw new Exception($"Employee Not Found ID= {employeeId}");
 
 
             return new EmployeeInfoDto

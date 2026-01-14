@@ -33,7 +33,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
         {
             var employeeId = _currentUser.EmployeeID;
             var employee = await _db.TbEmployees.FirstOrDefaultAsync(e => e.EmployeeId == employeeId, ct);
-            if (employee == null) throw new NotFoundException("Employee Not Found", employeeId);
+            if (employee == null) throw new Exception($"Employee Not Found ID={employeeId}");
 
 
             var balance = await _db.TbEmployeeVacationBalances

@@ -1,5 +1,6 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
+using HRsystem.Api.Features.EmployeeAttendance;
 using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
@@ -9,7 +10,7 @@ using System.Threading;
 
 
 
-namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
+namespace HRsystem.Api.Features.EmployeeAttendance.EmployeePunch
 {
 
     public record PunchInCommand(
@@ -146,7 +147,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                             attendance.AttStatues = statues.OnTime;
                         break;
                     case false:
-                        if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(egyptTime))
+                        if (ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes) <= TimeOnly.FromDateTime(egyptTime))
                             attendance.AttStatues = statues.Late;
                         else
                             attendance.AttStatues = statues.OnTime;
@@ -272,7 +273,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                     AttendanceDate = today,
                     FirstPuchin = now.AddMinutes(-1),
                     LastPuchout = now,
-                    TotalHours = (decimal)1 / 60m
+                    TotalHours = 1 / 60m
                 };
                 _db.TbEmployeeAttendances.Add(attendance);
                 await _db.SaveChangesAsync(ct);
@@ -311,7 +312,7 @@ namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
                             attendance.AttStatues = statues.OnTime;
                         break;
                     case false:
-                        if ((ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes)) <= TimeOnly.FromDateTime(egyptTime))
+                        if (ShiftINfo.StartTime.AddMinutes(ShiftINfo.GracePeriodMinutes) <= TimeOnly.FromDateTime(egyptTime))
                             attendance.AttStatues = statues.Late;
                         else
                             attendance.AttStatues = statues.OnTime;

@@ -7,7 +7,7 @@ using HRsystem.Api.Shared.ExceptionHandling;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.Mission.CreateMission
+namespace HRsystem.Api.Features.EmployeeRequest.Mission.CreateMission
 {
     public record CreateMissionCommand(
            // int EmployeeId,
@@ -64,7 +64,7 @@ namespace HRsystem.Api.Features.Mission.CreateMission
             .FirstOrDefaultAsync(x => x.ActivityCode == "REQ_MISSION", ct);
 
             if (activityType == null)
-                throw new NotFoundException("Invalid ActivityType code:", "REQ_MISSION");
+                throw new Exception("Invalid ActivityType code: REQ_MISSION");
             
 
             // 1️⃣ Create the Activity first

@@ -4,7 +4,7 @@ using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 
-namespace HRsystem.Api.Features.VacationType.CreateVacationType
+namespace HRsystem.Api.Features.Lookups.VacationType.CreateVacationType
 {
     public record CreateVacationTypeCommand(
         LocalizedData VacationName,
@@ -37,7 +37,7 @@ namespace HRsystem.Api.Features.VacationType.CreateVacationType
 }
 
 
-namespace HRsystem.Api.Features.VacationType.CreateVacationType
+namespace HRsystem.Api.Features.Lookups.VacationType.CreateVacationType
 {
     public class CreateVacationTypeValidator : AbstractValidator<CreateVacationTypeCommand>
     {

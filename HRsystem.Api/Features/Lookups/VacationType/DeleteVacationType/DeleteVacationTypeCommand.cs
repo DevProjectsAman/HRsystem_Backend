@@ -3,7 +3,7 @@ using HRsystem.Api.Database.DataTables;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.VacationType.DeleteVacationType
+namespace HRsystem.Api.Features.Lookups.VacationType.DeleteVacationType
 {
     public record DeleteVacationTypeCommand(int VacationTypeId) : IRequest<bool>;
 

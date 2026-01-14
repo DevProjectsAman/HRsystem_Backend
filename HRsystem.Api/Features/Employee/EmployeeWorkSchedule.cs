@@ -25,7 +25,7 @@ namespace HRsystem.Api.Features.Employee
                     .FirstOrDefaultAsync(e => e.EmployeeId == request.EmployeeId, cancellationToken);
 
                 if (employee == null)
-                    throw new NotFoundException("Invalid Employee Id:", request.EmployeeId);
+                    throw new Exception($"Invalid Employee Id:{ request.EmployeeId}");
 
                 // ✅ تحديث الحقول من DTO
                 employee.EmployeeCodeFinance = request.UpdatedData.EmployeeCodeFinance;

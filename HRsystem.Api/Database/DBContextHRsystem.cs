@@ -2,6 +2,7 @@
 using HRsystem.Api.Database.DataTables;
 //using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Database.Entities;
+ 
 using HRsystem.Api.Shared.DTO;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -98,6 +99,9 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
     public DbSet<TbContractType> TbContractTypes { get; set; }
     public DbSet<TbShiftRuleMappng> TbShiftRuleMappngs { get; set; }
     public DbSet<TbEmployeeDevicesTrack> TbEmployeeDevicesTrack { get; set; }
+
+    public DbSet<TbEmployeeCodeTracking> TbEmployeeCodeTrackings { get; set; }
+    public DbSet<TbUserSession> TbUserSession { get; set; }
 
 
 
@@ -245,6 +249,12 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
         // 🔹 Unique index on permission names
         modelBuilder.Entity<AspPermission>()
             .HasIndex(p => p.PermissionName)
+            .IsUnique();
+
+ 
+
+        modelBuilder.Entity<TbUserSession>()
+            .HasIndex(x => x.Jti)
             .IsUnique();
     }
 

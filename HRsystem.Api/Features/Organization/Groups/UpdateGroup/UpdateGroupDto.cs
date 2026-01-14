@@ -1,4 +1,4 @@
-﻿namespace HRsystem.Api.Features.Groups.UpdateGroup
+﻿namespace HRsystem.Api.Features.Organization.Groups.UpdateGroup
 {
     public class UpdateGroupDto
     {

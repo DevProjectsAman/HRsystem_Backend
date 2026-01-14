@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-using HRsystem.Api.Database;
-using HRsystem.Api.Features.Groups.GetGroupById;
+﻿using HRsystem.Api.Database;
 using MediatR;
 
 namespace HRsystem.Api.Features.Organization.Company.GetCompanyById

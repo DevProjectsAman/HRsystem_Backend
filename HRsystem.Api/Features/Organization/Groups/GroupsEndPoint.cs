@@ -1,15 +1,14 @@
 ﻿using FluentValidation;
-using HRsystem.Api.Features.Groups.Create;
-using HRsystem.Api.Features.Groups.DeleteGroup;
-using HRsystem.Api.Features.Groups.GetALlGroup;
-using HRsystem.Api.Features.Groups.GetGroupById;
-using HRsystem.Api.Features.Groups.UpdateGroup;
+using HRsystem.Api.Features.Organization.Groups.Create;
+using HRsystem.Api.Features.Organization.Groups.DeleteGroup;
+using HRsystem.Api.Features.Organization.Groups.GetALlGroup;
+using HRsystem.Api.Features.Organization.Groups.GetGroupById;
+using HRsystem.Api.Features.Organization.Groups.UpdateGroup;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
-namespace HRsystem.Api.Features.Groups
+namespace HRsystem.Api.Features.Organization.Groups
 {
     public static class GroupsEndPoint
     {

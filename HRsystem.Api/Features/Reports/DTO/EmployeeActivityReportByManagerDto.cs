@@ -43,6 +43,18 @@
         public bool IsRemoteday { get; set; }
         public string TodayStatues { get; set; }
         public string Details { get; set; }
+
+
+        // ✅ new names
+        public string JobTitleName { get; set; }
+        public string JobLevelCode { get; set; }
+        public string ManagerName { get; set; }
+        public string CompanyName { get; set; }
+        public string DepartmentCode { get; set; }
+        public string DepartmentName { get; set; }
+        public string ShiftName { get; set; }
+        public string ShiftStartTime { get; set; }
+        public string ShiftEndTime { get; set; }
     }
 
     public class ActivitySummaryDto

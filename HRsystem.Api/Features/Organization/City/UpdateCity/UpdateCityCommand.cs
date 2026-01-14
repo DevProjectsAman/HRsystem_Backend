@@ -4,7 +4,7 @@ using HRsystem.Api.Database.DataTables;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.City.UpdateCity
+namespace HRsystem.Api.Features.Organization.City.UpdateCity
 {
     public record UpdateCityCommand(int CityId, string CityName, int? GovId, int? UpdatedBy) : IRequest<TbCity?>;
 
@@ -30,7 +30,7 @@ namespace HRsystem.Api.Features.City.UpdateCity
 }
 
 
-namespace HRsystem.Api.Features.City.UpdateCity
+namespace HRsystem.Api.Features.Organization.City.UpdateCity
 {
     public class UpdateCityCommandValidator : AbstractValidator<UpdateCityCommand>
     {

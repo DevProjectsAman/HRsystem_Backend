@@ -5,6 +5,7 @@ using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Features.EmployeeHandler.Create;
 
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.EmployeeHandler.Create
 {
@@ -38,6 +39,11 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
 
                 #region Create Employee (Aggregate Root)
 
+                var empPhotoPath = _db.TbEmployeeCodeTrackings.Where(e => e.UniqueEmployeeCode == request.EmployeeBasicData.UniqueEmployeeCode && e.IsUsed == false)
+                    .Select(e => e.DocFullPath).FirstOrDefault();
+
+                string? photoPath = empPhotoPath != null ? empPhotoPath : null;
+
                 var employee = new TbEmployee
                 {
                     // ===== Basic Data =====
@@ -45,9 +51,10 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
                     ArabicFullName = request.EmployeeBasicData.ArabicFullName,
                     NationalId = request.EmployeeBasicData.NationalId,
                     Birthdate = request.EmployeeBasicData.Birthdate,
-                    PlaceOfBirth = request.EmployeeBasicData.PlaceOfBirth,
+                    PlaceOfBirth = request.EmployeeBasicData.PlaceOfBirth ?? "Unknown",
                     Gender = request.EmployeeBasicData.Gender,
-                    EmployeePhotoPath = request.EmployeeBasicData.EmployeePhotoPath,
+                    EmployeePhotoPath = photoPath,
+                    UniqueEmployeeCode = request.EmployeeBasicData.UniqueEmployeeCode,
 
                     // ===== Extra Data =====
                     PassportNumber = request.EmployeeExtraData.PassportNumber,
@@ -55,7 +62,7 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
                     NationalityId = request.EmployeeExtraData.NationalityId,
                     PrivateMobile = request.EmployeeExtraData.PrivateMobile,
                     BuisnessMobile = request.EmployeeExtraData.BuisnessMobile,
-                    Email = request.EmployeeExtraData.Email,
+                    Email = request.EmployeeExtraData.Email ?? $"{request.EmployeeBasicData.UniqueEmployeeCode}@Any.com" ,
                     Address = request.EmployeeExtraData.Address,
                     Religion = request.EmployeeExtraData.Religion,
                     Note = request.EmployeeExtraData.Note,
@@ -94,10 +101,24 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
                 var employeeId = employee.EmployeeId;
 
                 #endregion
+                #region Employee Code Tracking Update
+                var empCodeTrack = await _db.TbEmployeeCodeTrackings
+                    .FirstOrDefaultAsync(e => e.UniqueEmployeeCode ==  request.EmployeeBasicData.UniqueEmployeeCode && e.IsUsed == false, cancellationToken);
+                if (empCodeTrack != null)
+                {
+                    empCodeTrack.IsUsed = true;
+                    empCodeTrack.UsedAt = now;
+                    empCodeTrack.GeneratedById = userId;
+                    _db.TbEmployeeCodeTrackings.Update(empCodeTrack);
+                    await _db.SaveChangesAsync(cancellationToken);
+                }
 
-                #region Work Locations
+                    #endregion
 
-                foreach (var loc in request.EmployeeWorkLocations.EmployeeWorkLocations)
+
+                    #region Work Locations
+
+                    foreach (var loc in request.EmployeeWorkLocations.EmployeeWorkLocations)
                 {
                     _db.TbEmployeeWorkLocations.Add(new TbEmployeeWorkLocation
                     {

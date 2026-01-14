@@ -2,11 +2,11 @@
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.Scheduling.Shift.GetAllShifts;
-using HRsystem.Api.Features.ShiftRule.CreateShiftRule;
+using HRsystem.Api.Features.Scheduling.ShiftRule.CreateShiftRule;
 using HRsystem.Api.Services.CurrentUser;
 using MediatR;
 
-namespace HRsystem.Api.Features.ShiftRule.CreateShiftRule
+namespace HRsystem.Api.Features.Scheduling.ShiftRule.CreateShiftRule
 {
     public record CreateShiftRuleMappedCommand(
         string? ShiftRuleName,

@@ -3,7 +3,7 @@ using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
 using MediatR;
 
-namespace HRsystem.Api.Features.City.CreateCity
+namespace HRsystem.Api.Features.Organization.City.CreateCity
 {
     public record CreateCityCommand(string CityName, int? GovId, int? CreatedBy) : IRequest<TbCity>;
 
@@ -27,7 +27,7 @@ namespace HRsystem.Api.Features.City.CreateCity
 }
 
 
-namespace HRsystem.Api.Features.City.CreateCity
+namespace HRsystem.Api.Features.Organization.City.CreateCity
 {
     public class CreateCityCommandValidator : AbstractValidator<CreateCityCommand>
     {

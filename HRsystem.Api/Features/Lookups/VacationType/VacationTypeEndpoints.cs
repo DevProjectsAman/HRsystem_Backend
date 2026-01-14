@@ -1,16 +1,15 @@
 ﻿using FluentValidation;
-using HRsystem.Api.Features.VacationType.CreateVacationType;
-using HRsystem.Api.Features.VacationType.DeleteVacationType;
-using HRsystem.Api.Features.VacationType.GetAllVacationTypes;
-using HRsystem.Api.Features.VacationType.GetVacationTypeById;
-using HRsystem.Api.Features.VacationType.UpdateVacationType;
+using HRsystem.Api.Features.Lookups.VacationType.CreateVacationType;
+using HRsystem.Api.Features.Lookups.VacationType.DeleteVacationType;
+using HRsystem.Api.Features.Lookups.VacationType.GetAllVacationTypes;
+using HRsystem.Api.Features.Lookups.VacationType.GetVacationTypeById;
+using HRsystem.Api.Features.Lookups.VacationType.UpdateVacationType;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using System.Linq;
 
 
-namespace HRsystem.Api.Features.ShiftEndpoints
+namespace HRsystem.Api.Features.Lookups.VacationType
 {
     public static class ShiftEndpoints
     {

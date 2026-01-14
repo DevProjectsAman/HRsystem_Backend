@@ -1,4 +1,4 @@
-﻿namespace HRsystem.Api.Features.Groups.GetALL
+﻿namespace HRsystem.Api.Features.Organization.Groups.GetALL
 {
     public class GetGroupCommand
     {

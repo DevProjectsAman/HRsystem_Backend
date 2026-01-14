@@ -23,7 +23,7 @@
         #region Error
         public const string InvalidSaved = "error! data not saved";
         public const string InvalidDelete = "error! data not Deleted";
-        public const string InvalidLogin = "invalid User Or Passwod ";
+        public const string InvalidLogin = "invalid UserName Or Passwod ";
         public const string PhoneAleardyExist = "Phone Already Exist";
         public const string UserNameAleardyExist = "UserName Already Exist";
         public const string EmailAleardyExist = "Email Already Exist";

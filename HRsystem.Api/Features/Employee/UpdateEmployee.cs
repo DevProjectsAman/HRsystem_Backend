@@ -10,7 +10,7 @@ using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.Employee.DTO;
 using HRsystem.Api.Services.CurrentUser;
 
-namespace HRsystem.Api.Features.Employee.Commands
+namespace HRsystem.Api.Features.Employee
 {
     // Command
     public record UpdateEmployeeCommand(EmployeeUpdateDto Employee) : IRequest<Unit>;

@@ -3,7 +3,7 @@ using HRsystem.Api.Database.DataTables;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 
-namespace HRsystem.Api.Features.ShiftRule.GetShiftRuleById
+namespace HRsystem.Api.Features.Scheduling.ShiftRule.GetShiftRuleById
 {
     public record GetShiftRuleByIdQuery(int RuleId) : IRequest<TbShiftRule?>;
 

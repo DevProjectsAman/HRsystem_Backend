@@ -80,10 +80,10 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                     ? Results.Ok(result)
                     : Results.BadRequest(result);
             })
-                   .RequireAuthorization(policy =>
-                policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                    ctx.User.HasClaim("permission", "system.roles")))
+                //   .RequireAuthorization(policy =>
+                //policy.RequireAssertion(ctx =>
+                //    ctx.User.IsInRole("SystemAdmin") &&
+                //    ctx.User.HasClaim("permission", "system.roles")))
             .WithName("ListRoles");
 
             // --- Get role by id (GET) ---

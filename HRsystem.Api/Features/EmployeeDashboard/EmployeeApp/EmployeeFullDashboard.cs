@@ -1,6 +1,6 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
-using HRsystem.Api.Features.EmployeeDashboard.ManagerActivity;
+using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.ExceptionHandling;
 using MediatR;
@@ -22,8 +22,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
         [MaxLength(25)]
         public string PunchType { get; set; }
 
-        public string? firstPunchIn { get; set; }
-        public string? lastPunchOut { get; set; }
+        public DateTime? firstPunchIn { get; set; }
+        public DateTime? lastPunchOut { get; set; }
         public string? actualWorkingHours { get; set; }
     }
     public record EmployeeFullDashboardQuery() : IRequest<EmployeeFullDashboardDto>;
@@ -69,7 +69,7 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                 .FirstOrDefaultAsync(e => e.EmployeeId == employeeId, ct);
 
             if (employee == null)
-                throw new NotFoundException("Employee not found", employeeId);
+                throw new Exception($"Employee not found ID={employeeId}");
 
             var info = new EmployeeInfoDto
             {
@@ -215,15 +215,16 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
                     .Where(p => p.PunchType == "PunchIn")
                     .OrderBy(p => p.PunchTime)
                     .Select(p => p.PunchTime)
-                    .FirstOrDefault()?
-                    .ToString("HH:mm");
+                    .FirstOrDefault()  ;
+
+                //.ToString("HH:mm");
 
                 checkhistory.lastPunchOut = punches
                     .Where(p => p.PunchType == "PunchOut")
                     .OrderByDescending(p => p.PunchTime)
                     .Select(p => p.PunchTime)
-                    .FirstOrDefault()?
-                    .ToString("HH:mm");
+                    .FirstOrDefault() ;
+                    //.ToString("HH:mm");
 
 
             }

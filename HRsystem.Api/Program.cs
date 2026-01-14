@@ -3,36 +3,37 @@ using FluentValidation;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Features.AccessManagment.Auth.UserManagement;
+using HRsystem.Api.Features.AccessManagment.RefreshTokens;
 using HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission;
 using HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles;
-using HRsystem.Api.Features.ActivityType;
 using HRsystem.Api.Features.AuditLog;
-using HRsystem.Api.Features.City;
+using HRsystem.Api.Features.Documents;
 using HRsystem.Api.Features.Employee;
 using HRsystem.Api.Features.EmployeeApproval;
 using HRsystem.Api.Features.EmployeeAttendance;
 using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
 using HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport;
 using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
-using HRsystem.Api.Features.EmployeeDashboard.ManagerActivity;
 using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
 using HRsystem.Api.Features.EmployeeDevices;
 using HRsystem.Api.Features.EmployeeHandler;
 using HRsystem.Api.Features.EmployeeRequest.EmployeeVacation;
+using HRsystem.Api.Features.EmployeeRequest.employeevacations;
 using HRsystem.Api.Features.EmployeeRequest.Execuse;
-using HRsystem.Api.Features.employeevacations;
-using HRsystem.Api.Features.Groups;
+using HRsystem.Api.Features.EmployeeRequest.Mission;
 using HRsystem.Api.Features.Holiday;
 using HRsystem.Api.Features.HolidayType;
 using HRsystem.Api.Features.Lookups.ActivityStatus;
+using HRsystem.Api.Features.Lookups.ActivityType;
 using HRsystem.Api.Features.Lookups.ActivityTypeStatus;
 using HRsystem.Api.Features.Lookups.ContractTypes;
 using HRsystem.Api.Features.Lookups.GeneralLookups;
-using HRsystem.Api.Features.Lookups.MaretialStatus;
-using HRsystem.Api.Features.Mission;
+using HRsystem.Api.Features.Lookups.VacationType;
+using HRsystem.Api.Features.Organization.City;
 using HRsystem.Api.Features.Organization.Company;
 using HRsystem.Api.Features.Organization.Department;
 using HRsystem.Api.Features.Organization.Govermenet;
+using HRsystem.Api.Features.Organization.Groups;
 using HRsystem.Api.Features.Organization.JobManagment;
 using HRsystem.Api.Features.Organization.Project;
 using HRsystem.Api.Features.Organization.WorkLocation;
@@ -43,17 +44,16 @@ using HRsystem.Api.Features.Scheduling.ShiftRule;
 using HRsystem.Api.Features.Scheduling.VacationRule;
 using HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule;
 using HRsystem.Api.Features.Scheduling.VacationRulesGroup;
-using HRsystem.Api.Features.ShiftEndpoints;
-using HRsystem.Api.Features.SystemAdmin.RolePermission;
-using HRsystem.Api.Features.WorkDaysRules;
-using HRsystem.Api.Services;
+using HRsystem.Api.Features.Scheduling.WorkDaysRules;
 using HRsystem.Api.Services.AuditLog;
 using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.Chatbot;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Services.DeviceEnforcement;
+using HRsystem.Api.Services.GenerateDailyEmployeeReport;
 using HRsystem.Api.Services.LookupCashing;
 using HRsystem.Api.Services.Reports;
+using HRsystem.Api.Services.VacationCalculation;
 using HRsystem.Api.Shared.EncryptText;
 using HRsystem.Api.Shared.ExceptionHandling;
 using HRsystem.Api.Shared.ValidationHandler;
@@ -106,6 +106,13 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     options.Password.RequireUppercase = false; // Require at least one uppercase letter
     options.Password.RequireNonAlphanumeric = false; // Require at least one special character (e.g., !@#$%)
     options.Password.RequiredUniqueChars = 2; // Require at least 4 unique characters
+
+    options.Lockout.AllowedForNewUsers = true;
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+
+
+
 })
     .AddEntityFrameworkStores<DBContextHRsystem>()
     .AddDefaultTokenProviders();
@@ -130,7 +137,11 @@ builder.Services.AddCors(options =>
 });
 
 
-
+ // this for  cashing the security  of the user 
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<ISecurityCacheService, SecurityCacheService>();
+builder.Services.AddScoped<JwtSessionValidator>();
+/**************************************************************/
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer(); // Needed for minimal APIs
@@ -159,7 +170,34 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Register JWT Authentication
+
+
+//// Register JWT Authentication
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//.AddJwtBearer(options =>
+//{
+//    options.RequireHttpsMetadata = false;
+//    options.SaveToken = true;
+
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuer = true,
+//        ValidateAudience = true,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+
+//        ValidIssuer = jwtSettings["Issuer"],
+//        ValidAudience = jwtSettings["Audience"],
+//        IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+//    };
+//});
+
+
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -179,20 +217,53 @@ builder.Services.AddAuthentication(options =>
 
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+        IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+
+        // allow 4 minutes more after expire to refresh 
+        ClockSkew = TimeSpan.Zero // 🔥 IMPORTANT
+
+
     };
+
+    
+    options.Events = new JwtBearerEvents
+    {
+        //OnTokenValidated = async context =>
+        //{
+        //    var validator = context.HttpContext.RequestServices
+        //        .GetRequiredService<JwtSessionValidator>();
+
+        //    await validator.ValidateAsync(context);
+        //}
+
+
+        OnTokenValidated = async context =>
+        {
+            var validator = context.HttpContext.RequestServices
+                .GetRequiredService<JwtSessionValidator>();
+
+            // Manually pull the header here
+           // var clientType = context.Request.Headers["X-ClientType"].FirstOrDefault() ?? string.Empty;
+
+            // Pass the Principal and ClientType explicitly
+            await validator.ValidateAsync(context);
+        }
+
+    };
+
+
+
 });
+
+
+
+
+
 
 builder.Services.AddAuthorization();
 
+ 
 
-builder.Services.Configure<SecurityStampValidatorOptions>(options =>
-{
-    options.ValidationInterval = TimeSpan.FromMinutes(5); // how often to re-check
-});
-
-// Replace default with our version
-builder.Services.AddScoped<ISecurityStampValidator, PermissionVersionValidator<ApplicationUser>>();
 
 
 builder.Services.AddMediatR(cfg =>
@@ -286,20 +357,77 @@ builder.Services.AddRateLimiter(options =>
                 QueueLimit = 0
             });
     });
+
+    options.AddPolicy("LoginPolicy", httpContext =>
+    {
+        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        return RateLimitPartition.GetSlidingWindowLimiter(
+            partitionKey: $"login:{ip}",
+            factory: _ => new SlidingWindowRateLimiterOptions
+            {
+                PermitLimit = 5,                    // 5 attempts
+                Window = TimeSpan.FromMinutes(1),   // per minute
+                SegmentsPerWindow = 5,
+                QueueLimit = 0
+            });
+    });
+
+
+    options.AddPolicy("RefreshTokenPolicy", httpContext =>
+    {
+        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: $"refresh:{ip}",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            });
+    });
+
+
+
 });
+
+
+
+
+
+
 
 
 // builder.Services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
 //builder.Services.AddScoped<IAuthorizationHandler, PermissionHandlerService>();
 
+////Monthly Report Service
+//builder.Services.AddScoped<IEmployeeMonthlyReportService, EmployeeMonthlyReportService>();
+//builder.Services.AddHostedService<EmployeeMonthlyReportScheduler>();
+
+
+builder.Services.AddScoped<IVacationDaysCalculator, VacationDaysCalculator>();
+
+
 // Monthly Report Service
-builder.Services.AddScoped<IEmployeeMonthlyReportService, EmployeeMonthlyReportService>();
-builder.Services.AddHostedService<EmployeeMonthlyReportScheduler>();
+builder.Services.AddScoped<IGenerateEmployeeMonthlyReportService, GenerateEmployeesMonthlyActivityReport>();
+
+// Register background service (runs at midnight)
+builder.Services.AddHostedService<MonthlyReportBackgroundService>();
+
+
+
+
 
 
 //chatbot
-builder.Services.AddScoped<ChatbotService>();
-builder.Services.AddScoped<IntentExecutorService>();
+//builder.Services.AddScoped<ChatbotService>();
+
+//builder.Services.AddScoped<IntentExecutorService>();
+
+
+
 builder.Services.AddControllers();
 
 
@@ -438,6 +566,10 @@ app.MapEmployeeAppEndPoints();
 
  app.MapEmployeeHandlerEndpoints();
 
+
+app.MapDocumentEndpoints();
+
+app.MapRefreshTokenEndpoint();
 
 
 app.MapEmployeeReportEndpoints();

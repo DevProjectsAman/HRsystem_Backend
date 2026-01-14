@@ -1,4 +1,4 @@
-﻿namespace HRsystem.Api.Features.EmployeeActivityDt.EmployeePunch
+﻿namespace HRsystem.Api.Features.EmployeeAttendance.EmployeePunch
 {
     public static class LocationHelper
     {

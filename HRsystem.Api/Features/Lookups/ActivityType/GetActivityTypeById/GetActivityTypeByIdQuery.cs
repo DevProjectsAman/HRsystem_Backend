@@ -3,7 +3,7 @@ using HRsystem.Api.Database.DataTables;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRsystem.Api.Features.ActivityType.GetActivityTypeById
+namespace HRsystem.Api.Features.Lookups.ActivityType.GetActivityTypeById
 {
     public record GetActivityTypeByIdQuery(int ActivityTypeId) : IRequest<TbActivityType?>;
 

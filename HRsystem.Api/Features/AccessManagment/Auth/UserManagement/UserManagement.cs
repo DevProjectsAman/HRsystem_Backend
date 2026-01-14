@@ -1,17 +1,19 @@
 ﻿using FluentValidation;
-using Google;
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
-using HRsystem.Api.Features.SystemAdmin.DTO;
-using HRsystem.Api.Services;
+using HRsystem.Api.Features.AccessManagment.SystemAdmin.DTO;
+
+using HRsystem.Api.Services.Auth;
+using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared;
 using HRsystem.Api.Shared.DTO;
+using HRsystem.Api.Shared.Tools;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 
 
 
@@ -33,9 +35,9 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
 
                 var result = await mediator.Send(command);
                 return result.Success ? Results.Ok(result) : Results.BadRequest(result);
-            });
+            }).RequireRateLimiting("LoginPolicy"); 
 
-            group.MapPost("/register", async (RegisterUserCommand command, ISender mediator, IValidator<RegisterUserCommand> validator) =>
+            group.MapPost("/register", [Authorize] async (RegisterUserCommand command, ISender mediator, IValidator<RegisterUserCommand> validator) =>
             {
                 var validation = await validator.ValidateAsync(command);
                 if (!validation.IsValid)
@@ -90,7 +92,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
 
 
             // 🔹 Get User Roles (Role IDs)
-            group.MapPost("/users-roles", [Authorize] async (     GetUserRolesCommand command,     ISender mediator) =>
+            group.MapPost("/users-roles", [Authorize] async (GetUserRolesCommand command, ISender mediator) =>
             {
                 var result = await mediator.Send(command);
 
@@ -103,7 +105,35 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
              .Produces<ResponseResultDTO<List<int>>>(StatusCodes.Status404NotFound);
 
 
+            group.MapPost("/logout",
+                   async (IMediator mediator) =>
+                   {
+                       var result = await mediator.Send(new LogoutCommand());
+                       return Results.Ok(new { message = "Logged out successfully" });
+                   })
+               .RequireAuthorization()
+               .WithTags("Auth")
+               .WithName("Logout")
+               .WithSummary("Logout from current session")
+               .Produces(StatusCodes.Status200OK);
+
+            group.MapPost("/logout-all",
+                async (IMediator mediator) =>
+                {
+                    var count = await mediator.Send(new LogoutAllSessionsCommand());
+                    return Results.Ok(new
+                    {
+                        message = $"Logged out from {count} session(s)",
+                        sessionsTerminated = count
+                    });
+                })
+            .RequireAuthorization()
+            .WithTags("Auth")
+            .WithName("LogoutAllSessions")
+            .WithSummary("Logout from all sessions (all devices)")
+            .Produces(StatusCodes.Status200OK);
         }
+
     }
 
     #region Login
@@ -115,35 +145,108 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtService _jwtService;
+        private readonly ICurrentUserService _currentUser;
+        private readonly DBContextHRsystem _dbContextHRsystem;
+        private readonly ISecurityCacheService _securityCacheService;
 
         public LoginHandler(SignInManager<ApplicationUser> signInManager,
                             UserManager<ApplicationUser> userManager,
-                            JwtService jwtService)
+                            JwtService jwtService, ICurrentUserService currentUserService
+            , DBContextHRsystem dbContextHRsystem, ISecurityCacheService securityCacheService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _jwtService = jwtService;
+            _currentUser = currentUserService;
+            _dbContextHRsystem = dbContextHRsystem;
+            _securityCacheService = securityCacheService;
         }
+
 
         public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var result = await _signInManager.PasswordSignInAsync(request.UserName, request.Password, false, false);
-            if (!result.Succeeded)
+            var result = await _signInManager.PasswordSignInAsync(request.UserName, request.Password, false, lockoutOnFailure: true);
+            if (!result.Succeeded || result.IsLockedOut)    //  even if it is locked out we return invalid login to avoid user enumeration
                 return new LoginResponse(false, ResponseMessages.InvalidLogin);
 
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user == null || !user.IsActive)
                 return new LoginResponse(false, ResponseMessages.InvalidLogin);
 
-           
-            var jwtToken = await _jwtService.GenerateTokenAsync(user);
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
-            return new LoginResponse(true, ResponseMessages.SucessLogin, tokenString, user.UserName);
+            var clientType = string.IsNullOrEmpty(_currentUser.X_ClientType) ? "web" : _currentUser.X_ClientType;
+                        var DeviceId = string.IsNullOrEmpty(_currentUser.DeviceId) ? "web" : _currentUser.DeviceId;
+
+
+
+
+            var oldSession = await _dbContextHRsystem.TbUserSession
+                            .Where(s =>
+                                s.UserId == user.Id &&
+                                s.ClientType == clientType &&
+                                s.IsActive)
+                            .FirstOrDefaultAsync();
+
+            if (oldSession != null)
+            {
+                oldSession.IsActive = false;
+                oldSession.LastSeenAt = DateTime.UtcNow;
+            }
+
+            // 🔥 3. CLEAR THE CACHE using the helper
+            // This ensures that the NEXT request the user makes will trigger a fresh DB check
+            _securityCacheService.ClearUserCache(user.Id, clientType);
+
+
+            var jwtToken = await _jwtService.GenerateTokenAsync(user);
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(jwtToken.Token);
+            var jti = jwtToken.Jti;
+
+            string refreshToken = GenerateRefreshTokenHelperr.GenerateRefreshToken();
+
+            string refreshTokenHash = GenerateRefreshTokenHelperr.HashRefreshToken(refreshToken);
+
+
+            _dbContextHRsystem.TbUserSession.Add(new TbUserSession
+            {
+                UserId = user.Id,
+                ClientType = clientType,
+                DeviceId = DeviceId,
+                Jti = jti,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                LastSeenAt = DateTime.UtcNow,
+                RefreshTokenHash = refreshTokenHash,
+                RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7) // e.g., 7 days validity
+
+            });
+
+            await _dbContextHRsystem.SaveChangesAsync();
+
+            LoginResponse res = new LoginResponse(true,
+                ResponseMessages.SucessLogin,
+                tokenString, refreshToken, user.UserFullName,jti, DateTime.UtcNow.AddDays(7));
+
+            return res;
+                 
         }
+
+
+
+
+
     }
 
-    public record LoginResponse(bool Success, string Message, string? Token = null, string? UserName = null);
+    public record LoginResponse(
+    bool Success,
+    string Message,
+    string? Token = null,
+    string? RefreshToken = null,
+    string? UserName = null,
+    string? Jti=null,
+    DateTime? ExpiresAt = null
+);
+
 
     public class LoginValidator : AbstractValidator<LoginCommand>
     {
@@ -318,13 +421,13 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
 
 
             if (!request.RoleIds.Any())
-            { 
-                    return new ResponseResultDTO
-                    {
-                        Success = false,
-                        Message = "No valid roles found"
-                    };
- 
+            {
+                return new ResponseResultDTO
+                {
+                    Success = false,
+                    Message = "No valid roles found"
+                };
+
             }
 
 
@@ -595,5 +698,113 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
 
 
     #endregion
+    #region  LogOut
+
+
+
+
+    public record LogoutCommand : IRequest<bool>;
+
+    public class LogoutHandler : IRequestHandler<LogoutCommand, bool>
+    {
+        private readonly DBContextHRsystem _db;
+        private readonly ICurrentUserService _currentUser;
+        private readonly IMemoryCache _cache;
+
+        public LogoutHandler(
+            DBContextHRsystem db,
+            ICurrentUserService currentUser,
+            IMemoryCache cache)
+        {
+            _db = db;
+            _currentUser = currentUser;
+            _cache = cache;
+        }
+
+        public async Task<bool> Handle(LogoutCommand request, CancellationToken cancellationToken)
+        {
+            var userId = _currentUser.UserId;
+            var clientType = _currentUser.X_ClientType;
+            var deviceId = _currentUser.DeviceId;
+
+            // Find and invalidate the current session
+            var session = await _db.TbUserSession
+                .FirstOrDefaultAsync(s =>
+                    s.UserId == userId &&
+                    s.ClientType == clientType &&
+                    s.DeviceId == deviceId &&
+                    s.IsActive,
+                    cancellationToken);
+
+            if (session != null)
+            {
+                session.IsActive = false;
+                await _db.SaveChangesAsync(cancellationToken);
+
+                // Clear security cache
+                string cacheKey = $"user_sec_{userId}_{clientType}";
+                _cache.Remove(cacheKey);
+            }
+
+            return true;
+        }
+    }
+
+    // ============================================
+    // LOGOUT ALL SESSIONS (All devices)
+    // ============================================
+
+    public record LogoutAllSessionsCommand : IRequest<int>;
+
+    public class LogoutAllSessionsHandler : IRequestHandler<LogoutAllSessionsCommand, int>
+    {
+        private readonly DBContextHRsystem _db;
+        private readonly ICurrentUserService _currentUser;
+        private readonly IMemoryCache _cache;
+
+        public LogoutAllSessionsHandler(
+            DBContextHRsystem db,
+            ICurrentUserService currentUser,
+            IMemoryCache cache)
+        {
+            _db = db;
+            _currentUser = currentUser;
+            _cache = cache;
+        }
+
+        public async Task<int> Handle(LogoutAllSessionsCommand request, CancellationToken cancellationToken)
+        {
+            var userId = _currentUser.UserId;
+
+            var sessions = await _db.TbUserSession
+                .Where(s => s.UserId == userId && s.IsActive)
+                .ToListAsync(cancellationToken);
+
+            foreach (var session in sessions)
+            {
+                session.IsActive = false;
+
+                // Clear cache for each client type
+                string cacheKey = $"user_sec_{userId}_{session.ClientType}";
+                _cache.Remove(cacheKey);
+            }
+
+            await _db.SaveChangesAsync(cancellationToken);
+
+            return sessions.Count;
+        }
+    }
+
+    // ============================================
+    // ENDPOINTS
+    // ============================================
+
+
+    #endregion
+
+
+
+
+
 
 }
