@@ -212,6 +212,8 @@
 
 
 
+
+
 using HRsystem.Api.Database;
 using HRsystem.Api.Features.Reports.DTO;
 using HRsystem.Api.Services.CurrentUser;
@@ -270,12 +272,7 @@ namespace HRsystem.Api.Features.Reports
                 var rows = new List<EmployeeActivityRowDto>();
 
                 // ===================== جلب كل المديرين مرة واحدة =====================
-                var allManagerIds = await _db.TbEmployees
-                    .Select(e => e.EmployeeId)
-                    .ToListAsync(cancellationToken);
-
                 var managers = await _db.TbEmployees
-                    .Where(e => allManagerIds.Contains(e.EmployeeId))
                     .Select(e => new { e.EmployeeId, e.EnglishFullName })
                     .ToListAsync(cancellationToken);
 
@@ -286,7 +283,7 @@ namespace HRsystem.Api.Features.Reports
                 {
                     var pastToDate = toDate < today ? toDate : today.AddDays(-1);
 
-                    var pastData = await (
+                    var pastData = (
                         from r in _db.TbEmployeeMonthlyReports.AsNoTracking()
                         join jt in _db.TbJobTitles.AsNoTracking() on r.JobTitleId equals jt.JobTitleId into jtG
                         from jt in jtG.DefaultIfEmpty()
@@ -301,43 +298,42 @@ namespace HRsystem.Api.Features.Reports
                         where r.ManagerId == managerId
                               && r.Date >= fromDate
                               && r.Date <= pastToDate
-                        select new EmployeeActivityRowDto
-                        {
-                            DayId = r.DayId,
-                            Date = r.Date,
-                            EmployeeId = r.EmployeeId,
-                            EnglishFullName = r.EnglishFullName,
-                            ArabicFullName = r.ArabicFullName,
-                            ContractTypeId = r.ContractTypeId,
-                            EmployeeCodeFinance = r.EmployeeCodeFinance,
-                            EmployeeCodeHr = r.EmployeeCodeHr,
-                            JobTitleId = r.JobTitleId,
-                            JobTitleName = jt != null ? jt.TitleName.en : null,
-                            JobLevelId = r.JobLevelId,
-                            JobLevelCode = jl != null ?jl.JobLevelCode : null,
-                            ManagerId = r.ManagerId,
-                            //ManagerName = r.ManagerId.HasValue
-                            //    ? managers.FirstOrDefault(m => m.EmployeeId == r.ManagerId.Value)?.EnglishFullName
-                            //    : null,
-                            ManagerName = managers.FirstOrDefault(m => m.EmployeeId == r.ManagerId) != null
-                            ? managers.First(m => m.EmployeeId == r.ManagerId).EnglishFullName
-                            : null,
-                            CompanyId = r.CompanyId,
-                            CompanyName = c != null?c.CompanyName : null,
-                            DepartmentId = r.DepartmentId,
-                            DepartmentCode = d != null ? d.DepartmentCode : null,
-                            DepartmentName = d != null ? d.DepartmentName.en: null,
-                            ShiftId = r.ShiftId,
-                            ShiftName = s != null?s.ShiftName.en : null,
-                            ShiftStartTime = s != null ? s.StartTime.ToString(@"hh\:mm") : null,
-                            ShiftEndTime = s != null ?s.EndTime.ToString(@"hh\:mm") : null,
-                            ActivityId = r.ActivityId,
-                            ActivityTypeId = r.ActivityTypeId,
-                            EmployeeTodayStatuesId = r.EmployeeTodayStatuesId,
-                            TodayStatues = r.TodayStatues,
-                            AttStatues = r.AttStatues.HasValue ? (int?)r.AttStatues.Value : null,
-                            Details = r.Details
-                        }).ToListAsync(cancellationToken);
+                        select new { r, jt, jl, d, c, s }
+                    )
+                    .AsEnumerable() // ينقل البيانات للذاكرة لتجنب مشاكل EF Core مع FirstOrDefault
+                    .Select(x => new EmployeeActivityRowDto
+                    {
+                        DayId = x.r.DayId,
+                        Date = x.r.Date,
+                        EmployeeId = x.r.EmployeeId,
+                        EnglishFullName = x.r.EnglishFullName,
+                        ArabicFullName = x.r.ArabicFullName,
+                        ContractTypeId = x.r.ContractTypeId,
+                        EmployeeCodeFinance = x.r.EmployeeCodeFinance,
+                        EmployeeCodeHr = x.r.EmployeeCodeHr,
+                        JobTitleId = x.r.JobTitleId,
+                        JobTitleName = x.jt != null ? x.jt.TitleName.en : null,
+                        JobLevelId = x.r.JobLevelId,
+                        JobLevelCode = x.jl != null ? x.jl.JobLevelCode : null,
+                        ManagerId = x.r.ManagerId,
+                        ManagerName = managers.FirstOrDefault(m => m.EmployeeId == x.r.ManagerId)?.EnglishFullName,
+                        CompanyId = x.r.CompanyId,
+                        CompanyName = x.c?.CompanyName,
+                        DepartmentId = x.r.DepartmentId,
+                        DepartmentCode = x.d?.DepartmentCode,
+                        DepartmentName = x.d?.DepartmentName.en,
+                        ShiftId = x.r.ShiftId,
+                        ShiftName = x.s?.ShiftName.en,
+                        ShiftStartTime = x.s?.StartTime.ToString(),
+                        ShiftEndTime = x.s?.EndTime.ToString(),
+                        ActivityId = x.r.ActivityId,
+                        ActivityTypeId = x.r.ActivityTypeId,
+                        EmployeeTodayStatuesId = x.r.EmployeeTodayStatuesId,
+                        TodayStatues = x.r.TodayStatues,
+                        AttStatues = x.r.AttStatues.HasValue ? (int?)x.r.AttStatues.Value : null,
+                        Details = x.r.Details
+                    })
+                    .ToList();
 
                     rows.AddRange(pastData);
                 }
@@ -352,7 +348,6 @@ namespace HRsystem.Api.Features.Reports
                         .Include(e => e.JobLevel)
                         .Include(e => e.Department)
                         .Include(e => e.Company)
-                      //  .Include(e => e.Shift)
                         .AsNoTracking()
                         .Where(e => e.ManagerId == managerId)
                         .ToListAsync(cancellationToken);
@@ -369,9 +364,7 @@ namespace HRsystem.Api.Features.Reports
                             .Where(a => a.EmployeeId == emp.EmployeeId)
                             .ToList();
 
-                        var managerName = managers.FirstOrDefault(m => m.EmployeeId == emp.ManagerId) != null
-                             ? managers.First(m => m.EmployeeId == emp.ManagerId).EnglishFullName
-                             : null;
+                        var managerName = managers.FirstOrDefault(m => m.EmployeeId == emp.ManagerId)?.EnglishFullName;
 
                         // No activities → Absent
                         if (!empActs.Any())
@@ -427,7 +420,7 @@ namespace HRsystem.Api.Features.Reports
                                 ShiftId = emp.ShiftId,
                                 ShiftName = null,
                                 ShiftStartTime = null,
-                                ShiftEndTime =null,
+                                ShiftEndTime = null,
                                 ActivityId = act.ActivityId,
                                 ActivityTypeId = act.ActivityTypeId,
                                 EmployeeTodayStatuesId = 1,
