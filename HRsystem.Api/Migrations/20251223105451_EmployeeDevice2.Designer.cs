@@ -1166,7 +1166,7 @@ namespace HRsystem.Api.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("varchar(60)");
 
-                    b.Property<string>("GoveCode")
+                    b.Property<string>("GovCode")
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 

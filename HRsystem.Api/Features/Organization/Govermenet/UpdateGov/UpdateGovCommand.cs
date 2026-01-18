@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.Organization.Govermenet.UpdateGov
 {
-    public record UpdateGovCommand(int GovId, string? GoveCode, string? GovName, string? GovArea) : IRequest<TbGov?>;
+    public record UpdateGovCommand(int GovId, string? GovCode, string? GovName, string? GovArea) : IRequest<TbGov?>;
 
     public class Handler : IRequestHandler<UpdateGovCommand, TbGov?>
     {
@@ -21,7 +21,7 @@ namespace HRsystem.Api.Features.Organization.Govermenet.UpdateGov
                 throw new KeyNotFoundException($"Gov with ID {request.GovId} not found.");
             }
 
-            entity.GoveCode = request.GoveCode;
+            entity.GovCode = request.GovCode;
             entity.GovName = request.GovName;
             entity.GovArea = request.GovArea;
 
@@ -40,7 +40,7 @@ namespace HRsystem.Api.Features.Organization.Govermenet.UpdateGov
         {
             RuleFor(x => x.GovId).GreaterThan(0);
             RuleFor(x => x.GovName).NotEmpty().MaximumLength(60);
-            RuleFor(x => x.GoveCode).MaximumLength(25);
+            RuleFor(x => x.GovCode).MaximumLength(25);
             RuleFor(x => x.GovArea).MaximumLength(100);
         }
     }

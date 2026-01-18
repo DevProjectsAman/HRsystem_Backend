@@ -225,7 +225,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
 
             LoginResponse res = new LoginResponse(true,
                 ResponseMessages.SucessLogin,
-                tokenString, refreshToken, user.UserFullName,jti, DateTime.UtcNow.AddDays(7));
+                tokenString, refreshToken, user.UserFullName, DateTime.UtcNow.AddDays(7));
 
             return res;
                  
@@ -243,7 +243,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
     string? Token = null,
     string? RefreshToken = null,
     string? UserName = null,
-    string? Jti=null,
+   // string? Jti=null,
     DateTime? ExpiresAt = null
 );
 

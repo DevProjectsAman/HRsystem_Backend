@@ -12,7 +12,7 @@ public partial class TbGov
     public int GovId { get; set; }
 
     [MaxLength(25)]
-    public string? GoveCode { get; set; }
+    public string? GovCode { get; set; }
     [MaxLength(60)]
     public string? GovName { get; set; }
     [MaxLength(100)]

@@ -239,7 +239,7 @@ namespace HRsystem.Api.Migrations
                 .OldAnnotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.AlterColumn<string>(
-                name: "GoveCode",
+                name: "GovCode",
                 table: "Tb_Gov",
                 type: "varchar(25)",
                 maxLength: 25,
@@ -979,7 +979,7 @@ namespace HRsystem.Api.Migrations
                 .OldAnnotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.AlterColumn<string>(
-                name: "GoveCode",
+                name: "GovCode",
                 table: "Tb_Gov",
                 type: "longtext",
                 nullable: true,

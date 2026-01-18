@@ -262,7 +262,7 @@ namespace HRsystem.Api.Migrations
                     b.Property<int?>("GovId")
                         .HasColumnType("int");
 
-                    b.Property<string>("GoveCode")
+                    b.Property<string>("GovCode")
                         .HasMaxLength(15)
                         .HasColumnType("varchar(15)");
 
@@ -1227,7 +1227,7 @@ namespace HRsystem.Api.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("varchar(60)");
 
-                    b.Property<string>("GoveCode")
+                    b.Property<string>("GovCode")
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 

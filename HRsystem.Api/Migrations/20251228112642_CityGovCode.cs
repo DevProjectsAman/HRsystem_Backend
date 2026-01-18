@@ -12,7 +12,7 @@ namespace HRsystem.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "GoveCode",
+                name: "GovCode",
                 table: "Tb_City",
                 type: "varchar(15)",
                 maxLength: 15,
@@ -31,7 +31,7 @@ namespace HRsystem.Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "GoveCode",
+                name: "GovCode",
                 table: "Tb_City");
 
             migrationBuilder.UpdateData(
