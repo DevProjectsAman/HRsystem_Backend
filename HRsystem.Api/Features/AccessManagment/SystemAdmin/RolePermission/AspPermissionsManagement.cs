@@ -2,6 +2,7 @@
 using FluentValidation.Results; // Required for ValidationResult
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
+using HRsystem.Api.Extensions;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
@@ -92,8 +93,8 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
             })
                    .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                    ctx.User.HasClaim("permission", "system.permissions")))
+                    
+                    ctx.User.HasPermission( "system.permissions")))
             .WithName("ListPermissions");
 
             // --- Get Permission by Id (GET) ---
@@ -106,8 +107,8 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
             })
                    .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                    ctx.User.HasClaim("permission", "system.permissions")))
+
+                    ctx.User.HasPermission("system.permissions")))
             .WithName("GetOnePermission");
 
             // --- Create Permission (POST) ---
@@ -122,10 +123,10 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
                 var result = await mediator.Send(cmd);
                 return HandleCommandResult(result, successStatusCode: 201); // 201 Created
             })
-                   .RequireAuthorization(policy =>
+                 .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                    ctx.User.HasClaim("permission", "system.permissions")))
+
+                    ctx.User.HasPermission("system.permissions")))
             .WithName("CreatePermission");
 
             // --- Update Permission (PUT) ---
@@ -140,10 +141,10 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
                 var result = await mediator.Send(cmd);
                 return HandleCommandResult(result); // 200 OK
             })
-                   .RequireAuthorization(policy =>
+                    .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                    ctx.User.HasClaim("permission", "system.permissions")))
+
+                    ctx.User.HasPermission("system.permissions")))
             .WithName("UpdatePermission");
 
             // --- Delete Permission (DELETE) ---
@@ -152,10 +153,10 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
                 var result = await mediator.Send(new DeletePermissionCommand(id));
                 return HandleCommandResult(result); // Handles 404 (not found) and 200 (success)
             })
-                   .RequireAuthorization(policy =>
+                .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                    ctx.User.HasClaim("permission", "system.permissions")))
+
+                    ctx.User.HasPermission("system.permissions")))
             .WithName("DeletePermission");
         }
     }

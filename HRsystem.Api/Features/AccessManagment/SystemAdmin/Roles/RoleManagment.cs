@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using HRsystem.Api.Database.Entities;
+using HRsystem.Api.Extensions;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
- 
+
 
 namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
 {
@@ -65,7 +66,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                     Error = e.ErrorMessage
                 }).ToList()
             });
-        
+
         }
 
         public static void MapAspRoleEndpoints(this IEndpointRouteBuilder app)
@@ -80,10 +81,9 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                     ? Results.Ok(result)
                     : Results.BadRequest(result);
             })
-                //   .RequireAuthorization(policy =>
-                //policy.RequireAssertion(ctx =>
-                //    ctx.User.IsInRole("SystemAdmin") &&
-                //    ctx.User.HasClaim("permission", "system.roles")))
+                   .RequireAuthorization(policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.HasPermission("system.roles")))
             .WithName("ListRoles");
 
             // --- Get role by id (GET) ---
@@ -96,8 +96,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
             })
                    .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                    ctx.User.HasClaim("permission", "system.roles")))
+                    ctx.User.HasPermission("system.roles")))
             .WithName("GetRole");
 
             // --- Create role (POST) ---
@@ -114,8 +113,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
             })
                    .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                    ctx.User.HasClaim("permission", "system.roles")))
+                                      ctx.User.HasPermission("system.roles")))
             .WithName("CreateRole");
 
             // --- Update role (PUT) ---
@@ -130,10 +128,9 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 var result = await mediator.Send(cmd);
                 return HandleCommandResult(result);
             })
-                   .RequireAuthorization(policy =>
+            .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                    ctx.User.HasClaim("permission", "system.roles")))
+                                      ctx.User.HasPermission("system.roles")))
             .WithName("UpdateRole");
 
             // --- Delete role (DELETE) ---
@@ -142,10 +139,9 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 var result = await mediator.Send(new DeleteRoleCommand(roleId));
                 return HandleCommandResult(result); // Handles 404 (not found) and 409 (users assigned)
             })
-                   .RequireAuthorization(policy =>
+            .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                    ctx.User.HasClaim("permission", "system.roles")))
+                                      ctx.User.HasPermission("system.roles")))
             .WithName("DeleteRole");
         }
     }
@@ -158,20 +154,20 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
     {
         public int RoleId { get; set; }
         public string RoleName { get; set; } = string.Empty;
-      //  public string NormalizedName { get; set; } = string.Empty;
+        //  public string NormalizedName { get; set; } = string.Empty;
 
         public int RoleLevel { get; set; }
 
         public string Category { get; set; } = "General";
         // Examples: HR, Finance, Attendance, System
- 
+
         public string DisplayName { get; set; } = "";
         // Example: "Edit Attendance Records"
-  
+
         public string? Description { get; set; } = "";
     }
 
-   
+
 
 
     // ===================================================================
@@ -183,9 +179,9 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
     public record GetRoleQuery(int RoleId) : IRequest<ResponseResultDTO<RoleDto>>;
 
     // Commands returning only ResponseResultDTO for success/failure info
-    public record CreateRoleCommand( string RoleName ,  int RoleLevel,   string Category , string DisplayName ,string? Description ) : IRequest<ResponseResultDTO>;
+    public record CreateRoleCommand(string RoleName, int RoleLevel, string Category, string DisplayName, string? Description) : IRequest<ResponseResultDTO>;
 
-    public record UpdateRoleCommand(int RoleId , int RoleLevel,  string RoleName, string Category, string DisplayName, string? Description) : IRequest<ResponseResultDTO>;
+    public record UpdateRoleCommand(int RoleId, int RoleLevel, string RoleName, string Category, string DisplayName, string? Description) : IRequest<ResponseResultDTO>;
 
     public record DeleteRoleCommand(string RoleId) : IRequest<ResponseResultDTO>;
 
@@ -212,8 +208,8 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
 
             RuleFor(x => x.RoleLevel)
                 .GreaterThan(0).WithMessage("Role Level must be greater than 0");
-             
-            
+
+
 
         }
     }
@@ -222,7 +218,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
     {
         public UpdateRoleValidator()
         {
-        
+
             RuleFor(x => x.RoleId)
                 .GreaterThan(0).WithMessage("Role ID must be greater than 0");
             RuleFor(x => x.RoleLevel)
@@ -282,9 +278,9 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                     RoleId = r.Id,
                     RoleName = r.Name ?? string.Empty,
                     RoleLevel = r.RoleLevel,
-                     Description = r.Description?? string.Empty,
-                      Category = r.Category?? string.Empty,
-                       DisplayName = r.DisplayName ?? string.Empty,
+                    Description = r.Description ?? string.Empty,
+                    Category = r.Category ?? string.Empty,
+                    DisplayName = r.DisplayName ?? string.Empty,
 
                 })
                 .ToListAsync(ct);
@@ -323,9 +319,9 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 RoleId = role.Id,
                 RoleName = role.Name ?? string.Empty,
                 RoleLevel = role.RoleLevel,
-                 Category = role.Category ?? string.Empty,
-                  DisplayName = role.DisplayName ?? string.Empty,
-                   Description = role.Description ?? string.Empty,
+                Category = role.Category ?? string.Empty,
+                DisplayName = role.DisplayName ?? string.Empty,
+                Description = role.Description ?? string.Empty,
             };
 
             return new ResponseResultDTO<RoleDto>
@@ -368,10 +364,10 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 Category = request.Category,
                 DisplayName = request.DisplayName,
                 Description = request.Description,
-                 NormalizedName = _roleManager.NormalizeKey(roleName),
-                 RoleLevel = request.RoleLevel
+                NormalizedName = _roleManager.NormalizeKey(roleName),
+                RoleLevel = request.RoleLevel
             };
-        
+
             var result = await _roleManager.CreateAsync(role);
 
             if (!result.Succeeded)
@@ -380,8 +376,8 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 {
                     Success = false,
                     Message = "Role creation failed.",
-                    Errors = result.Errors.Select(e => new ResponseErrorDTO {Property= e.Code,Error= e.Description }).ToList()
-                    
+                    Errors = result.Errors.Select(e => new ResponseErrorDTO { Property = e.Code, Error = e.Description }).ToList()
+
                 };
             }
 
@@ -420,7 +416,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 {
                     Success = false,
                     Message = "Role update failed.",
-                   // Errors = result.Errors
+                    // Errors = result.Errors
                 };
 
             return new ResponseResultDTO { Success = true, Message = $"Role '{role.Name}' updated successfully." };
@@ -472,7 +468,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 {
                     Success = false,
                     Message = "Role deletion failed due to an Identity server error.",
-                    Errors = result.Errors.Select(e => new ResponseErrorDTO{ Property = e.Code, Error = e.Description }).ToList()
+                    Errors = result.Errors.Select(e => new ResponseErrorDTO { Property = e.Code, Error = e.Description }).ToList()
                 };
             }
 
