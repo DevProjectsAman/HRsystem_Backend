@@ -153,6 +153,43 @@ namespace HRsystem.Api.Features.Reports
         "with special handling for today's date."
     );
 
+
+
+
+            group.MapGet("/employee-activity-report-by-department", [Authorize]
+            async (
+        ISender mediator,
+        [FromQuery] int DepartmentId,
+        [FromQuery] DateTime? fromDate,
+        [FromQuery] DateTime? toDate,
+        CancellationToken cancellationToken
+    ) =>
+            {
+                var query = new EmployeeActivityReportByDepartment
+                    .GetEmployeeActivityReportByDepartmentQuery(
+                        DepartmentId: DepartmentId,
+                        FromDate: fromDate,
+                        ToDate: toDate
+                        
+                    );
+
+                var result = await mediator.Send(query, cancellationToken);
+
+                return Results.Ok(new
+                {
+                    Success = result.Success,
+                    Message = result.Message,
+                    Data = result.Data
+                });
+            })
+    .WithName("GetEmployeeActivityReportByDepartment")
+    .WithSummary("Get employee activity report by department")
+    .WithDescription(
+        "Returns employee activities (rows) and activity summary " +
+        "for employees in this department, " +
+        "with special handling for today's date."
+    );
+
         }
 
 
