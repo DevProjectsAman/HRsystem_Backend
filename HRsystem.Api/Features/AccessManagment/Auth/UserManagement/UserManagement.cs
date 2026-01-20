@@ -35,7 +35,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
 
                 var result = await mediator.Send(command);
                 return result.Success ? Results.Ok(result) : Results.BadRequest(result);
-            }).RequireRateLimiting("LoginPolicy"); 
+            }).RequireRateLimiting("LoginPolicy");
 
             group.MapPost("/register", [Authorize] async (RegisterUserCommand command, ISender mediator, IValidator<RegisterUserCommand> validator) =>
             {
@@ -175,22 +175,31 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
 
 
             var clientType = string.IsNullOrEmpty(_currentUser.X_ClientType) ? "web" : _currentUser.X_ClientType;
-                        var DeviceId = string.IsNullOrEmpty(_currentUser.DeviceId) ? "web" : _currentUser.DeviceId;
+            var DeviceId = string.IsNullOrEmpty(_currentUser.DeviceId) ? "web" : _currentUser.DeviceId;
 
 
 
 
-            var oldSession = await _dbContextHRsystem.TbUserSession
-                            .Where(s =>
-                                s.UserId == user.Id &&
-                                s.ClientType == clientType &&
-                                s.IsActive)
-                            .FirstOrDefaultAsync();
+            //var oldSession = await _dbContextHRsystem.TbUserSession
+            //                .Where(s =>
+            //                    s.UserId == user.Id &&
+            //                    s.ClientType == clientType &&
+            //                    s.IsActive)
+            //                .FirstOrDefaultAsync();
 
-            if (oldSession != null)
+            //if (oldSession != null)
+            //{
+            //    oldSession.IsActive = false;
+            //    oldSession.LastSeenAt = DateTime.UtcNow;
+            //}
+
+            var oldSessions = await _dbContextHRsystem.TbUserSession
+    .Where(s => s.UserId == user.Id && s.ClientType == clientType)
+    .ToListAsync(cancellationToken);
+
+            if (oldSessions.Any())
             {
-                oldSession.IsActive = false;
-                oldSession.LastSeenAt = DateTime.UtcNow;
+                _dbContextHRsystem.TbUserSession.RemoveRange(oldSessions);
             }
 
             // 🔥 3. CLEAR THE CACHE using the helper
@@ -198,9 +207,9 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
             _securityCacheService.ClearUserCache(user.Id, clientType);
 
             var jti = Guid.NewGuid().ToString();
-            var jwtToken = await _jwtService.GenerateTokenAsync(user,jti );
+            var jwtToken = await _jwtService.GenerateTokenAsync(user, jti);
             var tokenString = new JwtSecurityTokenHandler().WriteToken(jwtToken);
-           // var jti = jwtToken.Jti;
+            // var jti = jwtToken.Jti;
 
             string refreshToken = GenerateRefreshTokenHelperr.GenerateRefreshToken();
 
@@ -228,7 +237,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                 tokenString, refreshToken, user.UserFullName, DateTime.UtcNow.AddDays(7));
 
             return res;
-                 
+
         }
 
 
@@ -243,7 +252,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
     string? Token = null,
     string? RefreshToken = null,
     string? UserName = null,
-   // string? Jti=null,
+    // string? Jti=null,
     DateTime? ExpiresAt = null
 );
 

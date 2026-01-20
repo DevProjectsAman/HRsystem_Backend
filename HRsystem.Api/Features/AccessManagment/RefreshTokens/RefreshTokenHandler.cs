@@ -33,96 +33,135 @@ namespace HRsystem.Api.Features.AccessManagment.RefreshTokens
             _jwtService = jwtService;
         }
 
-        public async Task<AuthResponseDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+        public async Task<AuthResponseDto> Handle(
+      RefreshTokenCommand request,
+      CancellationToken cancellationToken)
         {
+            var now = DateTime.UtcNow;
             var refreshHash = GenerateRefreshTokenHelperr.HashRefreshToken(request.RefreshToken);
 
-            // 1. Find the session by the hash provided
+            // 1️⃣ Find session by refresh token
             var session = await _db.TbUserSession
                 .Include(x => x.User)
-                .Where(x => x.RefreshTokenHash == refreshHash && x.ClientType == request.ClientType)
-                .FirstOrDefaultAsync(cancellationToken);
+                .FirstOrDefaultAsync(x =>
+                    x.RefreshTokenHash == refreshHash &&
+                    x.ClientType == request.ClientType,
+                    cancellationToken);
 
             if (session == null)
                 throw new UnauthorizedAccessException("Invalid refresh token");
 
-            var now = DateTime.UtcNow;
+            // 2️⃣ USER / SESSION HARD INVALIDATION
+            if (session.User == null ||
+                session.User.ForceLogout ||
+                !session.IsActive ||
+                session.RefreshTokenExpiresAt < now)
+            {
+                await DeleteAllUserSessions(
+                    session.UserId,
+                    request.ClientType,
+                    cancellationToken);
 
-            // 2. CHECK FOR REUSE / GRACE PERIOD
+                throw new UnauthorizedAccessException("Session expired or invalidated.");
+            }
+
+            // 3️⃣ TOKEN REUSE DETECTION (Grace Period)
             if (session.RevokedAt.HasValue)
             {
-                // GRACE PERIOD: Was it revoked less than 30 seconds ago?
+                // Within grace window (30s)
                 if (session.RevokedAt.Value.AddSeconds(30) > now)
                 {
-                    // The user sent an "old" token, but it's within the grace window.
-                    // Find the NEW session record that replaced this one to return its token.
                     var nextSession = await _db.TbUserSession
-                        .FirstOrDefaultAsync(x => x.RefreshTokenHash == session.ReplacedByTokenHash, cancellationToken);
+                        .FirstOrDefaultAsync(x =>
+                            x.RefreshTokenHash == session.ReplacedByTokenHash,
+                            cancellationToken);
 
                     if (nextSession != null)
                     {
-                        // We return the info for the NEW token that was already created
-                        // Note: You'll need to store the raw token or regenerate the JWT for this specific case
-                        var jwtResult = await _jwtService.GenerateTokenAsync(session.User!,session.Jti);
+                        var jwt = await _jwtService.GenerateTokenAsync(
+                            session.User,
+                            session.Jti);
+
                         return new AuthResponseDto(
-                            AccessToken: new JwtSecurityTokenHandler().WriteToken(jwtResult),
-                            RefreshToken: "USE_EXISTING_NEW_TOKEN_LOGIC", // See Note Below
-                            AccessTokenExpiresAt: jwtResult.ValidTo
+                            AccessToken: new JwtSecurityTokenHandler().WriteToken(jwt),
+                            RefreshToken: "USE_EXISTING_NEW_TOKEN",
+                            AccessTokenExpiresAt: jwt.ValidTo
                         );
                     }
                 }
 
-                // REUSE DETECTION: If we are here, it's a second use OUTSIDE the 30s window.
-                await InvalidateAllUserSessions(session.UserId, request.ClientType, cancellationToken);
-                throw new UnauthorizedAccessException("Token reuse detected. Security breach suspected.");
+                // ❌ Reuse outside grace window → SECURITY BREACH
+                await DeleteAllUserSessions(
+                    session.UserId,
+                    request.ClientType,
+                    cancellationToken);
+
+                throw new UnauthorizedAccessException(
+                    "Refresh token reuse detected. All sessions revoked.");
             }
 
-            // 3. CHECK EXPIRATION
-            if (session.RefreshTokenExpiresAt < now || !session.IsActive || session.User?.ForceLogout == true)
-            {
-                session.IsActive = false;
-                await _db.SaveChangesAsync(cancellationToken);
-                throw new UnauthorizedAccessException("Session expired or invalidated.");
-            }
+            // 4️⃣ CLEANUP OLD SESSIONS (VERY IMPORTANT)
+            // Keep:
+            // - current session
+            // - revoked sessions within grace window
+            await _db.TbUserSession
+                .Where(x =>
+                    x.UserId == session.UserId &&
+                    x.ClientType == request.ClientType &&
+                    x.Id != session.Id &&
+                    (!x.RevokedAt.HasValue ||
+                     x.RevokedAt.Value.AddSeconds(30) < now))
+                .ExecuteDeleteAsync(cancellationToken);
 
-            // 4. ROTATION (The "Correct" way with Grace Period)
+            // 5️⃣ ROTATE REFRESH TOKEN
             var newRefreshToken = GenerateRefreshTokenHelperr.GenerateRefreshToken();
-            var newHash = GenerateRefreshTokenHelperr.HashRefreshToken(newRefreshToken);
+            var newRefreshHash = GenerateRefreshTokenHelperr.HashRefreshToken(newRefreshToken);
 
-            // Mark current session as Revoked but keep it for 30 seconds
+            // Revoke current session (grace window starts)
             session.RevokedAt = now;
-            session.ReplacedByTokenHash = newHash;
-            session.IsActive = false; // It's no longer the "primary" active token
+            session.ReplacedByTokenHash = newRefreshHash;
+            session.IsActive = false;
 
-            // Create a NEW session record for the new token
+            // Create new session (SAME JTI)
             var newSession = new TbUserSession
             {
                 UserId = session.UserId,
-                RefreshTokenHash = newHash,
-                RefreshTokenExpiresAt = now.AddDays(7), // Sliding window
                 ClientType = request.ClientType,
                 DeviceId = request.DeviceId,
-                IsActive = true,
+                Jti = session.Jti, // 🔥 SAME JTI
+                RefreshTokenHash = newRefreshHash,
+                RefreshTokenExpiresAt = now.AddDays(7),
                 CreatedAt = now,
-                LastSeenAt = now
+                LastSeenAt = now,
+                IsActive = true
             };
 
             _db.TbUserSession.Add(newSession);
 
-            var jwt = await _jwtService.GenerateTokenAsync(session.User!, session.Jti);
-            // newSession.Jti = jwt.Jti;
-            // need to keep the same jti for the new session
-            newSession.Jti = session.Jti;
-
+            // 6️⃣ ISSUE NEW ACCESS TOKEN
+            var newJwt = await _jwtService.GenerateTokenAsync(
+                session.User,
+                session.Jti);
 
             await _db.SaveChangesAsync(cancellationToken);
 
             return new AuthResponseDto(
-                AccessToken: new JwtSecurityTokenHandler().WriteToken(jwt),
+                AccessToken: new JwtSecurityTokenHandler().WriteToken(newJwt),
                 RefreshToken: newRefreshToken,
-                AccessTokenExpiresAt: jwt.ValidTo
+                AccessTokenExpiresAt: newJwt.ValidTo
             );
         }
+
+
+        private async Task DeleteAllUserSessions(    long userId,    string clientType,    CancellationToken cancellationToken)
+        {
+            await _db.TbUserSession
+                .Where(x =>
+                    x.UserId == userId &&
+                    x.ClientType == clientType)
+                .ExecuteDeleteAsync(cancellationToken);
+        }
+
 
         private async Task InvalidateAllUserSessions(int userId, string clientType, CancellationToken ct)
         {
