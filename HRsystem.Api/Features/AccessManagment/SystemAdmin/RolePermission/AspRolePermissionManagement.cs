@@ -16,6 +16,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
     using Microsoft.AspNetCore.Routing;
     using Microsoft.AspNetCore.Mvc; // For [Authorize]
     using System.Threading.Tasks;
+    using HRsystem.Api.Extensions;
 
     // --- Assumed DTO Definitions (as before) ---
     // public record ResponseErrorDTO(string Property, string Error);
@@ -45,8 +46,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
             // Apply the custom authorization policy
             .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                    ctx.User.HasClaim("permission", "system.role.permissions")))
+                   ctx.User.HasPermission( "system.role.permissions")))
             .WithName("ListRolePermissions");
 
             // --- Get Role Permission ---
@@ -73,8 +73,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
             })
                    .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                     ctx.User.HasClaim("permission", "system.role.permissions")))
+                   ctx.User.HasPermission("system.role.permissions")))
             .WithName("GetRolePermission");
 
             // --- Create Role Permission ---
@@ -94,10 +93,9 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
                         Data = result
                     });
             })
-                   .RequireAuthorization(policy =>
+                 .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                     ctx.User.HasClaim("permission", "system.role.permissions")))
+                   ctx.User.HasPermission("system.role.permissions")))
             .WithName("CreateRolePermission");
 
             // --- Delete Role Permission ---
@@ -116,10 +114,9 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
                     Message = $"RolePermission deleted successfully"
                 });
             })
-                   .RequireAuthorization(policy =>
+                .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                     ctx.User.HasClaim("permission", "system.role.permissions")))
+                   ctx.User.HasPermission("system.role.permissions")))
             .WithName("DeleteRolePermission");
 
             // --- Update Role Permissions (Bulk) ---
@@ -138,10 +135,9 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
                     Data = result
                 });
             })
-                   .RequireAuthorization(policy =>
+                  .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("SystemAdmin") &&
-                     ctx.User.HasClaim("permission", "system.role.permissions")))
+                   ctx.User.HasPermission("system.role.permissions")))
             .WithName("UpdateRolePermissions");
         }
     }

@@ -6,6 +6,7 @@ using HRsystem.Api.Features.AccessManagment.Auth.UserManagement;
 using HRsystem.Api.Features.AccessManagment.RefreshTokens;
 using HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission;
 using HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles;
+using HRsystem.Api.Features.ActivityDashboard;
 using HRsystem.Api.Features.AuditLog;
 using HRsystem.Api.Features.Documents;
 using HRsystem.Api.Features.Employee;
@@ -547,7 +548,7 @@ app.MapMaritalStatusEndpoints();
 app.MapGetAllNationalitiesEndpoint();
 app.MapContractTypeEndpoints();
 
-
+app.MapActivityDashboardEndpoints();
 
 
 app.MapRemoteWorkDaysEndpoints();

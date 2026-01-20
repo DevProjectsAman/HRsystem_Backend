@@ -58,6 +58,7 @@
 	<ItemGroup>
 	  <Folder Include="Features\AccessManagment\SystemAdmin\UserRoles\" />
 	  <Folder Include="Migrations\" />
+	  <Folder Include="uploaded_images\2026-01-19\" />
 	</ItemGroup>
 
 </Project>

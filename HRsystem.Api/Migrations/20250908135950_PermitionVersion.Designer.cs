@@ -794,7 +794,7 @@ namespace HRsystem.Api.Migrations
                     b.Property<string>("GovName")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("GoveCode")
+                    b.Property<string>("GovCode")
                         .HasColumnType("longtext");
 
                     b.HasKey("GovId");

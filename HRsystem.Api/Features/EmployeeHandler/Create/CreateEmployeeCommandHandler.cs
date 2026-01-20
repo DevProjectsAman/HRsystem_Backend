@@ -101,6 +101,24 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
                 var employeeId = employee.EmployeeId;
 
                 #endregion
+
+
+                #region Employee Manager
+
+                var managerId = request.EmployeeOrganization?.ManagerId;
+                if (managerId is > 0)
+                {
+                    var empManager = await _db.TbEmployees
+                        .FirstOrDefaultAsync(e => e.EmployeeId == managerId, cancellationToken);
+                    if (empManager != null)
+                    {
+                        empManager.IsTopmanager = 1;
+                        await _db.SaveChangesAsync(cancellationToken);
+                    }
+                }
+                #endregion
+
+
                 #region Employee Code Tracking Update
                 var empCodeTrack = await _db.TbEmployeeCodeTrackings
                     .FirstOrDefaultAsync(e => e.UniqueEmployeeCode ==  request.EmployeeBasicData.UniqueEmployeeCode && e.IsUsed == false, cancellationToken);

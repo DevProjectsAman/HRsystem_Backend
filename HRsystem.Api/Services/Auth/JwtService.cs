@@ -58,22 +58,56 @@ namespace HRsystem.Api.Services.Auth
                     new Claim("cid", SimpleCrypto.Encrypt(user.CompanyId.ToString()))
                 };
 
-            // Add roles + permissions
+            //// Add roles + permissions
+            //foreach (var role in roles)
+            //{
+            //    claims.Add(new Claim(ClaimTypes.Role, role)); // short role claim
+
+            //    var permissions = await GetRolePermissionsAsync(role);
+            //    if (permissions != null)
+            //    {
+            //        //claims.Add(new Claim("permission", JsonSerializer.Serialize(permissions)));
+
+            //        foreach (var permission in permissions)
+            //        {
+            //            claims.Add(new Claim("permission", permission)); // short permission claim
+            //        }
+            //    }
+            //}
+
+            // Collect all permissions   
+            // Add roles
             foreach (var role in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role)); // short role claim
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
+            // Collect permissions
+            var allPermissions = new List<string>();
+            foreach (var role in roles)
+            {
                 var permissions = await GetRolePermissionsAsync(role);
                 if (permissions != null)
                 {
-                    //claims.Add(new Claim("permission", JsonSerializer.Serialize(permissions)));
-
-                    foreach (var permission in permissions)
-                    {
-                        claims.Add(new Claim("permission", permission)); // short permission claim
-                    }
+                    allPermissions.AddRange(permissions);
                 }
             }
+
+            // For SystemAdmin, just add the superuser permission
+            if (roles.Contains("SystemAdmin"))
+            {
+                claims.Add(new Claim("permissions", "admin.all")); // or "superuser" or "admin.all"
+            }
+            else
+            {
+                // For regular users, add all their permissions
+                if (allPermissions.Any())
+                {
+                    var uniquePermissions = string.Join(",", allPermissions.Distinct());
+                    claims.Add(new Claim("permissions", uniquePermissions));
+                }
+            }
+
 
             var token = new JwtSecurityToken(
                 issuer: issuer,

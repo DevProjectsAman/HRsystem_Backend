@@ -40,8 +40,8 @@ namespace HRsystem.Api.Features.Employee
             var query = _db.TbEmployees
                 .Include(e => e.JobLevel)
                 .Include(e => e.Department)
-                .Where(e => e.CompanyId == request.CompanyId)
-                .Where(e => e.ManagerId > 0 || e.IsTopmanager == 1);   // managers only
+                .Where(e => e.CompanyId == request.CompanyId);
+               // .Where(e => e.ManagerId > 0 || e.IsTopmanager == 1);   // managers only
 
 
             // Filter by department

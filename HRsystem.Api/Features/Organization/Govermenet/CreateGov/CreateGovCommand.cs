@@ -5,7 +5,7 @@ using MediatR;
 
 namespace HRsystem.Api.Features.Organization.Govermenet.CreateGov
 {
-    public record CreateGovCommand(string? GoveCode, string? GovName, string? GovArea) : IRequest<TbGov>;
+    public record CreateGovCommand(string? GovCode, string? GovName, string? GovArea) : IRequest<TbGov>;
 
     public class Handler : IRequestHandler<CreateGovCommand, TbGov>
     {
@@ -16,7 +16,7 @@ namespace HRsystem.Api.Features.Organization.Govermenet.CreateGov
         {
             var entity = new TbGov
             {
-                GoveCode = request.GoveCode,
+                GovCode = request.GovCode,
                 GovName = request.GovName,
                 GovArea = request.GovArea
             };
@@ -36,7 +36,7 @@ namespace HRsystem.Api.Features.Organization.Govermenet.CreateGov
         public CreateGovValidator()
         {
             RuleFor(x => x.GovName).NotEmpty().MaximumLength(60);
-            RuleFor(x => x.GoveCode).MaximumLength(25);
+            RuleFor(x => x.GovCode).MaximumLength(25);
             RuleFor(x => x.GovArea).MaximumLength(100);
         }
     }
