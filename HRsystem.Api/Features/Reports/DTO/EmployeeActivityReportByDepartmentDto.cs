@@ -48,7 +48,7 @@
         // ✅ new names
         public string JobTitleName { get; set; }
         public string JobLevelCode { get; set; }
-        public string ManagerName { get; set; }
+        public string? ManagerName { get; set; }
         public string CompanyName { get; set; }
         public string DepartmentCode { get; set; }
         public string DepartmentName { get; set; }
