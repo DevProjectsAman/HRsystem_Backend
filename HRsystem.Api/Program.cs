@@ -22,6 +22,7 @@ using HRsystem.Api.Features.EmployeeRequest.EmployeeVacation;
 using HRsystem.Api.Features.EmployeeRequest.employeevacations;
 using HRsystem.Api.Features.EmployeeRequest.Execuse;
 using HRsystem.Api.Features.EmployeeRequest.Mission;
+using HRsystem.Api.Features.EmployeeUpdates;
 using HRsystem.Api.Features.Holiday;
 using HRsystem.Api.Features.HolidayType;
 using HRsystem.Api.Features.Lookups.ActivityStatus;
@@ -138,7 +139,7 @@ builder.Services.AddCors(options =>
 });
 
 
- // this for  cashing the security  of the user 
+// this for  cashing the security  of the user 
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<ISecurityCacheService, SecurityCacheService>();
 builder.Services.AddScoped<JwtSessionValidator>();
@@ -226,7 +227,7 @@ builder.Services.AddAuthentication(options =>
 
     };
 
-    
+
     options.Events = new JwtBearerEvents
     {
         //OnTokenValidated = async context =>
@@ -244,7 +245,7 @@ builder.Services.AddAuthentication(options =>
                 .GetRequiredService<JwtSessionValidator>();
 
             // Manually pull the header here
-           // var clientType = context.Request.Headers["X-ClientType"].FirstOrDefault() ?? string.Empty;
+            // var clientType = context.Request.Headers["X-ClientType"].FirstOrDefault() ?? string.Empty;
 
             // Pass the Principal and ClientType explicitly
             await validator.ValidateAsync(context);
@@ -263,7 +264,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
- 
+
 
 
 
@@ -501,7 +502,7 @@ app.UseRateLimiter();
 
 app.MapUserManagementEndpoints();
 
-//app.MapRoleAssignmentEndpoints();
+
 
 app.MapJobLevelEndpoints();
 app.MapJobTitleEndpoints();
@@ -526,9 +527,8 @@ app.MapAuditLogEndpoints();
 app.MapProjectEndpoints();
 app.MapMissionEndPoint();
 app.MapExcuseEndPoint();
-app.MapEmployeePunchEndpoints(); // from EmployeePunchEndpoints.cs
+app.MapEmployeePunchEndpoints();
 
-//app.MapEmployeeVacationsEndPoints();
 
 app.MapEmployeeEndpoints();
 
@@ -565,19 +565,21 @@ app.MapHolidayEndpoints();
 
 app.MapEmployeeAppEndPoints();
 
- app.MapEmployeeHandlerEndpoints();
+app.MapEmployeeHandlerEndpoints();
 
 
 app.MapDocumentEndpoints();
 
 app.MapRefreshTokenEndpoint();
 
+app.MapEmployeeUpdatesEndpoints();
+
 
 app.MapEmployeeReportEndpoints();
 app.MapReportEndPoints();
 
 // Rate Limitter applied to all controllers
-app.MapControllers()   ;
+app.MapControllers();
 
 
 app.Run();

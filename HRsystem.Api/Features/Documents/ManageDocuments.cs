@@ -5,6 +5,7 @@ using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HRsystem.Api.Features.Documents;
 
@@ -74,7 +75,7 @@ public sealed class UploadEmployeeDocumentHandler
         var (staticPath, virtualPath) = GetFilePaths(employeeCode, fileName);
 
         await SaveFileToDiskAsync(file, staticPath, ct);
-        await SaveEmployeeCodeTrackingAsync(employeeCode, staticPath, ct);
+        await SaveEmployeeCodeTrackingAsync(employeeCode, virtualPath, ct);
 
         var docInfo = GetDocumentInfo(Path.GetExtension(file.FileName));
 
@@ -142,12 +143,18 @@ public sealed class UploadEmployeeDocumentHandler
 
     private string GetVirtualFolder(string employeeCode)
     {
+        //var settings = _configuration.GetSection("ImageSettings");
+        //var virtualUrl = settings["VirtualURL"]
+        //    ?? throw new InvalidOperationException("VirtualURL not configured");
+
+        //var folderDate = DateTime.UtcNow.ToString("yyyy-MM-dd");
+        //return Path.Combine(virtualUrl, folderDate, employeeCode).Replace("\\", "/");
         var settings = _configuration.GetSection("ImageSettings");
         var virtualUrl = settings["VirtualURL"]
             ?? throw new InvalidOperationException("VirtualURL not configured");
 
         var folderDate = DateTime.UtcNow.ToString("yyyy-MM-dd");
-        return Path.Combine(virtualUrl, folderDate, employeeCode).Replace("\\", "/");
+        return Path.Combine(folderDate, employeeCode).Replace("\\", "/");
     }
 
     private static string GenerateFileName(IFormFile file)
@@ -205,7 +212,7 @@ public static class DocumentEndpoints
         var group = app.MapGroup("/api/documents").WithTags("Documents");
 
         // --- Upload Document (POST) ---
-        group.MapPost("/uploadDoc", [Authorize] async (IFormFile file, IMediator mediator) =>
+        group.MapPost("/uploadDoc", [Authorize] async (  IFormFile file, IMediator mediator) =>
         {
             if (file is null)
             {
@@ -241,8 +248,8 @@ public static class DocumentEndpoints
                 });
             }
 
-         //   var physicalPath = ResolvePhysicalPath(virtualPath, config);
-            var physicalPath = virtualPath;
+            var physicalPath = ResolvePhysicalPath(virtualPath, config);
+         //   var physicalPath = virtualPath;
 
 
             if (physicalPath is null || !File.Exists(physicalPath))

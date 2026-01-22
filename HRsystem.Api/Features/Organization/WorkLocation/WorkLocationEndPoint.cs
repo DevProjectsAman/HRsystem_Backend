@@ -26,9 +26,9 @@ namespace HRsystem.Api.Features.Organization.WorkLocation
             });
 
             // Get all
-            group.MapGet("/ListSpecific", [Authorize] async (ISender mediator,int companyId, int cityId) =>
+            group.MapGet("/ListSpecific", [Authorize] async (ISender mediator,int companyId,int govId, int cityId) =>
             {
-                var result = await mediator.Send(new GetSpecificWorkLocationsQuery( companyId , cityId));
+                var result = await mediator.Send(new GetSpecificWorkLocationsQuery( companyId , govId, cityId));
                 return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
             // Get by Id

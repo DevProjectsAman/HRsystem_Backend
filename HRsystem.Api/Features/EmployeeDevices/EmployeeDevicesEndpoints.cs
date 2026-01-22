@@ -48,7 +48,7 @@ namespace HRsystem.Api.Features.EmployeeDevices
                     var validation = await validator.ValidateAsync(cmd);
                     if (!validation.IsValid)
                     {
-                        return Results.BadRequest(new ResponseResultDTO
+                        return Results.Ok(new ResponseResultDTO
                         {
                             Success = false,
                             Message = "Validation failed",
@@ -65,7 +65,7 @@ namespace HRsystem.Api.Features.EmployeeDevices
 
                     if (!result)
                     {
-                        return Results.Conflict(new ResponseResultDTO
+                        return Results.Ok(new ResponseResultDTO
                         {
                             Success = false,
                             Message = "This device is already registered"
