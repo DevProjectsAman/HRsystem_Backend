@@ -1,4 +1,6 @@
-﻿using HRsystem.Api.Shared.DTO;
+﻿using HRsystem.Api.Features.EmployeeUpdates.GetEmployeeWorkLocationsTree;
+using HRsystem.Api.Features.EmployeeUpdates.UpdateEmployeeWorkLocation;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +11,6 @@ namespace HRsystem.Api.Features.EmployeeUpdates
 
     {
        
- 
             public static void MapEmployeeUpdatesEndpoints(this IEndpointRouteBuilder app)
             {
                 var group = app.MapGroup("/api/EmployeeUpdates")
@@ -43,10 +44,41 @@ namespace HRsystem.Api.Features.EmployeeUpdates
                 .WithName("GetEmployeeWorkLocations");
 
 
-                // =====================================================
-                // ✅ Update Employee Work Locations (Delete + Insert)
-                // =====================================================
-                group.MapPost("/UpdateEmployeeWorkLocations", [Authorize] async (
+            // Save employee work locations (diff-based)
+            group.MapPost("/SaveEmployeeSelection", [Authorize] async (
+                SaveEmployeeWorkLocationsCommand dto,
+                ISender mediator) =>
+            {
+                var result = await mediator.Send(
+                    new SaveEmployeeWorkLocationsCommand(
+                        dto.EmployeeId,
+                        dto.WorkLocationIds));
+
+                return Results.Ok(new ResponseResultDTO
+                {
+                    Success = true,
+                    Message = "Employee work locations updated successfully"
+                });
+            });
+
+            group.MapGet("/EmployeeWorkLocationTree", [Authorize] async (
+               int employeeId,
+               ISender mediator) =>
+            {
+                var result = await mediator.Send(
+                    new GetWorkLocationsHierarchyQuery(employeeId));
+
+                return Results.Ok(new ResponseResultDTO<object>
+                {
+                    Success = true,
+                    Data = result
+                });
+            });
+
+            // =====================================================
+            // ✅ Update Employee Work Locations (Delete + Insert)
+            // =====================================================
+            group.MapPost("/UpdateEmployeeWorkLocations", [Authorize] async (
                     IMediator mediator,
                     [FromBody] EmployeeWorkLocations.UpdateEmployeeWorkLocationsCommand command) =>
                 {
