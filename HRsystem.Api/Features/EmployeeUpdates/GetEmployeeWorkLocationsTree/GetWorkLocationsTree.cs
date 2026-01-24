@@ -48,6 +48,9 @@ namespace HRsystem.Api.Features.EmployeeUpdates.GetEmployeeWorkLocationsTree
         public int? GovId { get; set; }
         public int? CityId { get; set; }
 
+        public string? CityName { get; set; }
+        public string? GovName { get; set; }
+
         // ⭐ TreeView
         public bool IsSelected { get; set; }
 
@@ -126,6 +129,8 @@ namespace HRsystem.Api.Features.EmployeeUpdates.GetEmployeeWorkLocationsTree
                                     AllowedRadiusM = w.AllowedRadiusM,
                                     GovId = w.GovId,
                                     CityId = w.CityId,
+                                    CityName= w.City?.CityName,
+                                    GovName= w.Gov?.GovName,
                                     IsSelected = selectedWorkLocationIds.Contains(w.WorkLocationId)
                                 }).ToList();
 
