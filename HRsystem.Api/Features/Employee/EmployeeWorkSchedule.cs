@@ -1,8 +1,7 @@
-﻿using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Database;
-using HRsystem.Api.Shared.ExceptionHandling;
-using MediatR;
+﻿using HRsystem.Api.Database;
+using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Features.Employee.DTO;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRsystem.Api.Features.Employee

@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
-using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Database;
+using HRsystem.Api.Database.DataTables;
 using HRsystem.Api.Services.CurrentUser;
-using HRsystem.Api.Shared.ExceptionHandling;
+using HRsystem.Api.Services.LookupCashing;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using HRsystem.Api.Services.LookupCashing;
 
 namespace HRsystem.Api.Features.EmployeeRequest.Execuse.CreateExecuse
 {
