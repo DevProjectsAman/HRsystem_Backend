@@ -47,6 +47,7 @@ using HRsystem.Api.Features.Scheduling.VacationRule;
 using HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule;
 using HRsystem.Api.Features.Scheduling.VacationRulesGroup;
 using HRsystem.Api.Features.Scheduling.WorkDaysRules;
+using HRsystem.Api.Helpers;
 using HRsystem.Api.Services.AuditLog;
 using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.Chatbot;
@@ -362,14 +363,27 @@ builder.Services.AddRateLimiter(options =>
 
     options.AddPolicy("LoginPolicy", httpContext =>
     {
-        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        // 1. Fallback to IP if username isn't found
+        string partitionKey = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        // 2. Try to get the username/email from the request body
+        // Note: This requires the request body to be buffered (see "Important Setup" below)
+        httpContext.Request.EnableBuffering();
+
+        // You would typically use a simple helper to peek at the JSON 
+        // for a field like "Email" or "Username"
+        var username = GeneralHelpers.ExtractUsernameFromRequest(httpContext);
+        if (!string.IsNullOrEmpty(username))
+        {
+            partitionKey = username;
+        }
 
         return RateLimitPartition.GetSlidingWindowLimiter(
-            partitionKey: $"login:{ip}",
+            partitionKey: $"login_user:{partitionKey}",
             factory: _ => new SlidingWindowRateLimiterOptions
             {
-                PermitLimit = 5,                    // 5 attempts
-                Window = TimeSpan.FromMinutes(1),   // per minute
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(5), // Longer window for identity-based locks
                 SegmentsPerWindow = 5,
                 QueueLimit = 0
             });

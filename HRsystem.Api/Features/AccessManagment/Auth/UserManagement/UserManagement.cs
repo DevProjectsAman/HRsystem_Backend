@@ -34,7 +34,8 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                     return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
 
                 var result = await mediator.Send(command);
-                return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+                return   Results.Ok(result) ;
+
             }).RequireRateLimiting("LoginPolicy");
 
             group.MapPost("/register", [Authorize] async (RegisterUserCommand command, ISender mediator, IValidator<RegisterUserCommand> validator) =>
@@ -167,31 +168,21 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
         {
             var result = await _signInManager.PasswordSignInAsync(request.UserName, request.Password, false, lockoutOnFailure: true);
             if (!result.Succeeded || result.IsLockedOut)    //  even if it is locked out we return invalid login to avoid user enumeration
+            {
+                await SaveLoginTrial(false, request.UserName, result.IsLockedOut ? "Account Locked Out" : "Invalid Credentials");
                 return new LoginResponse(false, ResponseMessages.InvalidLogin);
+            }
 
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user == null || !user.IsActive)
+            {
+                await SaveLoginTrial(false, request.UserName, "User Not Found or Inactive");
                 return new LoginResponse(false, ResponseMessages.InvalidLogin);
-
+            }
 
             var clientType = string.IsNullOrEmpty(_currentUser.X_ClientType) ? "web" : _currentUser.X_ClientType;
             var DeviceId = string.IsNullOrEmpty(_currentUser.DeviceId) ? "web" : _currentUser.DeviceId;
 
-
-
-
-            //var oldSession = await _dbContextHRsystem.TbUserSession
-            //                .Where(s =>
-            //                    s.UserId == user.Id &&
-            //                    s.ClientType == clientType &&
-            //                    s.IsActive)
-            //                .FirstOrDefaultAsync();
-
-            //if (oldSession != null)
-            //{
-            //    oldSession.IsActive = false;
-            //    oldSession.LastSeenAt = DateTime.UtcNow;
-            //}
 
             var oldSessions = await _dbContextHRsystem.TbUserSession
     .Where(s => s.UserId == user.Id && s.ClientType == clientType)
@@ -232,6 +223,9 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
 
             await _dbContextHRsystem.SaveChangesAsync();
 
+            await SaveLoginTrial(true, request.UserName, string.Empty);
+
+
             LoginResponse res = new LoginResponse(true,
                 ResponseMessages.SucessLogin,
                 tokenString, refreshToken, user.UserFullName, DateTime.UtcNow.AddDays(7));
@@ -241,7 +235,23 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
         }
 
 
+        private async Task SaveLoginTrial(bool loginSucceeded, string attemptedUserName, string failureReason)
+        {
+            var loginHistory = new TbUserLoginHistory
+            {
+                UserId = _currentUser.UserId > 0 ? _currentUser.UserId : 0,
+                UserNameAttempt = attemptedUserName,
+                ClientType = _currentUser.X_ClientType,
+                DeviceId = _currentUser.DeviceId,
+                IPAddress = _currentUser.IPAddress,
+                LoggedInAt = DateTime.UtcNow,
+                Success = loginSucceeded,
+                FailureReason = failureReason
+            };
+            _dbContextHRsystem.TbUserLoginHistories.Add(loginHistory);
+            await _dbContextHRsystem.SaveChangesAsync();
 
+        }
 
 
     }

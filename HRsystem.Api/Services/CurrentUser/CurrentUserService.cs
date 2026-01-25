@@ -18,7 +18,7 @@ namespace HRsystem.Api.Services.CurrentUser
         string? DeviceId { get; }   // ✅ NEW
         string? X_ClientType { get; }   // ✅ NEW
 
-
+        string? IPAddress { get; }
 
     }
 
@@ -128,5 +128,23 @@ namespace HRsystem.Api.Services.CurrentUser
         }
 
 
+        public string? IPAddress
+        {
+            get
+            {
+                var context = _httpContextAccessor.HttpContext;
+                if (context == null) return null;
+
+                var forwardedFor = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+                string? ip = !string.IsNullOrWhiteSpace(forwardedFor)
+                             ? forwardedFor.Split(',').FirstOrDefault()?.Trim()
+                             : context.Connection.RemoteIpAddress?.ToString();
+
+                if (ip == "::1" || ip == "127.0.0.1")
+                    return "localhost";  // optional normalization
+
+                return ip;
+            }
+        }
     }
 }
