@@ -18,10 +18,10 @@ using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
 using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
 using HRsystem.Api.Features.EmployeeDevices;
 using HRsystem.Api.Features.EmployeeHandler;
-using HRsystem.Api.Features.EmployeeRequest.EmployeeVacation;
 using HRsystem.Api.Features.EmployeeRequest.employeevacations;
 using HRsystem.Api.Features.EmployeeRequest.Execuse;
 using HRsystem.Api.Features.EmployeeRequest.Mission;
+using HRsystem.Api.Features.EmployeeUpdates;
 using HRsystem.Api.Features.Holiday;
 using HRsystem.Api.Features.HolidayType;
 using HRsystem.Api.Features.Lookups.ActivityStatus;
@@ -43,25 +43,20 @@ using HRsystem.Api.Features.Scheduling.RemoteWorkdays;
 using HRsystem.Api.Features.Scheduling.Shift;
 using HRsystem.Api.Features.Scheduling.ShiftRule;
 using HRsystem.Api.Features.Scheduling.VacationRule;
-using HRsystem.Api.Features.Scheduling.VacationRule.UpdateVacationRule;
 using HRsystem.Api.Features.Scheduling.VacationRulesGroup;
 using HRsystem.Api.Features.Scheduling.WorkDaysRules;
+using HRsystem.Api.Helpers;
 using HRsystem.Api.Services.AuditLog;
 using HRsystem.Api.Services.Auth;
-using HRsystem.Api.Services.Chatbot;
 using HRsystem.Api.Services.CurrentUser;
-using HRsystem.Api.Services.DeviceEnforcement;
 using HRsystem.Api.Services.GenerateDailyEmployeeReport;
 using HRsystem.Api.Services.LookupCashing;
-using HRsystem.Api.Services.Reports;
 using HRsystem.Api.Services.VacationCalculation;
 using HRsystem.Api.Shared.EncryptText;
-using HRsystem.Api.Shared.ExceptionHandling;
 using HRsystem.Api.Shared.ValidationHandler;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -138,7 +133,7 @@ builder.Services.AddCors(options =>
 });
 
 
- // this for  cashing the security  of the user 
+// this for  cashing the security  of the user 
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<ISecurityCacheService, SecurityCacheService>();
 builder.Services.AddScoped<JwtSessionValidator>();
@@ -226,7 +221,7 @@ builder.Services.AddAuthentication(options =>
 
     };
 
-    
+
     options.Events = new JwtBearerEvents
     {
         //OnTokenValidated = async context =>
@@ -244,7 +239,7 @@ builder.Services.AddAuthentication(options =>
                 .GetRequiredService<JwtSessionValidator>();
 
             // Manually pull the header here
-           // var clientType = context.Request.Headers["X-ClientType"].FirstOrDefault() ?? string.Empty;
+            // var clientType = context.Request.Headers["X-ClientType"].FirstOrDefault() ?? string.Empty;
 
             // Pass the Principal and ClientType explicitly
             await validator.ValidateAsync(context);
@@ -263,7 +258,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
- 
+
 
 
 
@@ -361,14 +356,27 @@ builder.Services.AddRateLimiter(options =>
 
     options.AddPolicy("LoginPolicy", httpContext =>
     {
-        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        // 1. Fallback to IP if username isn't found
+        string partitionKey = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        // 2. Try to get the username/email from the request body
+        // Note: This requires the request body to be buffered (see "Important Setup" below)
+        httpContext.Request.EnableBuffering();
+
+        // You would typically use a simple helper to peek at the JSON 
+        // for a field like "Email" or "Username"
+        var username = GeneralHelpers.ExtractUsernameFromRequest(httpContext);
+        if (!string.IsNullOrEmpty(username))
+        {
+            partitionKey = username;
+        }
 
         return RateLimitPartition.GetSlidingWindowLimiter(
-            partitionKey: $"login:{ip}",
+            partitionKey: $"login_user:{partitionKey}",
             factory: _ => new SlidingWindowRateLimiterOptions
             {
-                PermitLimit = 5,                    // 5 attempts
-                Window = TimeSpan.FromMinutes(1),   // per minute
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(5), // Longer window for identity-based locks
                 SegmentsPerWindow = 5,
                 QueueLimit = 0
             });
@@ -501,7 +509,7 @@ app.UseRateLimiter();
 
 app.MapUserManagementEndpoints();
 
-//app.MapRoleAssignmentEndpoints();
+
 
 app.MapJobLevelEndpoints();
 app.MapJobTitleEndpoints();
@@ -526,9 +534,8 @@ app.MapAuditLogEndpoints();
 app.MapProjectEndpoints();
 app.MapMissionEndPoint();
 app.MapExcuseEndPoint();
-app.MapEmployeePunchEndpoints(); // from EmployeePunchEndpoints.cs
+app.MapEmployeePunchEndpoints();
 
-//app.MapEmployeeVacationsEndPoints();
 
 app.MapEmployeeEndpoints();
 
@@ -565,19 +572,21 @@ app.MapHolidayEndpoints();
 
 app.MapEmployeeAppEndPoints();
 
- app.MapEmployeeHandlerEndpoints();
+app.MapEmployeeHandlerEndpoints();
 
 
 app.MapDocumentEndpoints();
 
 app.MapRefreshTokenEndpoint();
 
+app.MapEmployeeUpdatesEndpoints();
+
 
 app.MapEmployeeReportEndpoints();
 app.MapReportEndPoints();
 
 // Rate Limitter applied to all controllers
-app.MapControllers()   ;
+app.MapControllers();
 
 
 app.Run();

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using FluentValidation;
+﻿using FluentValidation;
 using HRsystem.Api.Features.Organization.WorkLocation.CreateWorkLocation;
 using HRsystem.Api.Features.Organization.WorkLocation.DeleteWorkLocation;
 using HRsystem.Api.Features.Organization.WorkLocation.GetAllWorkLocations;
@@ -9,6 +8,8 @@ using HRsystem.Api.Features.Organization.WorkLocation.UpdateWorkLocation;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
+ 
 
 namespace HRsystem.Api.Features.Organization.WorkLocation
 {
@@ -26,9 +27,9 @@ namespace HRsystem.Api.Features.Organization.WorkLocation
             });
 
             // Get all
-            group.MapGet("/ListSpecific", [Authorize] async (ISender mediator,int companyId, int cityId) =>
+            group.MapGet("/ListSpecific", [Authorize] async (ISender mediator,int companyId,int govId, int cityId) =>
             {
-                var result = await mediator.Send(new GetSpecificWorkLocationsQuery( companyId , cityId));
+                var result = await mediator.Send(new GetSpecificWorkLocationsQuery( companyId , govId, cityId));
                 return Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
             // Get by Id
@@ -90,6 +91,9 @@ namespace HRsystem.Api.Features.Organization.WorkLocation
                     ? Results.NotFound(new ResponseResultDTO { Success = false, Message = $"WorkLocation {cmd.WorkLocationId} not found" })
                     : Results.Ok(new ResponseResultDTO<object> { Success = true, Data = result });
             });
+
+            // Get hierarchy with selection (Gov → City → WorkLocation)
+           
 
             // Delete
             group.MapDelete("/Delete", [Authorize] async (int id, ISender mediator) =>

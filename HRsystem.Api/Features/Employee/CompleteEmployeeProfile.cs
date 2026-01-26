@@ -1,6 +1,5 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Features.Employee.DTO;
-using HRsystem.Api.Shared.ExceptionHandling;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

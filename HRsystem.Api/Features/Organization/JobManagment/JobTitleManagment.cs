@@ -17,9 +17,9 @@ namespace HRsystem.Api.Features.Organization.JobManagment
             var group = app.MapGroup("/api/Organization/JobTitle").WithTags("Job Titles");
 
             // Get All
-            group.MapGet("/ListJobTitles" , [Authorize] async (int companyId, int departmentId, IMediator mediator) =>
+            group.MapGet("/ListJobTitles" , [Authorize] async (int companyId, int departmentId,int jobLevelID, IMediator mediator) =>
             {
-                var result = await mediator.Send(new GetAllJobTitlesQuery(companyId, departmentId));
+                var result = await mediator.Send(new GetAllJobTitlesQuery(companyId, departmentId, jobLevelID));
                 return Results.Ok(new ResponseResultDTO<List<JobTitleDto>>
                 {
                     Success = true,
@@ -83,7 +83,7 @@ namespace HRsystem.Api.Features.Organization.JobManagment
     }
 
     #region Get All
-    public record GetAllJobTitlesQuery(int CompanyId,int DepartmentId) : IRequest<System.Collections.Generic.List<JobTitleDto>>;
+    public record GetAllJobTitlesQuery(int CompanyId,int DepartmentId,int jobLevelID) : IRequest<System.Collections.Generic.List<JobTitleDto>>;
 
     public class JobTitleDto
     {
@@ -112,12 +112,23 @@ namespace HRsystem.Api.Features.Organization.JobManagment
         {
             var lang = _currentUser.UserLanguage ?? "en";
 
-            var jobTitles = await _db.TbJobTitles.Where(j => j.CompanyId == request.CompanyId && j.DepartmentId == request.DepartmentId)
+            // 1. Start with the base query and required filters
+            var query = _db.TbJobTitles
+                .Where(j => j.CompanyId == request.CompanyId && j.DepartmentId == request.DepartmentId)
                 .Include(j => j.Company)
                 .Include(j => j.Department)
                 .Include(j => j.JobLevel)
-                .AsNoTracking()
-                .ToListAsync(ct);
+                .AsNoTracking();
+
+            // 2. Add optional filter (ignore if 0 or null)
+            if (request.jobLevelID > 0)
+            {
+                query = query.Where(j => j.JobLevelId == request.jobLevelID);
+            }
+
+            // 3. Execute and project
+            var jobTitles = await query.ToListAsync(ct);
+
 
             return jobTitles.Select(j => new JobTitleDto
             {
@@ -131,7 +142,12 @@ namespace HRsystem.Api.Features.Organization.JobManagment
                 JobLevelDesc = j.JobLevel.JobLevelDesc
             }).ToList();
         }
+    
+    
+    
     }
+
+
 
 
     #endregion

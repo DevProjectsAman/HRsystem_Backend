@@ -1,8 +1,5 @@
 ﻿using HRsystem.Api.Database;
-using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
 using HRsystem.Api.Services.CurrentUser;
-using HRsystem.Api.Shared.ExceptionHandling;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

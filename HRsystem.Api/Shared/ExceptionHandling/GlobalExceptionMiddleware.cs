@@ -2,6 +2,8 @@
 using System.Net;
 using System.Text.Json;
 using FluentValidation;
+using Serilog;
+using Serilog.Formatting.Compact; // You will need this NuGet package
 
 public class GlobalExceptionMiddleware
 {
@@ -10,6 +12,17 @@ public class GlobalExceptionMiddleware
     public GlobalExceptionMiddleware(RequestDelegate next)
     {
         _next = next;
+
+        // UPDATED: Configure Serilog for Structured JSON
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .Enrich.FromLogContext() // Adds contextual info to the JSON
+            .WriteTo.File(
+                formatter: new CompactJsonFormatter(), // Switched from template to JSON Formatter
+                path: "Logs/log-.json",                // Changed extension to .json
+                rollingInterval: RollingInterval.Day
+            )
+            .CreateLogger();
     }
 
     public async Task Invoke(HttpContext context)
@@ -20,122 +33,78 @@ public class GlobalExceptionMiddleware
         }
         catch (ValidationException ex)
         {
-            var statusCode = HttpStatusCode.BadRequest; // ✨ NEW variable
-            context.Response.StatusCode = (int)statusCode;
-            context.Response.ContentType = "application/json";
+            Log.Warning("Validation failed: {Message}", ex.Message);
 
-            var response = new ResponseResultDTO
-            {
-                Success = false,
-                StatusCode = (int)statusCode, // ✨ NEW
-                Message = "Validation failed",
-                Errors = new List<ResponseErrorDTO>
-                {
-                    new ResponseErrorDTO
-                    {
-                        Property = string.Empty,
-                        Error = ex.InnerException?.Message ?? ex.Message
-                    }
-                }
-            };
-
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            var statusCode = HttpStatusCode.BadRequest;
+            await WriteResponseAsync(context, statusCode, "Validation failed", ex);
         }
-        // ✨ NEW - Handle Unauthorized (401)
         catch (UnauthorizedAccessException ex)
         {
+            Log.Warning("Unauthorized access: {Message}", ex.Message);
+
             var statusCode = HttpStatusCode.Unauthorized;
-            context.Response.StatusCode = (int)statusCode;
-            context.Response.ContentType = "application/json";
-
-            var response = new ResponseResultDTO
-            {
-                Success = false,
-                StatusCode = (int)statusCode,
-                Message = "Unauthorized access",
-                Errors = new List<ResponseErrorDTO>
-                {
-                    new ResponseErrorDTO
-                    {
-                        Property = string.Empty,
-                        Error = ex.Message
-                    }
-                }
-            };
-
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            await WriteResponseAsync(context, statusCode, "Unauthorized access", ex);
         }
-        // ✨ NEW - Handle Not Found (404)
         catch (KeyNotFoundException ex)
         {
+            Log.Warning("Resource not found: {Message}", ex.Message);
+
             var statusCode = HttpStatusCode.NotFound;
-            context.Response.StatusCode = (int)statusCode;
-            context.Response.ContentType = "application/json";
-
-            var response = new ResponseResultDTO
-            {
-                Success = false,
-                StatusCode = (int)statusCode,
-                Message = "Resource not found",
-                Errors = new List<ResponseErrorDTO>
-                {
-                    new ResponseErrorDTO
-                    {
-                        Property = string.Empty,
-                        Error = ex.Message
-                    }
-                }
-            };
-
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            await WriteResponseAsync(context, statusCode, "Resource not found", ex);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"🔥 Unhandled exception: {ex}");
+            var severity = GetSeverity(ex);
+            if (severity == "Critical")
+                Log.Fatal(ex, "Critical exception occurred");
+            else
+                Log.Error(ex, "Unhandled exception occurred");
 
-            var statusCode = HttpStatusCode.InternalServerError; // ✨ NEW variable
+            var statusCode = HttpStatusCode.InternalServerError;
             string friendlyMessage = "An unexpected error occurred.";
 
-            // Handle database-specific exceptions
             if (ex is Microsoft.EntityFrameworkCore.DbUpdateException dbUpdateEx && dbUpdateEx.InnerException != null)
             {
                 var dbMessage = dbUpdateEx.InnerException.Message;
                 friendlyMessage = GetFriendlyMessage(dbMessage);
 
-                // ✨ NEW - Check constraint type and set appropriate status code
-                // Check if it's a foreign key constraint violation
-                if (dbMessage.Contains("FOREIGN KEY constraint fails", StringComparison.OrdinalIgnoreCase))
+                if (dbMessage.Contains("FOREIGN KEY constraint fails", StringComparison.OrdinalIgnoreCase) ||
+                    dbMessage.Contains("Duplicate entry", StringComparison.OrdinalIgnoreCase))
                 {
-                    statusCode = HttpStatusCode.Conflict; // 409
-                }
-                // Check if it's a duplicate entry
-                else if (dbMessage.Contains("Duplicate entry", StringComparison.OrdinalIgnoreCase))
-                {
-                    statusCode = HttpStatusCode.Conflict; // 409
+                    statusCode = HttpStatusCode.Conflict;
                 }
             }
 
-            context.Response.StatusCode = (int)statusCode;
-            context.Response.ContentType = "application/json";
-
-            var response = new ResponseResultDTO
-            {
-                Success = false,
-                StatusCode = (int)statusCode, // ✨ NEW
-                Message = friendlyMessage,
-                Errors = new List<ResponseErrorDTO>
-                {
-                    new ResponseErrorDTO
-                    {
-                        Property = string.Empty,
-                        Error = ex.InnerException?.Message ?? ex.Message
-                    }
-                }
-            };
-
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            await WriteResponseAsync(context, statusCode, friendlyMessage, ex);
         }
     }
+
+    // DRY: Helper to write the JSON response to the client
+    private static async Task WriteResponseAsync(HttpContext context, HttpStatusCode code, string message, Exception ex)
+    {
+        context.Response.StatusCode = (int)code;
+        context.Response.ContentType = "application/json";
+
+        var response = new ResponseResultDTO
+        {
+            Success = false,
+            StatusCode = (int)code,
+            Message = message,
+            Errors = new List<ResponseErrorDTO>
+            {
+                new ResponseErrorDTO
+                {
+                    Property = string.Empty,
+                    Error = ex.InnerException?.Message ?? ex.Message
+                }
+            }
+        };
+
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+    }
+
+    private static string GetSeverity(Exception ex) =>
+        ex is Microsoft.EntityFrameworkCore.DbUpdateException ? "Critical" : "Error";
 
     private static string GetFriendlyMessage(string dbMessage)
     {
@@ -177,3 +146,6 @@ public class GlobalExceptionMiddleware
         return "A database relationship error occurred. Please check related data.";
     }
 }
+
+
+

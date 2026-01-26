@@ -1,15 +1,8 @@
 ﻿using HRsystem.Api.Database;
-using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Features.EmployeeDashboard.EmployeeApp;
-using HRsystem.Api.Features.EmployeeRequest.EmployeeVacation;
-using HRsystem.Api.Migrations;
 using HRsystem.Api.Services.CurrentUser;
-using HRsystem.Api.Shared.ExceptionHandling;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using static HRsystem.Api.Enums.EnumsList;
 
 namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 {

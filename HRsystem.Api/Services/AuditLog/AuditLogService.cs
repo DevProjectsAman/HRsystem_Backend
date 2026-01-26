@@ -14,7 +14,7 @@ namespace HRsystem.Api.Services.AuditLog
             _dbContext = dbContext;
         }
 
-        public async Task LogAsync(
+        public async Task LogActionAsync(
             int companyId,
             int userId,
             string tableName,

@@ -102,6 +102,7 @@ public class DBContextHRsystem : IdentityDbContext<ApplicationUser, ApplicationR
 
     public DbSet<TbEmployeeCodeTracking> TbEmployeeCodeTrackings { get; set; }
     public DbSet<TbUserSession> TbUserSession { get; set; }
+    public DbSet<TbUserLoginHistory> TbUserLoginHistories { get; set; }
 
 
 
