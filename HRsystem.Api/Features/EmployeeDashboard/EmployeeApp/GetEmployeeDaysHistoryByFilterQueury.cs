@@ -42,13 +42,26 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
             var lang = _currentUserService.UserLanguage ?? "en";
 
             // 1️⃣ هات كل الـ Activities الخاصة بالموظف في الفترة
+            var fromDate = request.From.Date;
+            var toDate = request.To.Date.AddDays(1);
+
             var activities = await _db.TbEmployeeActivities
                 .Include(a => a.ActivityType)
                 .Include(a => a.Status)
-                .Where(a => a.EmployeeId == employeeId &&
-                            a.RequestDate >= request.From &&
-                            a.RequestDate <= request.To )
+                .Where(a =>
+                    a.EmployeeId == employeeId &&
+                    a.RequestDate >= fromDate &&
+                    a.RequestDate < toDate)
                 .ToListAsync(ct);
+
+            // 1️⃣ هات كل الـ Activities الخاصة بالموظف في الفترة
+            //var activities = await _db.TbEmployeeActivities
+            //    .Include(a => a.ActivityType)
+            //    .Include(a => a.Status)
+            //    .Where(a => a.EmployeeId == employeeId &&
+            //                a.RequestDate >= request.From &&
+            //                a.RequestDate <= request.To )
+            //    .ToListAsync(ct);
 
             // 2️⃣ هات كل الـ ActivityIds
             var activityIds = activities.Select(a => a.ActivityId).ToList();
@@ -102,5 +115,8 @@ namespace HRsystem.Api.Features.EmployeeDashboard.EmployeeApp
 
             return result;
         }
+   
+    
+    
     }
 }

@@ -34,7 +34,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                     return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
 
                 var result = await mediator.Send(command);
-                return   Results.Ok(result) ;
+                return Results.Ok(result);
 
             }).RequireRateLimiting("LoginPolicy");
 
@@ -56,7 +56,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                     return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
 
                 var result = await mediator.Send(command);
-                return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+                return   Results.Ok(result) ;
             });
 
 
@@ -403,9 +403,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
             _roleManager = roleManager;
         }
 
-        public async Task<ResponseResultDTO> Handle(
-            UpdateUserCommand request,
-            CancellationToken cancellationToken)
+        public async Task<ResponseResultDTO> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
             // 1️⃣ Find user
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
@@ -424,7 +422,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
             // 3️⃣ Update user
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
-                return Failed(updateResult);
+                return new ResponseResultDTO { Success = false, Message = updateResult.ToString() };  
 
             // 4️⃣ Update password (optional)
             if (!string.IsNullOrWhiteSpace(request.NewPassword))
@@ -434,7 +432,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                     user, token, request.NewPassword);
 
                 if (!pwResult.Succeeded)
-                    return Failed(pwResult);
+                    return new ResponseResultDTO { Success = false, Message = pwResult.ToString() }; 
             }
 
 

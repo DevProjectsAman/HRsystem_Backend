@@ -53,7 +53,7 @@ namespace HRsystem.Api.Features.EmployeeHandler
             {
                 if (string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    return Results.BadRequest(new ResponseResultDTO
+                    return Results.Ok(new ResponseResultDTO
                     {
                         Success = false,
                         Message = "Search term is required."
@@ -62,10 +62,7 @@ namespace HRsystem.Api.Features.EmployeeHandler
 
                 var result = await mediator.Send(new SearchEmployeeQuery(searchTerm));
 
-                if (!result.Success)
-                {
-                    return Results.NotFound(result);
-                }
+                
 
                 return Results.Ok(result);
             })

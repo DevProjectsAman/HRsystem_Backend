@@ -1,6 +1,7 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Services.LookupCashing;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,18 +31,26 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities
     {
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUserService;
-        public GetPendingActivitiesQueryHandler(DBContextHRsystem db, ICurrentUserService currentUserService)
+        private readonly IActivityStatusLookupCache _activityStatusLookupCache;
+        public GetPendingActivitiesQueryHandler(DBContextHRsystem db, ICurrentUserService currentUserService
+            , IActivityStatusLookupCache activityStatusLookupCache)
         {
             _db = db;
             _currentUserService = currentUserService;
+            _activityStatusLookupCache = activityStatusLookupCache;
         }
         public async Task<List<PendingActivityDto>> Handle(GetPendingActivitiesQuery request, CancellationToken ct)
         {
             var employeeId = _currentUserService.EmployeeID;
             var language = _currentUserService.UserLanguage;
 
-            const int PendingStatusId = 10; // غيّر الرقم حسب الـ StatusId بتاع الـ Pending عندك
-            var lastMonthDate = DateTime.UtcNow.AddDays(-30);
+
+          //  const int PendingStatusId = 10; // غيّر الرقم حسب الـ StatusId بتاع الـ Pending عندك
+           int PendingStatusId = _activityStatusLookupCache.GetIdByCode(ActivityStatusCodes.Pending) ; // غيّر الرقم حسب الـ StatusId بتاع الـ Pending عندك
+            
+
+
+              var lastMonthDate = DateTime.UtcNow.AddDays(-30);
 
             var activities = await _db.TbEmployeeActivities
                                     .Include(a => a.Status)

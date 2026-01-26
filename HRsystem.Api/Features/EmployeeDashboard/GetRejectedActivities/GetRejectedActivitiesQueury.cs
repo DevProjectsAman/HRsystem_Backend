@@ -2,6 +2,7 @@
 using HRsystem.Api.Features.EmployeeDashboard.GetApprovedActivites;
 using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Services.LookupCashing;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,18 +28,30 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetRejectedActivities
     {
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUserService;
-        public GetRejectedActivitiesQueuryHandler(DBContextHRsystem db, ICurrentUserService currentUserService)
+        private readonly IActivityStatusLookupCache _activityStatusLookupCache;
+        public GetRejectedActivitiesQueuryHandler(DBContextHRsystem db, ICurrentUserService currentUserService, IActivityStatusLookupCache activityStatusLookupCache)
         {
             _db = db;
             _currentUserService = currentUserService;
+            _activityStatusLookupCache = activityStatusLookupCache;
         }
         public async Task<List<RejectedActivityDto>> Handle(GetRejectedActivitiesQueury request, CancellationToken ct)
         {
             var employeeId = _currentUserService.EmployeeID;
             var language = _currentUserService.UserLanguage;
 
-            const int RejectedStatusId = 8; // غيّر الرقم حسب الـ StatusId بتاع الـ Pending عندك
+          //  const int RejectedStatusId = 8; // غيّر الرقم حسب الـ StatusId بتاع الـ Pending عندك
+
+          //  int Pending = _activityStatusLookupCache.GetIdByCode(ActivityStatusCodes.Pending);
+           // int Approved = _activityStatusLookupCache.GetIdByCode(ActivityStatusCodes.Approved);
+            int RejectedStatusId = _activityStatusLookupCache.GetIdByCode(ActivityStatusCodes.Rejected);
+
+
+
             var lastMonthDate = DateTime.UtcNow.AddDays(-30);
+
+
+
 
             var activities = await _db.TbEmployeeActivities
                         .Include(a => a.Status)

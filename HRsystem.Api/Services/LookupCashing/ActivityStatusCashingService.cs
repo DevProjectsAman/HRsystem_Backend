@@ -5,6 +5,7 @@
     public static class ActivityStatusCodes
     {
         public const string Pending = "PENDING";
+        public const string Approved = "APPROVED";
         public const string ApprovedByManager = "APRV_MGR";
         public const string ApprovedByHR = "APRV_HR";
         public const string Rejected = "REJECTED";

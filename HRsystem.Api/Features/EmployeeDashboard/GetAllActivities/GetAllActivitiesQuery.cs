@@ -1,5 +1,6 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Services.LookupCashing;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using static Azure.Core.HttpHeader;
@@ -30,13 +31,14 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetAllActivities
     {
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUserService;
-
-        public GetAllActivitiesQueryHandler(
+        private readonly IActivityStatusLookupCache _activityStatusLookupCache;
+        public GetAllActivitiesQueryHandler(IActivityStatusLookupCache activityStatusLookupCache,
             DBContextHRsystem db,
             ICurrentUserService currentUserService)
         {
             _db = db;
             _currentUserService = currentUserService;
+             _activityStatusLookupCache = activityStatusLookupCache;
         }
 
         public async Task<List<AllActivityDto>> Handle(
@@ -46,9 +48,12 @@ namespace HRsystem.Api.Features.EmployeeDashboard.GetAllActivities
             var language = _currentUserService.UserLanguage;
             var lastMonthDate = DateTime.UtcNow.AddDays(-30);
 
-            const int Pending = 10;
-            const int Approved = 7;
-            const int Rejected = 8;
+            //const int Pending = 10;
+            //const int Approved = 7;
+            //const int Rejected = 8;
+              int Pending =  _activityStatusLookupCache.GetIdByCode(ActivityStatusCodes.Pending);
+             int Approved = _activityStatusLookupCache.GetIdByCode(ActivityStatusCodes.Approved);
+             int Rejected = _activityStatusLookupCache.GetIdByCode(ActivityStatusCodes.Rejected);
 
             var activities = await _db.TbEmployeeActivities
                 .Include(a => a.Status)

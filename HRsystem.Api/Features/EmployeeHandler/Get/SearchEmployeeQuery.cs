@@ -25,6 +25,7 @@
         public List<string> WorkLocations { get; set; } = new();
         public List<string> Projects { get; set; } = new();
 
+        public List<int>? RoleIds { get; set; } = new();
         public int? UserId { get; set; }
         public string? UserName { get; set; } = string.Empty;
         public string? UserFullName { get; set; } = string.Empty;
@@ -71,8 +72,6 @@
                  .Include(e => e.Department)
                 .Include(e => e.TbEmployeeWorkLocations)    // Many-to-many
                 .ThenInclude(wl => wl.WorkLocation)
-
-
                 .Include(e => e.TbEmployeeProjects)
                 .ThenInclude(p => p.Project)
                 .Where(e => e.NationalId == search
@@ -81,46 +80,57 @@
                 .FirstOrDefaultAsync(ct);
 
             if (employee == null)
+            {
                 return new ResponseResultDTO<EmployeeSearchDto>
                 {
                     Success = false,
                     Message = "Employee not found."
                 };
 
-
-
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.EmployeeId == employee.EmployeeId);
-
-
-
-            var dto = new EmployeeSearchDto
+            }
+            else
             {
-                EmployeeId = employee.EmployeeId,
-                CompanyId = employee.CompanyId,
-                FullNameEnglish = employee.EnglishFullName,
-                FullNameArabic = employee.ArabicFullName,
-                NationalId = employee.NationalId,
-                EmployeeCodeHr = employee.EmployeeCodeHr,
-                EmployeeCodeFinance = employee.EmployeeCodeFinance,
-                UserId = user != null ? user.Id : 0,
-                UserName = user != null ? user.UserName : string.Empty,
-                UserFullName = user != null ? user.UserName : string.Empty,
-                PhotoUrl = employee.EmployeePhotoPath,
-                DepartmentName = $"{employee.Department.DepartmentName.ar} - ({employee.Department.DepartmentName.en})",
-                MobileNumber = employee.PrivateMobile,
-                JobTitle = employee.JobTitle?.TitleName.ar ?? string.Empty,
-                WorkLocations = employee.TbEmployeeWorkLocations?.Select(w => w.WorkLocation.LocationName.ar).ToList() ?? new List<string>(),
-                Projects = employee.TbEmployeeProjects?.Select(p => p.Project.ProjectName.ar).ToList() ?? new List<string>()
-
-            };
 
 
-            return new ResponseResultDTO<EmployeeSearchDto>
-            {
-                Success = true,
-                Message = "Employee retrieved successfully.",
-                Data = dto
-            };
+
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.EmployeeId == employee.EmployeeId);
+
+                var roleIds = await _db.UserRoles
+                  .Select(ur => ur.RoleId)
+                  .ToListAsync();
+
+
+                var dto = new EmployeeSearchDto
+                {
+                    EmployeeId = employee.EmployeeId,
+                    CompanyId = employee.CompanyId,
+                    FullNameEnglish = employee.EnglishFullName,
+                    FullNameArabic = employee.ArabicFullName,
+                    NationalId = employee.NationalId,
+                    EmployeeCodeHr = employee.EmployeeCodeHr,
+                    EmployeeCodeFinance = employee.EmployeeCodeFinance,
+                    UserId = user != null ? user.Id : 0,
+                    UserName = user != null ? user.UserName : string.Empty,
+                    UserFullName = user != null ? user.UserName : string.Empty,
+                    PhotoUrl = employee.EmployeePhotoPath,
+                    DepartmentName = $"{employee.Department.DepartmentName.ar} - ({employee.Department.DepartmentName.en})",
+                    MobileNumber = employee.PrivateMobile,
+                    JobTitle = employee.JobTitle?.TitleName.ar ?? string.Empty,
+                    WorkLocations = employee.TbEmployeeWorkLocations?.Select(w => w.WorkLocation.LocationName.ar).ToList() ?? new List<string>(),
+                    Projects = employee.TbEmployeeProjects?.Select(p => p.Project.ProjectName.ar).ToList() ?? new List<string>()
+                    ,
+                    RoleIds = roleIds
+                };
+
+
+                return new ResponseResultDTO<EmployeeSearchDto>
+                {
+                    Success = true,
+                    Message = "Employee retrieved successfully.",
+                    Data = dto
+                };
+            }
+
         }
     }
 
