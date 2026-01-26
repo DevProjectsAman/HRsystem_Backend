@@ -331,8 +331,24 @@ namespace HRsystem.Api.Features.Reports
                         EmployeeTodayStatuesId = x.r.EmployeeTodayStatuesId,
                         TodayStatues = x.r.TodayStatues,
                         AttStatues = x.r.AttStatues.HasValue ? (int?)x.r.AttStatues.Value : null,
-                        Details = x.r.Details
-                    })
+                        Details = x.r.Details,
+                        RequestDate = x.r.RequestDate,
+                        ApprovedDate = x.r.ApprovedDate,
+                        RequestBy = x.r.RequestBy,
+                        ApprovedBy = x.r.ApprovedBy,
+                        AttendanceId = x.r.AttendanceId,
+                        AttendanceDate = x.r.AttendanceDate,
+                        FirstPuchin = x.r.FirstPuchin,
+                        LastPuchout = x.r.LastPuchout,
+                        TotalHours  = x.r.TotalHours,
+                        ActualWorkingHours = x.r.ActualWorkingHours,
+                        IsHoliday = x.r.IsHoliday,
+                        IsWorkday = x.r.IsWorkday,
+                        IsRemoteday = x.r.IsRemoteday,
+                      
+  
+
+        })
                     .ToList();
 
                     rows.AddRange(pastData);
@@ -429,7 +445,10 @@ namespace HRsystem.Api.Features.Reports
                                 ActivityTypeId = act.ActivityTypeId,
                                 EmployeeTodayStatuesId = 1,
                                 TodayStatues = "Has Activity",
-                                RequestDate = act.RequestDate
+                                RequestDate = act.RequestDate,
+                                ApprovedDate = act.ApprovedDate,
+                                RequestBy = act.RequestBy,
+                                ApprovedBy = act.ApprovedBy
                             });
                         }
                     }
