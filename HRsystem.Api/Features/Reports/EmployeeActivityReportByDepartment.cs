@@ -98,6 +98,9 @@ namespace HRsystem.Api.Features.Reports
                             EnglishFullName = x.r.EnglishFullName,
                             ArabicFullName = x.r.ArabicFullName,
 
+                            EmployeeCodeFinance = x.r.EmployeeCodeFinance,
+                            EmployeeCodeHr = x.r.EmployeeCodeHr,
+
                             JobTitleId = x.r.JobTitleId,
                             JobTitleName = x.jt?.TitleName?.en,
 
@@ -172,6 +175,9 @@ namespace HRsystem.Api.Features.Reports
                                 EnglishFullName = emp.EnglishFullName,
                                 ArabicFullName = emp.ArabicFullName,
 
+                                EmployeeCodeFinance = emp.EmployeeCodeFinance,
+                                EmployeeCodeHr = emp.EmployeeCodeHr,
+
                                 JobTitleId = emp.JobTitleId,
                                 JobTitleName = emp.JobTitle?.TitleName?.en,
 
@@ -188,6 +194,7 @@ namespace HRsystem.Api.Features.Reports
                                 ManagerId = emp.ManagerId,
                                 ManagerName = managerName,
 
+
                                 EmployeeTodayStatuesId = 2,
                                 TodayStatues = "Absent",
                                 IsWorkday = true
@@ -203,6 +210,9 @@ namespace HRsystem.Api.Features.Reports
                                 EmployeeId = emp.EmployeeId,
                                 EnglishFullName = emp.EnglishFullName,
                                 ArabicFullName = emp.ArabicFullName,
+
+                                EmployeeCodeFinance = emp.EmployeeCodeFinance,
+                                EmployeeCodeHr = emp.EmployeeCodeHr,
 
                                 JobTitleId = emp.JobTitleId,
                                 JobTitleName = emp.JobTitle?.TitleName?.en,
