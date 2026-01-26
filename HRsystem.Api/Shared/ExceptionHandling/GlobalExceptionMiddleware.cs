@@ -19,7 +19,7 @@ public class GlobalExceptionMiddleware
             .Enrich.FromLogContext() // Adds contextual info to the JSON
             .WriteTo.File(
                 formatter: new CompactJsonFormatter(), // Switched from template to JSON Formatter
-                path: "Logs/log-.json",                // Changed extension to .json
+                path: "logs/log-.json",                // Changed extension to .json
                 rollingInterval: RollingInterval.Day
             )
             .CreateLogger();
