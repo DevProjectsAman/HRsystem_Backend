@@ -239,12 +239,16 @@ namespace HRsystem.Api.Services.GenerateDailyEmployeeReport
                 await ProcessExcuseAsync(report, activity.ActivityId, ct);
         }
 
-        private async Task ProcessAttendanceAsync(TbEmployeeMonthlyReport report, long activityId, CancellationToken ct)
+        private async Task ProcessAttendanceAsync(
+     TbEmployeeMonthlyReport report,
+     long activityId,
+     CancellationToken ct)
         {
             var attendance = await _db.TbEmployeeAttendances
                 .FirstOrDefaultAsync(a => a.ActivityId == activityId, ct);
 
-            if (attendance == null) return;
+            if (attendance == null)
+                return;
 
             report.AttendanceId = attendance.ActivityId;
             report.AttendanceDate = attendance.AttendanceDate;
@@ -253,45 +257,70 @@ namespace HRsystem.Api.Services.GenerateDailyEmployeeReport
             report.TotalHours = attendance.TotalHours;
             report.ActualWorkingHours = attendance.ActualWorkingHours;
             report.AttStatues = attendance.AttStatues;
-            report.EmployeeTodayStatuesId = 1; // Present
-            report.TodayStatues += " Attendance";
 
-            report.Details = JsonSerializer.Serialize(new
-            {
-                Type = "Attendance",
-                attendance.AttendanceDate,
-                attendance.FirstPuchin,
-                attendance.LastPuchout,
-                attendance.TotalHours,
-                attendance.ActualWorkingHours,
-                attendance.AttStatues,
-                attendance.AttendanceId
-            });
+            report.EmployeeTodayStatuesId = _attendanceTypeId; // Present
+
+            if (!report.TodayStatues.Contains("Attendance"))
+                report.TodayStatues += " Attendance";
+
+            // ✅ Append attendance details instead of overwriting
+            DailyReportDetailsHelper.AppendEvent(
+                report,
+                "Attendance",
+                new Dictionary<string, object?>
+                {
+                    ["AttendanceId"] = attendance.AttendanceId,
+                    ["AttendanceDate"] = attendance.AttendanceDate,
+                    ["FirstPuchin"] = attendance.FirstPuchin,
+                    ["LastPuchout"] = attendance.LastPuchout,
+                    ["TotalHours"] = attendance.TotalHours,
+                    ["ActualWorkingHours"] = attendance.ActualWorkingHours,
+                    ["AttStatues"] = attendance.AttStatues
+                });
         }
 
-        private async Task ProcessVacationAsync(TbEmployeeMonthlyReport report, long activityId, CancellationToken ct)
+        private async Task ProcessVacationAsync(
+      TbEmployeeMonthlyReport report,
+      long activityId,
+      CancellationToken ct)
         {
             var vacation = await _db.TbEmployeeVacations
                 .FirstOrDefaultAsync(v => v.ActivityId == activityId, ct);
 
-            if (vacation == null) return;
+            if (vacation == null)
+                return;
 
-            report.EmployeeTodayStatuesId = 3; // On Vacation
-            report.TodayStatues += " Vacation";
+            var reportDate = DateOnly.FromDateTime(report.Date);
 
-            report.Details = JsonSerializer.Serialize(new
+            // If report day is within vacation range
+            if (reportDate >= vacation.StartDate &&
+                reportDate <= vacation.EndDate)
             {
-                Type = "Vacation",
-                vacation.VacationTypeId,
-                vacation.StartDate,
-                vacation.EndDate,
-                vacation.DaysCount,
-                vacation.Notes,
-                vacation.VacationId
-            });
+                report.EmployeeTodayStatuesId = _vacationTypeId; // Vacation
 
-            // Create entries for multi-day vacations
-            await CreateVacationDaysEntriesAsync(report, vacation, ct);
+                if (!report.TodayStatues.Contains("Vacation"))
+                    report.TodayStatues += " Vacation";
+
+                // ✅ Append instead of overwrite
+                DailyReportDetailsHelper.AppendEvent(
+                    report,
+                    "Vacation",
+                    new Dictionary<string, object?>
+                    {
+                        ["VacationId"] = vacation.VacationId,
+                        ["VacationTypeId"] = vacation.VacationTypeId,
+                        ["StartDate"] = vacation.StartDate,
+                        ["EndDate"] = vacation.EndDate,
+                        ["DaysCount"] = vacation.DaysCount,
+                        ["Notes"] = vacation.Notes
+                    });
+            }
+
+            // Create entries only for multi-day vacations
+          //  if (vacation.DaysCount > 1)
+           // {
+                await CreateVacationDaysEntriesAsync(report, vacation, ct);
+           // }
         }
 
         private async Task CreateVacationDaysEntriesAsync(
@@ -307,7 +336,7 @@ namespace HRsystem.Api.Services.GenerateDailyEmployeeReport
                 if (vacationDay.Date == baseReport.Date.Date) continue;
 
                 var exists = await _db.TbEmployeeMonthlyReports
-                    .AnyAsync(r => r.EmployeeId == baseReport.EmployeeId && r.Date == vacationDay, ct);
+                    .AnyAsync(r => r.EmployeeId == baseReport.EmployeeId && r.Date.Date == vacationDay.Date, ct);
 
                 if (exists) continue;
 
@@ -350,18 +379,23 @@ namespace HRsystem.Api.Services.GenerateDailyEmployeeReport
 
             if (mission == null) return;
 
-            report.EmployeeTodayStatuesId = 4; // On Mission
-            report.TodayStatues += " Mission";
+            report.EmployeeTodayStatuesId = _missionTypeId; // On Mission
+            if (!report.TodayStatues.Contains("Mission"))
+                report.TodayStatues += " Mission";
+            
 
-            report.Details = JsonSerializer.Serialize(new
-            {
-                Type = "Mission",
-                mission.StartDatetime,
-                mission.EndDatetime,
-                mission.MissionLocation,
-                mission.MissionReason,
-                mission.MissionId
-            });
+            // ✅ Append instead of overwrite
+            DailyReportDetailsHelper.AppendEvent(
+                report,
+                "Mission",
+                new Dictionary<string, object?>
+                {
+                    ["MissionId"] = mission.MissionId,
+                    ["StartDatetime"] = mission.StartDatetime,
+                    ["EndDatetime"] = mission.EndDatetime,
+                    ["MissionLocation"] = mission.MissionLocation,
+                    ["MissionReason"] = mission.MissionReason
+                });
         }
 
         private async Task ProcessExcuseAsync(TbEmployeeMonthlyReport report, long activityId, CancellationToken ct)
@@ -371,19 +405,28 @@ namespace HRsystem.Api.Services.GenerateDailyEmployeeReport
 
             if (excuse == null) return;
 
-            report.EmployeeTodayStatuesId = 5; // Excused
+            report.EmployeeTodayStatuesId = _excuseTypeId; // Excused
             report.TodayStatues += " Excuse";
+            if (!report.TodayStatues.Contains("Excuse"))
+                report.TodayStatues += " Excuse";
 
-            report.Details = JsonSerializer.Serialize(new
-            {
-                Type = "Excuse",
-                excuse.StartTime,
-                excuse.EndTime,
-                excuse.ExcuseReason,
-                excuse.ExcuseDate,
-                excuse.ExcuseId
-            });
+
+            // ✅ Append instead of overwrite
+            DailyReportDetailsHelper.AppendEvent(
+                report,
+                "Excuse",
+                new Dictionary<string, object?>
+                {
+                    ["ExcuseId"] = excuse.ExcuseId,
+                    ["ExcuseDate"] = excuse.ExcuseDate,
+                    ["StartTime"] = excuse.StartTime,
+                    ["EndTime"] = excuse.EndTime,
+                    ["ExcuseReason"] = excuse.ExcuseReason
+                });
         }
+
+
+
 
         // Helper class
         private class DayInformation
