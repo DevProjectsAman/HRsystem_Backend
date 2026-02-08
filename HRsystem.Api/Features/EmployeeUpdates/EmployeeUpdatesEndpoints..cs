@@ -1,9 +1,11 @@
 ﻿using HRsystem.Api.Features.EmployeeUpdates.GetEmployeeWorkLocationsTree;
-using HRsystem.Api.Features.EmployeeUpdates.UpdateEmployeeWorkLocation;
+ 
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static HRsystem.Api.Features.EmployeeUpdates.UpdateEmployeeWorkLocation.UpdateEmployeeWorkLocationsCode;
+
 
 namespace HRsystem.Api.Features.EmployeeUpdates
 {
@@ -19,47 +21,47 @@ namespace HRsystem.Api.Features.EmployeeUpdates
                 // =====================================================
                 // ✅ Get Employee Work Locations
                 // =====================================================
-                group.MapGet("/GetWorkLocationByEmployee/{employeeId:int}", [Authorize] async (
-                    IMediator mediator,
-                    int employeeId) =>
-                {
-                    if (employeeId <= 0)
-                    {
-                        return Results.BadRequest(new ResponseResultDTO
-                        {
-                            Success = false,
-                            Message = "Invalid employee ID."
-                        });
-                    }
+                //group.MapGet("/GetWorkLocationByEmployee/{employeeId:int}", [Authorize] async (
+                //    IMediator mediator,
+                //    int employeeId) =>
+                //{
+                //    if (employeeId <= 0)
+                //    {
+                //        return Results.BadRequest(new ResponseResultDTO
+                //        {
+                //            Success = false,
+                //            Message = "Invalid employee ID."
+                //        });
+                //    }
 
-                    var data = await mediator.Send(
-                        new EmployeeWorkLocations.GetEmployeeWorkLocationsQuery(employeeId));
+                //    var data = await mediator.Send(
+                //        new EmployeeWorkLocations.GetEmployeeWorkLocationsQuery(employeeId));
 
-                    return Results.Ok(new ResponseResultDTO<object>
-                    {
-                        Success = true,
-                        Data = data
-                    });
-                })
-                .WithName("GetEmployeeWorkLocations");
+                //    return Results.Ok(new ResponseResultDTO<object>
+                //    {
+                //        Success = true,
+                //        Data = data
+                //    });
+                //})
+                //.WithName("GetEmployeeWorkLocations");
 
 
             // Save employee work locations (diff-based)
-            group.MapPost("/SaveEmployeeSelection", [Authorize] async (
-                SaveEmployeeWorkLocationsCommand dto,
-                ISender mediator) =>
-            {
-                var result = await mediator.Send(
-                    new SaveEmployeeWorkLocationsCommand(
-                        dto.EmployeeId,
-                        dto.WorkLocationIds));
+            //group.MapPost("/UpdateEmployeeLocations", [Authorize] async (
+            //    SaveEmployeeWorkLocationsCommand dto,
+            //    ISender mediator) =>
+            //{
+            //    var result = await mediator.Send(
+            //        new SaveEmployeeWorkLocationsCommand(
+            //            dto.EmployeeId,
+            //            dto.WorkLocationIds));
 
-                return Results.Ok(new ResponseResultDTO
-                {
-                    Success = true,
-                    Message = "Employee work locations updated successfully"
-                });
-            });
+            //    return Results.Ok(new ResponseResultDTO
+            //    {
+            //        Success = true,
+            //        Message = "Employee work locations updated successfully"
+            //    });
+            //});
 
             group.MapGet("/EmployeeWorkLocationTree", [Authorize] async (
                int employeeId,
@@ -80,7 +82,7 @@ namespace HRsystem.Api.Features.EmployeeUpdates
             // =====================================================
             group.MapPost("/UpdateEmployeeWorkLocations", [Authorize] async (
                     IMediator mediator,
-                    [FromBody] EmployeeWorkLocations.UpdateEmployeeWorkLocationsCommand command) =>
+                    [FromBody] UpdateEmployeeWorkLocationsCommand command) =>
                 {
                     if (command.EmployeeId <= 0)
                     {

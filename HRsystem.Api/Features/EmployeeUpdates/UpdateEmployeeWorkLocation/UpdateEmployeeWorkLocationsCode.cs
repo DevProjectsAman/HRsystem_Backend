@@ -1,16 +1,14 @@
 ﻿using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Features.Holiday.GetAllHolidays;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using static HRsystem.Api.Features.EmployeeUpdates.EmployeeWorkLocations.UpdateEmployeeWorkLocationsHandler;
 
-namespace HRsystem.Api.Features.EmployeeUpdates
+namespace HRsystem.Api.Features.EmployeeUpdates.UpdateEmployeeWorkLocation
 {
-    public class EmployeeWorkLocations
+    public class UpdateEmployeeWorkLocationsCode
     {
         #region  Get Employee Locations
         public record GetEmployeeWorkLocationsQuery(int employeeId) : IRequest<List<WorkLocationDto>>;
@@ -40,57 +38,57 @@ namespace HRsystem.Api.Features.EmployeeUpdates
 
         }
 
-        public class GetEmployeeWorkLocationsHandler    : IRequestHandler<GetEmployeeWorkLocationsQuery, List<WorkLocationDto>>
-        {
-            private readonly DBContextHRsystem _db;
+        //public class GetEmployeeWorkLocationsHandler    : IRequestHandler<GetEmployeeWorkLocationsQuery, List<WorkLocationDto>>
+        //{
+        //    private readonly DBContextHRsystem _db;
 
-            public GetEmployeeWorkLocationsHandler(DBContextHRsystem db)
-            {
-                _db = db;
-            }
+        //    public GetEmployeeWorkLocationsHandler(DBContextHRsystem db)
+        //    {
+        //        _db = db;
+        //    }
 
-            public async Task<List<WorkLocationDto>> Handle(
-                GetEmployeeWorkLocationsQuery request,
-                CancellationToken cancellationToken)
-            {
-                var workLocations = await _db.TbEmployeeWorkLocations
-                    .AsNoTracking()
-                    .Include(x => x.WorkLocation)
-                    .Where(x => x.EmployeeId == request.employeeId)
-                    .Select(x => new WorkLocationDto
-                    {
-                        WorkLocationId = x.WorkLocationId,
-                        CompanyId = x.CompanyId,
+        //    public async Task<List<WorkLocationDto>> Handle(
+        //        GetEmployeeWorkLocationsQuery request,
+        //        CancellationToken cancellationToken)
+        //    {
+        //        var workLocations = await _db.TbEmployeeWorkLocations
+        //            .AsNoTracking()
+        //            .Include(x => x.WorkLocation)
+        //            .Where(x => x.EmployeeId == request.employeeId)
+        //            .Select(x => new WorkLocationDto
+        //            {
+        //                WorkLocationId = x.WorkLocationId,
+        //                CompanyId = x.CompanyId,
 
-                        WorkLocationCode = x.WorkLocation.WorkLocationCode,
+        //                WorkLocationCode = x.WorkLocation.WorkLocationCode,
 
-                        LocationName = new LocalizedData
-                        {
-                            ar = x.WorkLocation.LocationName.ar,
-                            en = x.WorkLocation.LocationName.en
-                        },
+        //                LocationName = new LocalizedData
+        //                {
+        //                    ar = x.WorkLocation.LocationName.ar,
+        //                    en = x.WorkLocation.LocationName.en
+        //                },
 
-                        Latitude = (double?)x.WorkLocation.Latitude,
-                        Longitude = (double?)x.WorkLocation.Longitude,
-                        AllowedRadiusM = x.WorkLocation.AllowedRadiusM,
+        //                Latitude = (double?)x.WorkLocation.Latitude,
+        //                Longitude = (double?)x.WorkLocation.Longitude,
+        //                AllowedRadiusM = x.WorkLocation.AllowedRadiusM,
 
-                        CityId = x.CityId,
-                        CityName = _db.TbCities
-                            .Where(c => c.CityId == x.CityId)
-                            .Select(c => c.CityName)
-                            .FirstOrDefault(),
+        //                CityId = x.CityId,
+        //                CityName = _db.TbCities
+        //                    .Where(c => c.CityId == x.CityId)
+        //                    .Select(c => c.CityName)
+        //                    .FirstOrDefault(),
 
-                        GovId = x.WorkLocation.GovId,
-                        GovName = _db.TbGovs
-                            .Where(g => g.GovId == x.WorkLocation.GovId)
-                            .Select(g => g.GovName)
-                            .FirstOrDefault()
-                    })
-                    .ToListAsync(cancellationToken);
+        //                GovId = x.WorkLocation.GovId,
+        //                GovName = _db.TbGovs
+        //                    .Where(g => g.GovId == x.WorkLocation.GovId)
+        //                    .Select(g => g.GovName)
+        //                    .FirstOrDefault()
+        //            })
+        //            .ToListAsync(cancellationToken);
 
-                return workLocations;
-            }
-        }
+        //        return workLocations;
+        //    }
+        //}
 
 
         #endregion
@@ -100,10 +98,10 @@ namespace HRsystem.Api.Features.EmployeeUpdates
 
         public record UpdateEmployeeWorkLocationsCommand(
      int EmployeeId,
-     List<WorkLocationRequestDto> WorkLocations
+     List<BasicWorkLocationtDto> WorkLocations
  ) : IRequest<bool>;
 
-        public class WorkLocationRequestDto
+        public class BasicWorkLocationtDto
         {
             public int WorkLocationId { get; set; }
             public int CityId { get; set; }
@@ -153,9 +151,9 @@ namespace HRsystem.Api.Features.EmployeeUpdates
                         {
                             EmployeeId = request.EmployeeId,
                             WorkLocationId = w.WorkLocationId,
-                            CityId = w.CityId,
+                            CityId = (int)w.CityId,
                             CompanyId = w.CompanyId,
-
+                             
                             CreatedAt = DateTime.UtcNow,
                             CreatedBy = _currentUserService.UserId // set from current user if available
                         }).ToList();

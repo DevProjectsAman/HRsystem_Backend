@@ -10,6 +10,7 @@
 
 	<ItemGroup>
 	  <Compile Remove="Features\AccessManagment\Auth\UserManagement\userRolePermissions.cs" />
+	  <Compile Remove="Features\EmployeeUpdates\UpdateEmployeeWorkLocation\UpdateWorkLocationsTree.cs" />
 	  <Compile Remove="Features\Organization\Groups\Create\CreateGroupEndpoint.cs" />
 	  <Compile Remove="Features\Organization\Groups\DeleteGroup\DeleteGroupEndPoint.cs" />
 	  <Compile Remove="Features\Organization\Groups\GetALlGroup\GetAllGroupEndPoint.cs" />
