@@ -1,10 +1,10 @@
 ﻿
-    using MediatR;
-    using Microsoft.EntityFrameworkCore;
-    using FluentValidation;
-    using global::HRsystem.Api.Database;
-    using global::HRsystem.Api.Features.Reports.DTO;
-    using global::HRsystem.Api.Shared.DTO;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using global::HRsystem.Api.Database;
+using global::HRsystem.Api.Features.Reports.DTO;
+using global::HRsystem.Api.Shared.DTO;
 using Google.Cloud.AIPlatform.V1;
 
 namespace HRsystem.Api.Features.Reports
