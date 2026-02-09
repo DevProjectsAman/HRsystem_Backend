@@ -76,16 +76,18 @@ namespace HRsystem.Api.Services.Auth
             //}
 
             // Collect all permissions   
-            // Add roles
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
+            //// Add roles
+            //foreach (var role in roles)
+            //{
+                
+            //}
 
             // Collect permissions
             var allPermissions = new List<string>();
             foreach (var role in roles)
             {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+
                 var permissions = await GetRolePermissionsAsync(role);
                 if (permissions != null)
                 {

@@ -65,19 +65,49 @@
 
             var search = request.SearchTerm.Trim();
 
+
+            // First, try to find employee by device
+            var deviceTrack = await _db.TbEmployeeDevicesTrack
+                .AsNoTracking()
+                .Where(d => d.DeviceUid == search ||
+                            d.DeviceFingerprint == search ||
+                            d.Model.Contains(search) ||
+                            d.Manufacturer.Contains(search))
+                .FirstOrDefaultAsync(ct);
+
+            int? employeeIdFromDevice = deviceTrack?.EmployeeId;
+
+            // Query employee with related data
+            //var employee = await _db.TbEmployees
+            //    .AsNoTracking()
+            //    .Include(e => e.JobTitle)        // Assuming navigation property exists
+            //     .Include(e => e.Department)
+            //    .Include(e => e.TbEmployeeWorkLocations)    // Many-to-many
+            //    .ThenInclude(wl => wl.WorkLocation)
+            //    .Include(e => e.TbEmployeeProjects)
+            //    .ThenInclude(p => p.Project)
+            //    .Where(e => e.NationalId == search
+            //             || e.EmployeeCodeHr == search
+            //             || e.EmployeeCodeFinance == search)
+            //    .FirstOrDefaultAsync(ct);
+
+
             // Query employee with related data
             var employee = await _db.TbEmployees
                 .AsNoTracking()
-                .Include(e => e.JobTitle)        // Assuming navigation property exists
-                 .Include(e => e.Department)
-                .Include(e => e.TbEmployeeWorkLocations)    // Many-to-many
+                .Include(e => e.JobTitle)
+                .Include(e => e.Department)
+                .Include(e => e.TbEmployeeWorkLocations)
                 .ThenInclude(wl => wl.WorkLocation)
                 .Include(e => e.TbEmployeeProjects)
                 .ThenInclude(p => p.Project)
                 .Where(e => e.NationalId == search
                          || e.EmployeeCodeHr == search
-                         || e.EmployeeCodeFinance == search)
+                         || e.EmployeeCodeFinance == search
+                         || (employeeIdFromDevice.HasValue && e.EmployeeId == employeeIdFromDevice.Value))
                 .FirstOrDefaultAsync(ct);
+
+
 
             if (employee == null)
             {
@@ -132,6 +162,10 @@
             }
 
         }
+   
+    
+    
+    
     }
 
 }
