@@ -80,7 +80,8 @@ namespace HRsystem.Api.Features.EmployeeAttendance.EmployeePunch
                     }
                 }
             }
-            if (WorkLOC == null) throw new Exception("Not In Allowed Radius");
+          //  if (WorkLOC == null) throw new Exception("Not In Allowed Radius");
+             if (WorkLOC == null) throw new Exception("أنت خارج النطاق الجغرافي المسموح به");
 
             var today = DateTime.UtcNow.Date;
 
@@ -239,7 +240,8 @@ namespace HRsystem.Api.Features.EmployeeAttendance.EmployeePunch
                     }
                 }
             }
-            if (WorkLOC == null) throw new Exception("Not In Allowed Radius");
+
+            if (WorkLOC == null) throw new Exception("أنت خارج النطاق الجغرافي المسموح به");
 
             var today = DateTime.UtcNow.Date;
             var now = DateTime.UtcNow;

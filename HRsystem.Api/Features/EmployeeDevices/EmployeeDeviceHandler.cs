@@ -43,6 +43,7 @@ namespace HRsystem.Api.Features.EmployeeDevices
 
             if (device == null)
                 return false;
+
             // Primary check: fingerprint must match
             //if (device.DeviceFingerprint != fingerprint)
             //{
