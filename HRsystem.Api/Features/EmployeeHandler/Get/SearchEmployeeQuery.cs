@@ -67,12 +67,15 @@
 
 
             // First, try to find employee by device
+            // Priority: Active devices first, then by newest registration date
             var deviceTrack = await _db.TbEmployeeDevicesTrack
                 .AsNoTracking()
                 .Where(d => d.DeviceUid == search ||
                             d.DeviceFingerprint == search ||
                             d.Model.Contains(search) ||
                             d.Manufacturer.Contains(search))
+                .OrderByDescending(d => d.IsActiveDevice)  // Active devices first
+                .ThenByDescending(d => d.RegisteredAt)      // Then newest first
                 .FirstOrDefaultAsync(ct);
 
             int? employeeIdFromDevice = deviceTrack?.EmployeeId;
