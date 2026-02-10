@@ -83,7 +83,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
             })
                    .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.HasPermission("system.roles")))
+                    ctx.User.HasPermission("user.manage")))
             .WithName("ListRoles");
 
             // --- Get role by id (GET) ---
@@ -96,7 +96,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
             })
                    .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                    ctx.User.HasPermission("system.roles")))
+                    ctx.User.HasPermission("user.manage")))
             .WithName("GetRole");
 
             // --- Create role (POST) ---

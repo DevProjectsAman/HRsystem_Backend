@@ -94,7 +94,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
                    .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
                     
-                    ctx.User.HasPermission("system.permissions")))
+                    ctx.User.HasPermission("user.manage")))
             .WithName("ListPermissions");
 
             // --- Get Permission by Id (GET) ---
@@ -108,7 +108,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
                    .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
 
-                    ctx.User.HasPermission("system.permissions")))
+                    ctx.User.HasPermission("user.manage")))
             .WithName("GetOnePermission");
 
             // --- Create Permission (POST) ---

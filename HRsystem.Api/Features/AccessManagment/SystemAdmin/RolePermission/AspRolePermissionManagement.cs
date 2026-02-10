@@ -46,7 +46,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
             // Apply the custom authorization policy
             .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                   ctx.User.HasPermission( "system.role.permissions")))
+                   ctx.User.HasPermission( "user.manage")))
             .WithName("ListRolePermissions");
 
             // --- Get Role Permission ---
@@ -73,7 +73,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.RolePermission
             })
                    .RequireAuthorization(policy =>
                 policy.RequireAssertion(ctx =>
-                   ctx.User.HasPermission("system.role.permissions")))
+                   ctx.User.HasPermission("user.manage")))
             .WithName("GetRolePermission");
 
             // --- Create Role Permission ---
