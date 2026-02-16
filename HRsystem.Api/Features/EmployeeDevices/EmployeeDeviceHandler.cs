@@ -44,6 +44,7 @@ namespace HRsystem.Api.Features.EmployeeDevices
             if (device == null)
                 return false;
 
+
             // Primary check: fingerprint must match
             //if (device.DeviceFingerprint != fingerprint)
             //{
@@ -54,8 +55,7 @@ namespace HRsystem.Api.Features.EmployeeDevices
             //        EmployeeId = device.EmployeeId,
             //        Severity = "High"
             //    });
-
-              
+                       
            
 
             // Update last active

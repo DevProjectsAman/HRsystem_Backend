@@ -34,11 +34,17 @@ namespace HRsystem.Api.Features.Scheduling.VacationRulesGroup.GetBestMatchByPara
                     Rule = r,
                     Score =
                         (request.EmployeeAge != null &&
-                         r.MinAge <= request.EmployeeAge && r.MaxAge >= request.EmployeeAge ? 1 : 0) +
+                         (r.MinAge == null || r.MinAge <= request.EmployeeAge) &&
+                         (r.MaxAge == null || r.MaxAge >= request.EmployeeAge) ? 1 : 0) +
+
                         (request.ServiceYears != null &&
-                         r.MinServiceYears <= request.ServiceYears && r.MaxServiceYears >= request.ServiceYears ? 1 : 0) +
+                         (r.MinServiceYears == null || r.MinServiceYears <= request.ServiceYears) &&
+                         (r.MaxServiceYears == null || r.MaxServiceYears >= request.ServiceYears) ? 1 : 0) +
+
                         (request.WorkingYearsAtCompany != null &&
-                         r.WorkingYearsAtCompany <= request.WorkingYearsAtCompany ? 1 : 0)
+                         (r.WorkingYearsAtCompany == null ||
+                          r.WorkingYearsAtCompany <= request.WorkingYearsAtCompany) ? 1 : 0)
+
                 })
                 .ToListAsync(cancellationToken);
 

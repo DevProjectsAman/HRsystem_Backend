@@ -34,6 +34,9 @@
         public string? DepartmentName { get; set; } = string.Empty;
         public string? MobileNumber { get; set; } = string.Empty;
 
+        public string ShiftName { get; set; } = string.Empty;
+        public string? ShiftStartTime { get; set; } = string.Empty;
+        public string? ShiftEndTime { get; set; } = string.Empty;
 
     }
 
@@ -100,6 +103,7 @@
                 .AsNoTracking()
                 .Include(e => e.JobTitle)
                 .Include(e => e.Department)
+                .Include(e => e.Shifts) // Assuming navigation property exists
                 .Include(e => e.TbEmployeeWorkLocations)
                 .ThenInclude(wl => wl.WorkLocation)
                 .Include(e => e.TbEmployeeProjects)
@@ -150,9 +154,12 @@
                     MobileNumber = employee.PrivateMobile,
                     JobTitle = employee.JobTitle?.TitleName.ar ?? string.Empty,
                     WorkLocations = employee.TbEmployeeWorkLocations?.Select(w => w.WorkLocation.LocationName.ar).ToList() ?? new List<string>(),
-                    Projects = employee.TbEmployeeProjects?.Select(p => p.Project.ProjectName.ar).ToList() ?? new List<string>()
-                    ,
-                    RoleIds = roleIds
+                    Projects = employee.TbEmployeeProjects?.Select(p => p.Project.ProjectName.ar).ToList() ?? new List<string>(),
+                    RoleIds = roleIds,
+                    ShiftName = employee.Shifts != null ? employee.Shifts.ShiftName.ar : string.Empty,
+                    ShiftStartTime = employee.Shifts != null ? employee.Shifts.StartTime.ToString(@"hh\:mm") : string.Empty,
+                    ShiftEndTime = employee.Shifts != null ? employee.Shifts.EndTime.ToString(@"hh\:mm") : string.Empty
+
                 };
 
 
@@ -165,10 +172,10 @@
             }
 
         }
-   
-    
-    
-    
+
+
+
+
     }
 
 }

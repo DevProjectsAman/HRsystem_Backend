@@ -17,6 +17,7 @@ using HRsystem.Api.Features.EmployeeDashboard.EmployeeMonthlyReport;
 using HRsystem.Api.Features.EmployeeDashboard.GetPendingActivities;
 using HRsystem.Api.Features.EmployeeDashboard.mangeractivity;
 using HRsystem.Api.Features.EmployeeDevices;
+using HRsystem.Api.Features.EmployeeEdit;
 using HRsystem.Api.Features.EmployeeHandler;
 using HRsystem.Api.Features.EmployeeRequest.employeevacations;
 using HRsystem.Api.Features.EmployeeRequest.Execuse;
@@ -581,6 +582,7 @@ app.MapRefreshTokenEndpoint();
 
 app.MapEmployeeUpdatesEndpoints();
 
+app.MapEmployeeEditHandlerEndpoints();
 
 app.MapEmployeeReportEndpoints();
 app.MapReportEndPoints();

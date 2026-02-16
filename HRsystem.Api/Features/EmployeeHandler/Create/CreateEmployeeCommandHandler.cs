@@ -1,11 +1,14 @@
 ﻿
 using HRsystem.Api.Database;
 using HRsystem.Api.Database.DataTables;
-using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Features.EmployeeHandler.Create;
-
+using HRsystem.Api.Services.CurrentUser;
+using HRsystem.Api.Shared.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace HRsystem.Api.Features.EmployeeHandler.Create
 {
@@ -18,12 +21,18 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
         private readonly DBContextHRsystem _db;
         private readonly ICurrentUserService _currentUser;
 
-        public CreateEmployeeCommandHandler(
-            DBContextHRsystem db,
-            ICurrentUserService currentUser)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
+
+
+        public CreateEmployeeCommandHandler(            DBContextHRsystem db,
+            ICurrentUserService currentUser, UserManager<ApplicationUser> userManager
+            , RoleManager<ApplicationRole> roleManager)
         {
             _db = db;
             _currentUser = currentUser;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public async Task<int> Handle(
@@ -201,6 +210,16 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
                 }
 
                 #endregion
+                
+                #region Employee user account
+
+                await CreateEmployeeUserAccount(employee);
+
+
+                #endregion
+
+
+
 
                 await _db.SaveChangesAsync(cancellationToken);
                 await tx.CommitAsync(cancellationToken);
@@ -213,6 +232,48 @@ namespace HRsystem.Api.Features.EmployeeHandler.Create
                 throw;
             }
         }
+  
+    
+        private async Task<bool> CreateEmployeeUserAccount(TbEmployee employee)
+        {
+            // This method can be implemented to create a user account for the employee in the identity system.
+
+            var user = new ApplicationUser
+            {
+                UserName = employee.NationalId,
+                UserFullName = employee.EnglishFullName,
+                CompanyId = _currentUser.CompanyID,
+                EmployeeId = employee.EmployeeId,
+                IsActive = true,
+                Email = employee.Email,
+            };
+
+            var createResult = await _userManager.CreateAsync(user, employee.NationalId);
+
+            if (!createResult.Succeeded)
+            {
+                return false;
+            }
+
+             
+            List<string> roleNames = new List<string>();
+            roleNames.Add("Employee"); // Example role, adjust as needed
+
+            // 🔹 Add new roles
+            var addRolesResult = await _userManager.AddToRolesAsync(user, roleNames);
+            if (!addRolesResult.Succeeded)
+                return false;
+             
+            return true;
+        }
+
+
     }
+
+
+
+   
+
+
 
 }

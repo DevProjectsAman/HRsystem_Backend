@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using HRsystem.Api.Features.EmployeeHandler.Create;
 using HRsystem.Api.Features.EmployeeHandler.Get;
+using HRsystem.Api.Features.EmployeeHandler.GetList;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -67,6 +68,40 @@ namespace HRsystem.Api.Features.EmployeeHandler
                 return Results.Ok(result);
             })
             .WithName("SearchEmployee");
+
+
+            // --- Get Employees List (Optional Department + Pagination) ---
+            group.MapGet("/GetEmployeesList", [Authorize] async (
+                IMediator mediator,
+                int? departmentId,
+                string? Search,
+                string? SortBy,
+                string? SortDirection,
+                int pageNumber = 1,
+                int pageSize = 10) =>
+                        {
+                var result = await mediator.Send(
+                    new GetEmployeesListQuery(departmentId, Search, SortBy, SortDirection, pageNumber, pageSize)
+                );
+
+                return Results.Ok(result);
+            })
+            .WithName("GetEmployees");
+
+
+            group.MapGet("/GetAllEmployeesList", [Authorize] async (
+               IMediator mediator,
+               int? departmentId
+               ) =>
+            {
+                var result = await mediator.Send(
+                    new GetAllEmployeesListQuery(departmentId)
+                );
+
+                return Results.Ok(result);
+            })
+           .WithName("GetAllEmployees");
+
         }
 
     }
