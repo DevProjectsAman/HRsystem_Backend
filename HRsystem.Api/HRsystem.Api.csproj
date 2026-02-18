@@ -9,6 +9,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Features\EmployeeEdit\**" />
+	  <Content Remove="Features\EmployeeEdit\**" />
+	  <EmbeddedResource Remove="Features\EmployeeEdit\**" />
+	  <None Remove="Features\EmployeeEdit\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Remove="Features\AccessManagment\Auth\UserManagement\userRolePermissions.cs" />
 	  <Compile Remove="Features\EmployeeUpdates\UpdateEmployeeWorkLocation\UpdateWorkLocationsTree.cs" />
 	  <Compile Remove="Features\Organization\Groups\Create\CreateGroupEndpoint.cs" />

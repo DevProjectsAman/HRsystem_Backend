@@ -57,6 +57,8 @@ namespace HRsystem.Api.Features.EmployeeEdit
         public string? JobTitleName { get; set; }
         public int ManagerId { get; set; }
         public string? ManagerName { get; set; }
+
+        public int? ProjectId { get; set; }
     }
 
     public class EmployeeHiringDto

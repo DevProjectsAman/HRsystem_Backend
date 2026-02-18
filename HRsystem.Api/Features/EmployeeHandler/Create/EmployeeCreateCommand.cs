@@ -7,7 +7,6 @@ using static global::HRsystem.Api.Enums.EnumsList;
 namespace HRsystem.Api.Features.EmployeeHandler.Create
 {
 
-
     #region Command
 
     public sealed record CreateEmployeeCommandNew(
