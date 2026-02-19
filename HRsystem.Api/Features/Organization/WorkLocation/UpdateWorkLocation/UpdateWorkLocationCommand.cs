@@ -42,6 +42,14 @@ namespace HRsystem.Api.Features.Organization.WorkLocation.UpdateWorkLocation
             entity.CityId = request.CityId;
             entity.UpdatedAt = DateTime.UtcNow;
 
+            var govid = await _db.TbCities.Where(c => c.CityId == request.CityId)
+                .Select(c => c.GovId)
+                .FirstOrDefaultAsync(ct);
+
+
+            entity.GovId = govid;
+
+
             await _db.SaveChangesAsync(ct);
             return entity.WorkLocationId;
         }

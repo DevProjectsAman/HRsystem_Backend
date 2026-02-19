@@ -70,99 +70,95 @@ namespace HRsystem.Api.Features.EmployeeUpdates.GetEmployeeWorkLocationsTree
                 _currentUser = currentUser;
             }
 
-            public async Task<List<GovWithCitiesDto>> Handle(GetWorkLocationsHierarchyQuery request, CancellationToken ct)
-            {
-                // Get selected work locations for the employee
-                var selectedWorkLocationIds = await _db.TbEmployeeWorkLocations
-                    .AsNoTracking()
-                    .Where(e => e.EmployeeId == request.employeeId && e.CompanyId == _currentUser.CompanyID)
-                    .Select(e => e.WorkLocationId)
-                    .ToHashSetAsync(ct);
+        public async Task<List<GovWithCitiesDto>> Handle(GetWorkLocationsHierarchyQuery request, CancellationToken ct)
+        {
+            var selectedWorkLocationIds = await _db.TbEmployeeWorkLocations
+                .AsNoTracking()
+                .Where(e => e.EmployeeId == request.employeeId && e.CompanyId == _currentUser.CompanyID)
+                .Select(e => e.WorkLocationId)
+                .ToHashSetAsync(ct);
 
-                // Load all work locations for the company
-                var workLocations = await _db.TbWorkLocations
-                    .AsNoTracking()
-                    .Include(w => w.Gov)
-                    .Include(w => w.City)
-                    .Where(w => w.CompanyId == _currentUser.CompanyID)
-                    .ToListAsync(ct);
+            // Project directly — no Include needed, avoids null nav property issues
+            var workLocations = await _db.TbWorkLocations
+                .AsNoTracking()
+                .Where(w => w.CompanyId == _currentUser.CompanyID)
+                .Select(w => new
+                {
+                    w.WorkLocationId,
+                    w.CompanyId,
+                    w.WorkLocationCode,
+                    w.LocationName,
+                    w.Latitude,
+                    w.Longitude,
+                    w.AllowedRadiusM,
+                    GovId = w.GovId ?? 0,
+                    GovName = w.Gov != null ? w.Gov.GovName : "Unassigned",
+                    CityId = w.CityId ?? 0,
+                    CityName = w.City != null ? w.City.CityName : "Unassigned",
+                })
+                .ToListAsync(ct);
 
-                // Group by Gov (null-safe)
-                var govs = workLocations
-                    .GroupBy(w => new
+            var govs = workLocations
+                .GroupBy(w => new { w.GovId, w.GovName })
+                .Select(govGroup =>
+                {
+                    var govDto = new GovWithCitiesDto
                     {
-                        w.GovId,
-                        GovName = w.Gov?.GovName ?? string.Empty
-                    })
-                    .Select(govGroup =>
-                    {
-                        var govDto = new GovWithCitiesDto
+                        GovId = govGroup.Key.GovId,
+                        GovName = govGroup.Key.GovName ?? "Unassigned"
+                    };
+
+                    govDto.Cities = govGroup
+                        .GroupBy(w => new { w.CityId, w.CityName })
+                        .Select(cityGroup =>
                         {
-                            GovId = govGroup.Key.GovId ?? 0,
-                            GovName = govGroup.Key.GovName
-                        };
-
-                        // Group by City (null-safe)
-                        govDto.Cities = govGroup
-                            .GroupBy(w => new
+                            var cityDto = new CityWithWorkLocationsDto
                             {
-                                w.CityId,
-                                CityName = w.City?.CityName ?? string.Empty
-                            })
-                            .Select(cityGroup =>
+                                CityId = cityGroup.Key.CityId,
+                                CityName = cityGroup.Key.CityName ?? "Unassigned"
+                            };
+
+                            cityDto.WorkLocations = cityGroup.Select(w => new WorkLocationSelectionDto
                             {
-                                var cityDto = new CityWithWorkLocationsDto
-                                {
-                                    CityId = cityGroup.Key.CityId ?? 0,
-                                    CityName = cityGroup.Key.CityName
-                                };
+                                WorkLocationId = w.WorkLocationId,
+                                CompanyId = w.CompanyId,
+                                WorkLocationCode = w.WorkLocationCode ?? string.Empty,
+                                LocationName = w.LocationName,
+                                Latitude = w.Latitude,
+                                Longitude = w.Longitude,
+                                AllowedRadiusM = w.AllowedRadiusM,
+                                GovId = w.GovId,
+                                CityId = w.CityId,
+                                CityName = w.CityName,
+                                GovName = w.GovName,
+                                IsSelected = selectedWorkLocationIds.Contains(w.WorkLocationId)
+                            }).ToList();
 
-                                // Map WorkLocations
-                                cityDto.WorkLocations = cityGroup.Select(w => new WorkLocationSelectionDto
-                                {
-                                    WorkLocationId = w.WorkLocationId,
-                                    CompanyId = w.CompanyId,
-                                    WorkLocationCode = w.WorkLocationCode ?? string.Empty,
-                                    LocationName = w.LocationName,
-                                    Latitude = w.Latitude,
-                                    Longitude = w.Longitude,
-                                    AllowedRadiusM = w.AllowedRadiusM,
-                                    GovId = w.GovId,
-                                    CityId = w.CityId,
-                                    CityName= w.City?.CityName,
-                                    GovName= w.Gov?.GovName,
-                                    IsSelected = selectedWorkLocationIds.Contains(w.WorkLocationId)
-                                }).ToList();
+                            var selectedCount = cityDto.WorkLocations.Count(w => w.IsSelected);
+                            cityDto.SelectionState =
+                                selectedCount == 0 ? SelectionState.None :
+                                selectedCount == cityDto.WorkLocations.Count ? SelectionState.All :
+                                SelectionState.Partial;
 
-                                // City selection state
-                                var selectedCount = cityDto.WorkLocations.Count(w => w.IsSelected);
-                                cityDto.SelectionState =
-                                    selectedCount == 0
-                                        ? SelectionState.None
-                                        : selectedCount == cityDto.WorkLocations.Count
-                                            ? SelectionState.All
-                                            : SelectionState.Partial;
+                            return cityDto;
+                        })
+                        .ToList();
 
-                                return cityDto;
-                            })
-                            .ToList();
+                    var cityStates = govDto.Cities.Select(c => c.SelectionState).ToList();
+                    govDto.SelectionState =
+                        cityStates.All(s => s == SelectionState.None) ? SelectionState.None :
+                        cityStates.All(s => s == SelectionState.All) ? SelectionState.All :
+                        SelectionState.Partial;
 
-                        // Gov selection state
-                        var cityStates = govDto.Cities.Select(c => c.SelectionState).ToList();
-                        govDto.SelectionState =
-                            cityStates.All(s => s == SelectionState.None)
-                                ? SelectionState.None
-                                : cityStates.All(s => s == SelectionState.All)
-                                    ? SelectionState.All
-                                    : SelectionState.Partial;
+                    return govDto;
+                })
+                .ToList();
 
-                        return govDto;
-                    })
-                    .ToList();
-
-                return govs;
-            }
+            return govs;
         }
+
+
+    }
     }
 
 

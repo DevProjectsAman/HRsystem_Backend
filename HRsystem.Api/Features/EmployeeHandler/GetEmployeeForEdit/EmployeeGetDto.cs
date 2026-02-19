@@ -10,20 +10,18 @@ namespace HRsystem.Api.Features.EmployeeHandler.GetEmployeeForEdit
 
         public EmployeeExtraDataEditDto EmployeeExtraDataEdit { get; set; } = new();
 
+        public EmployeeOrganizationEditDto EmployeeOrganizationEdit { get; set; } = new();
+
+        public EmployeeOrganizationHiringEditDto EmployeeOrganizationHiringEdit { get; set; } = new();
 
 
-        //public EmployeeOrganizationEditDto EmployeeOrganization { get; set; } = new();
-
-        //public EmployeeOrganizationHiringEditDto EmployeeOrganizationHiring { get; set; } = new();
+        public EmployeeWorkLocationsEditDto EmployeeWorkLocationsEdit { get; set; } = new();
 
 
-        //public EmployeeWorkLocationsEditDto EmployeeWorkLocations { get; set; } = new();
+        public EmployeeShiftWorkDaysEditDto EmployeeShiftWorkDaysEdit { get; set; } = new();
 
 
-        //public EmployeeShiftWorkDaysEditDto EmployeeShiftWorkDays { get; set; } = new();
-
-
-        //public EmployeeVacationsBalanceListEditDto EmployeeVacationsBalance { get; set; } = new();
+        public EmployeeVacationsBalanceListEditDto EmployeeVacationsBalanceEdit { get; set; } = new();
 
 
 
@@ -57,7 +55,7 @@ namespace HRsystem.Api.Features.EmployeeHandler.GetEmployeeForEdit
     public class EmployeeVacationsBalanceListEditDto
     {
 
-        public List<EmployeeVacationBalanceEditDto> EmployeeVacationBalances { get; set; } = new();
+        public List<EmployeeVacationBalanceEditDto> EmployeeVacationBalancesEdit { get; set; } = new();
     }
 
     public class EmployeeVacationBalanceEditDto
@@ -168,7 +166,7 @@ namespace HRsystem.Api.Features.EmployeeHandler.GetEmployeeForEdit
     {
 
 
-        public List<WorkLocationEditDto> EmployeeWorkLocations { get; set; } = new();
+        public List<WorkLocationEditDto> EmployeeWorkLocationsEdit { get; set; } = new();
 
 
     }

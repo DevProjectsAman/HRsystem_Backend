@@ -35,30 +35,30 @@ namespace HRsystem.Api.Features.EmployeeHandler.GetEmployeeForEdit
             // Load Related Data
             // =========================
 
-            //var workLocations = await _db.TbEmployeeWorkLocations
-            //    .Where(x => x.EmployeeId == request.EmployeeId)
-            //    .Include(x => x.WorkLocation)
-            //        .ThenInclude(w => w.City)
-            //            .ThenInclude(c => c.Gov)
-            //    .AsNoTracking()
-            //    .ToListAsync(cancellationToken);
+            var workLocations = await _db.TbEmployeeWorkLocations
+                .Where(x => x.EmployeeId == request.EmployeeId)
+                .Include(x => x.WorkLocation)
+                    .ThenInclude(w => w.City)
+                        .ThenInclude(c => c.Gov)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
 
-            //var project = await _db.TbEmployeeProjects
-            //    .Where(x => x.EmployeeId == request.EmployeeId)
-            //    .OrderByDescending(x => x.CreatedAt)
-            //    .AsNoTracking()
-            //    .FirstOrDefaultAsync(cancellationToken);
+            var project = await _db.TbEmployeeProjects
+                .Where(x => x.EmployeeId == request.EmployeeId)
+                .OrderByDescending(x => x.CreatedAt)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cancellationToken);
 
-            //var shift = await _db.TbEmployeeShifts
-            //    .Where(x => x.EmployeeId == request.EmployeeId)
-            //    .OrderByDescending(x => x.EffectiveDate)
-            //    .AsNoTracking()
-            //    .FirstOrDefaultAsync(cancellationToken);
+            var shift = await _db.TbEmployeeShifts
+                .Where(x => x.EmployeeId == request.EmployeeId)
+                .OrderByDescending(x => x.EffectiveDate)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cancellationToken);
 
-            //var vacationBalances = await _db.TbEmployeeVacationBalances
-            //    .Where(x => x.EmployeeId == request.EmployeeId)
-            //    .AsNoTracking()
-            //    .ToListAsync(cancellationToken);
+            var vacationBalances = await _db.TbEmployeeVacationBalances
+                .Where(x => x.EmployeeId == request.EmployeeId)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
 
             // =========================
             // Map To Edit DTO
@@ -91,70 +91,70 @@ namespace HRsystem.Api.Features.EmployeeHandler.GetEmployeeForEdit
                     Note = employee.Note
                 },
 
-                //EmployeeOrganization = new EmployeeOrganizationEditDto
-                //{
-                //    CompanyId = employee.CompanyId,
-                //    DepartmentId = employee.DepartmentId,
-                //    JobLevelId =(int) employee.JobLevelId,
-                //    JobTitleId = employee.JobTitleId,
-                //    ManagerId = employee.ManagerId ,
-                //    ProjectId = project?.ProjectId
-                //},
+                EmployeeOrganizationEdit = new EmployeeOrganizationEditDto
+                {
+                    CompanyId = employee.CompanyId,
+                    DepartmentId = employee.DepartmentId,
+                    JobLevelId = (int)employee.JobLevelId,
+                    JobTitleId = employee.JobTitleId,
+                    ManagerId = employee.ManagerId,
+                    ProjectId =  project?.ProjectId
+                },
 
-                //EmployeeOrganizationHiring = new EmployeeOrganizationHiringEditDto
-                //{
-                //    ContractTypeId = employee.ContractTypeId,
-                //    SerialMobile = employee.SerialMobile,
-                //    EmployeeCodeFinance = employee.EmployeeCodeFinance,
-                //    EmployeeCodeHr = employee.EmployeeCodeHr,
-                //    HireDate = employee.HireDate,
-                //    StartDate = employee.StartDate,
-                //    EndDate = employee.EndDate,
-                //    Status = employee.Status
-                //},
+                EmployeeOrganizationHiringEdit = new EmployeeOrganizationHiringEditDto
+                {
+                    ContractTypeId = employee.ContractTypeId,
+                    SerialMobile = employee.SerialMobile,
+                    EmployeeCodeFinance = employee.EmployeeCodeFinance,
+                    EmployeeCodeHr = employee.EmployeeCodeHr,
+                    HireDate = employee.HireDate,
+                    StartDate = employee.StartDate,
+                    EndDate = employee.EndDate,
+                    Status = employee.Status
+                },
 
-                //EmployeeShiftWorkDays = new EmployeeShiftWorkDaysEditDto
-                //{
-                //    ShiftId = shift?.ShiftId ?? 0,
-                //    WorkDaysId = employee.WorkDaysId
-                //},
+                EmployeeShiftWorkDaysEdit = new EmployeeShiftWorkDaysEditDto
+                {
+                    ShiftId = shift?.ShiftId ?? 0,
+                    WorkDaysId = employee.WorkDaysId
+                },
 
-                //EmployeeWorkLocations = new EmployeeWorkLocationsEditDto
-                //{
-                //    EmployeeWorkLocations = workLocations.Select(w => new WorkLocationEditDto
-                //    {
-                //        WorkLocationId = w.WorkLocationId,
-                //        CompanyId = w.CompanyId,
-                //        WorkLocationCode = w.WorkLocation.WorkLocationCode,
-                //        Latitude =(double) w.WorkLocation.Latitude,
-                //        Longitude =(double) w.WorkLocation.Longitude,
-                //        AllowedRadiusM = w.WorkLocation.AllowedRadiusM,
+                EmployeeWorkLocationsEdit = new EmployeeWorkLocationsEditDto
+                {
+                    EmployeeWorkLocationsEdit = workLocations.Select(w => new WorkLocationEditDto
+                    {
+                        WorkLocationId = w.WorkLocationId,
+                        CompanyId = w.CompanyId,
+                        WorkLocationCode = w.WorkLocation.WorkLocationCode,
+                        Latitude = (double)w.WorkLocation.Latitude,
+                        Longitude = (double)w.WorkLocation.Longitude,
+                        AllowedRadiusM = w.WorkLocation.AllowedRadiusM,
 
-                //        LocationName = new LocalizedData
-                //        {
-                //            ar = w.WorkLocation.LocationName.ar,
-                //            en = w.WorkLocation.LocationName.en
-                //        },
+                        LocationName = new LocalizedData
+                        {
+                            ar = w.WorkLocation.LocationName.ar,
+                            en = w.WorkLocation.LocationName.en
+                        },
 
-                //        CityId = w.WorkLocation.CityId,
-                //        CityName = w.WorkLocation.City.CityName,
-                //        GovId = w.WorkLocation.City.GovId,
-                //        GovName = w.WorkLocation.City.Gov.GovName
-                //    }).ToList()
-                //},
+                        CityId = w.WorkLocation.CityId,
+                        CityName = w.WorkLocation.City.CityName,
+                        GovId = w.WorkLocation.City.GovId,
+                        GovName = w.WorkLocation.City.Gov.GovName
+                    }).ToList()
+                },
 
-                //EmployeeVacationsBalance = new EmployeeVacationsBalanceListEditDto
-                //{
-                //    EmployeeVacationBalances = vacationBalances
-                //        .Select(v => new EmployeeVacationBalanceEditDto
-                //        {
-                //            VacationTypeId = v.VacationTypeId,
-                //            Year = v.Year,
-                //            TotalDays = v.TotalDays,
-                //            Gender = employee.Gender,
-                //            Religion = employee.Religion
-                //        }).ToList()
-                //}
+                EmployeeVacationsBalanceEdit = new EmployeeVacationsBalanceListEditDto
+                {
+                    EmployeeVacationBalancesEdit = vacationBalances
+                        .Select(v => new EmployeeVacationBalanceEditDto
+                        {
+                            VacationTypeId = v.VacationTypeId,
+                            Year = v.Year,
+                            TotalDays = v.TotalDays,
+                            Gender = employee.Gender,
+                            Religion = employee.Religion
+                        }).ToList()
+                }
             };
 
             return new ResponseResultDTO<EmployeeEditDto> { Success = true, Message = "Success", Data = dto }
