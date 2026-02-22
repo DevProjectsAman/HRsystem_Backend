@@ -46,12 +46,12 @@ using HRsystem.Api.Features.Scheduling.ShiftRule;
 using HRsystem.Api.Features.Scheduling.VacationRule;
 using HRsystem.Api.Features.Scheduling.VacationRulesGroup;
 using HRsystem.Api.Features.Scheduling.WorkDaysRules;
-using HRsystem.Api.Helpers;
 using HRsystem.Api.Services.AuditLog;
 using HRsystem.Api.Services.Auth;
 using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Services.GenerateDailyEmployeeReport;
 using HRsystem.Api.Services.LookupCashing;
+using HRsystem.Api.Services.RateLimitterMiddleware;
 using HRsystem.Api.Services.VacationCalculation;
 using HRsystem.Api.Shared.EncryptText;
 using HRsystem.Api.Shared.ValidationHandler;
@@ -357,32 +357,21 @@ builder.Services.AddRateLimiter(options =>
 
     options.AddPolicy("LoginPolicy", httpContext =>
     {
-        // 1. Fallback to IP if username isn't found
-        string partitionKey = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-
-        // 2. Try to get the username/email from the request body
-        // Note: This requires the request body to be buffered (see "Important Setup" below)
-        httpContext.Request.EnableBuffering();
-
-        // You would typically use a simple helper to peek at the JSON 
-        // for a field like "Email" or "Username"
-        var username = GeneralHelpers.ExtractUsernameFromRequest(httpContext);
-        if (!string.IsNullOrEmpty(username))
-        {
-            partitionKey = username;
-        }
+        // Simply grab the value from our middleware
+        string partitionKey = httpContext.Items["LoginUserName"]?.ToString()
+                              ?? httpContext.Connection.RemoteIpAddress?.ToString()
+                              ?? "unknown";
 
         return RateLimitPartition.GetSlidingWindowLimiter(
-            partitionKey: $"login_user:{partitionKey}",
+            partitionKey: $"login:{partitionKey}",
             factory: _ => new SlidingWindowRateLimiterOptions
             {
-                PermitLimit = 5,
-                Window = TimeSpan.FromMinutes(5), // Longer window for identity-based locks
-                SegmentsPerWindow = 5,
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(5),
+                SegmentsPerWindow = 3,
                 QueueLimit = 0
             });
     });
-
 
     options.AddPolicy("RefreshTokenPolicy", httpContext =>
     {
@@ -447,6 +436,7 @@ var app = builder.Build();
 // Register global exception handler early in the pipeline
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
+app.UseMiddleware<LoginBodyBufferingMiddleware>();
 
 // Enable Swagger UI in development
 //if (app.Environment.IsDevelopment())
