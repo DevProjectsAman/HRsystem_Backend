@@ -22,7 +22,7 @@ namespace HRsystem.Api.Database.DataTables
 
 
         [StringLength(200)]
-        public string FcmToken { get; set; }  = default!;
+        public string? FcmToken { get; set; }  = default!;
 
         /// <summary>
         /// Device platform: 1 = Android, 2 = iOS

@@ -14,7 +14,7 @@ namespace HRsystem.Api.Services.RateLimitterMiddleware
         public async Task InvokeAsync(HttpContext context)
         {
             // Only run this logic for the Login path
-            if (context.Request.Path.StartsWithSegments("/api/auth/login") && context.Request.Method == "POST")
+            if (context.Request.Path.StartsWithSegments("/api/AccessManagement/login") && context.Request.Method == "POST")
             {
                 context.Request.EnableBuffering();
 
@@ -27,7 +27,7 @@ namespace HRsystem.Api.Services.RateLimitterMiddleware
                     try
                     {
                         using var json = JsonDocument.Parse(body);
-                        if (json.RootElement.TryGetProperty("userName", out var element))
+                        if (json.RootElement.TryGetProperty("username", out var element))
                         {
                             // Store it in Items for the Rate Limiter to find later
                             context.Items["LoginUserName"] = element.GetString();
