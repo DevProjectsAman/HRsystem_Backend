@@ -30,6 +30,7 @@ using HRsystem.Api.Features.Lookups.ActivityTypeStatus;
 using HRsystem.Api.Features.Lookups.ContractTypes;
 using HRsystem.Api.Features.Lookups.GeneralLookups;
 using HRsystem.Api.Features.Lookups.VacationType;
+using HRsystem.Api.Features.MyTeam;
 using HRsystem.Api.Features.Organization.City;
 using HRsystem.Api.Features.Organization.Company;
 using HRsystem.Api.Features.Organization.Department;
@@ -585,6 +586,8 @@ app.MapEmployeeUpdatesEndpoints();
 
 app.MapEmployeeReportEndpoints();
 app.MapReportEndPoints();
+
+app.MapMyTeamEndpoints();
 
 // Rate Limitter applied to all controllers
 app.MapControllers();

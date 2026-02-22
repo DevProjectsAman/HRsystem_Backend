@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using HRsystem.Api.Database;
 using HRsystem.Api.Database.Entities;
 using HRsystem.Api.Extensions;
+using HRsystem.Api.Services.CurrentUser;
 using HRsystem.Api.Shared.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -38,20 +40,7 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
             }
         }
 
-        // Helper to handle Validation check
-        //private static IResult HandleValidationFailure<TCommand>(ValidationResult validationResult)
-        //{
-        //    return Results.BadRequest(new ResponseResultDTO
-        //    {
-        //        Success = false,
-        //        Message = "Validation failed",
-        //        Errors = validationResult.Errors.Select(e => new ResponseErrorDTO(e.PropertyName, e.ErrorMessage)).ToList()
-        //    });
-        //}
-
-        // Original (Error-causing line 46):
-        // Errors = validationResult.Errors.Select(e => new ResponseErrorDTO { Property = e.PropertyName, Error = e.ErrorMessage }).ToList()
-
+        
         // Corrected: Use the primary constructor syntax (Parentheses)
         private static IResult HandleValidationFailure<TCommand>(ValidationResult validationResult)
         {
@@ -259,20 +248,47 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
 
-        public ListRolesHandler(RoleManager<ApplicationRole> roleManager) => _roleManager = roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ICurrentUserService _currentUserService;
 
-        public async Task<ResponseResultDTO<List<RoleDto>>> Handle(ListRolesQuery request, CancellationToken ct)
+        private readonly DBContextHRsystem _db;
+        public ListRolesHandler(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager,
+          ICurrentUserService currentUserService, DBContextHRsystem db  )
         {
-            var query = _roleManager.Roles.AsNoTracking();
+
+            _roleManager = roleManager;
+            _userManager = userManager;
+            _currentUserService = currentUserService;
+            _db = db;
+
+        }
+        public async Task<ResponseResultDTO<List<RoleDto>>> Handle(
+     ListRolesQuery request,
+     CancellationToken ct)
+        {
+            var currentUserId = _currentUserService.UserId;
+
+            // 🔐 Get current user max role level (single DB query)
+            var currentUserMaxLevel = await _db.Roles
+                .Where(r => _db.UserRoles
+                    .Any(ur => ur.UserId == currentUserId && ur.RoleId == r.Id))
+                .MaxAsync(r => r.RoleLevel, ct);
+
+            var query = _roleManager.Roles
+                .AsNoTracking()
+                .Where(r => r.RoleLevel <= currentUserMaxLevel); // 🔒 Restriction
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 var s = request.Search.Trim().ToUpperInvariant();
-                query = query.Where(r => r.Name!.ToUpper().Contains(s) || r.NormalizedName!.Contains(s));
+                query = query.Where(r =>
+                    r.Name!.ToUpper().Contains(s) ||
+                    r.NormalizedName!.Contains(s));
             }
 
             var list = await query
-                .OrderBy(r => r.Name)
+                .OrderBy(r => r.RoleLevel)  // better ordering for hierarchy
+                .ThenBy(r => r.Name)
                 .Select(r => new RoleDto
                 {
                     RoleId = r.Id,
@@ -281,7 +297,6 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                     Description = r.Description ?? string.Empty,
                     Category = r.Category ?? string.Empty,
                     DisplayName = r.DisplayName ?? string.Empty,
-
                 })
                 .ToListAsync(ct);
 
@@ -292,15 +307,40 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 Data = list
             };
         }
+
+
+        private async Task<int> GetCurrentUserMaxRoleLevel()
+        {
+            var userId = _currentUserService.UserId;
+
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (user == null)
+                throw new UnauthorizedAccessException("User not found.");
+
+            var roleNames = await _userManager.GetRolesAsync(user);
+
+            var roles = await _roleManager.Roles
+                .Where(r => roleNames.Contains(r.Name!))
+                .ToListAsync();
+
+            return roles.Max(r => r.RoleLevel);
+        }
+
     }
 
     // --- Get ---
     public class GetRoleHandler : IRequestHandler<GetRoleQuery, ResponseResultDTO<RoleDto>>
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
+      
+        public GetRoleHandler(RoleManager<ApplicationRole> roleManager
+            )
+        {
+            _roleManager = roleManager;
+            
 
-        public GetRoleHandler(RoleManager<ApplicationRole> roleManager) => _roleManager = roleManager;
-
+        }
         public async Task<ResponseResultDTO<RoleDto>> Handle(GetRoleQuery request, CancellationToken ct)
         {
             var role = await _roleManager.FindByIdAsync(request.RoleId.ToString());
@@ -331,6 +371,11 @@ namespace HRsystem.Api.Features.AccessManagment.SystemAdmin.Roles
                 Data = dto
             };
         }
+
+
+     
+
+
     }
 
     // --- Create ---

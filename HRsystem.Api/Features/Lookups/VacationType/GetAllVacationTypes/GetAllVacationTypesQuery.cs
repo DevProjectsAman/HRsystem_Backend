@@ -24,6 +24,8 @@ namespace HRsystem.Api.Features.Lookups.VacationType.GetAllVacationTypes
 
         public bool? RequiresHrApproval { get; set; }
 
+        public bool? IsDeductable { get; set; }
+
 
     }
 
@@ -53,6 +55,7 @@ namespace HRsystem.Api.Features.Lookups.VacationType.GetAllVacationTypes
                 VacationTypeName = s.VacationName,// ✅ translated here
                 IsPaid = s.IsPaid,
                 RequiresHrApproval = s.RequiresHrApproval,
+                IsDeductable = s.IsDeductable
             }).ToList();
         }
 

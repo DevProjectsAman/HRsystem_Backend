@@ -10,7 +10,8 @@ namespace HRsystem.Api.Features.Lookups.VacationType.CreateVacationType
         LocalizedData VacationName,
         string? Description,
         bool? IsPaid,
-        bool? RequiresHrApproval
+        bool? RequiresHrApproval,
+        bool? IsDeductable
     ) : IRequest<int>;
 
     public class Handler : IRequestHandler<CreateVacationTypeCommand, int>
@@ -25,7 +26,8 @@ namespace HRsystem.Api.Features.Lookups.VacationType.CreateVacationType
                 VacationName = request.VacationName,
                 Description = request.Description,
                 IsPaid = request.IsPaid,
-                RequiresHrApproval = request.RequiresHrApproval
+                RequiresHrApproval = request.RequiresHrApproval,
+                 IsDeductable = request.IsDeductable
             };
 
             _db.TbVacationTypes.Add(entity);

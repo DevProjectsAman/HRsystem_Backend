@@ -12,7 +12,8 @@ namespace HRsystem.Api.Features.Lookups.VacationType.UpdateVacationType
         LocalizedData VacationName,
         string? Description,
         bool? IsPaid,
-        bool? RequiresHrApproval
+        bool? RequiresHrApproval,
+        bool? IsDeductable
     ) : IRequest<TbVacationType?>;
 
     public class Handler : IRequestHandler<UpdateVacationTypeCommand, TbVacationType?>
@@ -34,6 +35,7 @@ namespace HRsystem.Api.Features.Lookups.VacationType.UpdateVacationType
             entity.Description = request.Description;
             entity.IsPaid = request.IsPaid;
             entity.RequiresHrApproval = request.RequiresHrApproval;
+            entity.IsDeductable = request.IsDeductable;
 
             await _db.SaveChangesAsync(ct);
             return entity;

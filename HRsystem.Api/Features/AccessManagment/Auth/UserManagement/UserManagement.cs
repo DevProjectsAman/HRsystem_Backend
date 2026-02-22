@@ -56,7 +56,7 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
                     return Results.BadRequest(validation.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
 
                 var result = await mediator.Send(command);
-                return   Results.Ok(result) ;
+                return Results.Ok(result);
             });
 
 
@@ -422,19 +422,22 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
             // 3️⃣ Update user
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
-                return new ResponseResultDTO { Success = false, Message = updateResult.ToString() };  
+                return new ResponseResultDTO { Success = false, Message = updateResult.ToString() };
 
             // 4️⃣ Update password (optional)
-            if (!string.IsNullOrWhiteSpace(request.NewPassword))
+
+            if (request.IsUpdatePassword)
             {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var pwResult = await _userManager.ResetPasswordAsync(
-                    user, token, request.NewPassword);
+                if (!string.IsNullOrWhiteSpace(request.NewPassword))
+                {
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    var pwResult = await _userManager.ResetPasswordAsync(
+                        user, token, request.NewPassword);
 
-                if (!pwResult.Succeeded)
-                    return new ResponseResultDTO { Success = false, Message = pwResult.ToString() }; 
+                    if (!pwResult.Succeeded)
+                        return new ResponseResultDTO { Success = false, Message = pwResult.ToString() };
+                }
             }
-
 
 
             if (!request.RoleIds.Any())
@@ -495,8 +498,12 @@ namespace HRsystem.Api.Features.AccessManagment.Auth.UserManagement
         public int UserId { get; set; }
         public string? UserName { get; set; }
         public string? FullName { get; set; }
+        public bool IsUpdatePassword { get; set; } = false; // flag to indicate if password should be updated
         public string? NewPassword { get; set; } // optional
         public List<int> RoleIds { get; set; } = [];
+
+
+
     }
 
 
